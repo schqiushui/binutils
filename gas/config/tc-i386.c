@@ -6997,6 +6997,15 @@ check_prefix:
 	      abort ();
 	    }
 
+	  /* For x32, add a dummy REX_OPCODE prefix for mov/add with
+	     R_X86_64_GOTTPOFF relocation so that linker can safely
+	     perform IE->LE optimization.  */
+	  if (x86_elf_abi == X86_64_X32_ABI
+	      && i.operands == 2
+	      && i.reloc[0] == BFD_RELOC_X86_64_GOTTPOFF
+	      && i.prefix[REX_PREFIX] == 0)
+	    add_prefix (REX_OPCODE);
+
 	  /* The prefix bytes.  */
 	  for (j = ARRAY_SIZE (i.prefix), q = i.prefix; j > 0; j--, q++)
 	    if (*q)
@@ -7985,7 +7994,7 @@ i386_finalize_immediate (segT exp_seg ATTRIBUTE_UNUSED, expressionS *exp,
       return 0;
     }
 #endif
-  else if (!intel_syntax && exp->X_op == O_register)
+  else if (!intel_syntax && exp_seg == reg_section)
     {
       if (imm_start)
 	as_bad (_("illegal immediate register operand %s"), imm_start);
