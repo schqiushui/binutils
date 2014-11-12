@@ -1,3 +1,14 @@
+2014-11-11  Alan Modra  <amodra@gmail.com>
+
+	* elf-eh-frame.c (_bfd_elf_write_section_eh_frame): Adjust section
+	size check to account for possible zero terminator.
+
+2014-11-10  Matthew Fortune  <matthew.fortune@imgtec.com>
+
+	Apply trunk patch:
+	* elfxx-mips.c (update_mips_abiflags_isa): Add E_MIPS_ARCH_32R6
+	and E_MIPS_ARCH_64R6 support.
+
 2014-11-07  H.J. Lu  <hongjiu.lu@intel.com>
 
 	Apply trunk patch:
