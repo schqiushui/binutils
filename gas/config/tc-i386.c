@@ -827,6 +827,12 @@ static const arch_entry cpu_arch[] =
     CPU_AVX512ER_FLAGS, 0, 0 },
   { STRING_COMMA_LEN (".avx512pf"), PROCESSOR_UNKNOWN,
     CPU_AVX512PF_FLAGS, 0, 0 },
+  { STRING_COMMA_LEN (".avx512dq"), PROCESSOR_UNKNOWN,
+    CPU_AVX512DQ_FLAGS, 0, 0 },
+  { STRING_COMMA_LEN (".avx512bw"), PROCESSOR_UNKNOWN,
+    CPU_AVX512BW_FLAGS, 0, 0 },
+  { STRING_COMMA_LEN (".avx512vl"), PROCESSOR_UNKNOWN,
+    CPU_AVX512VL_FLAGS, 0, 0 },
   { STRING_COMMA_LEN (".noavx"), PROCESSOR_UNKNOWN,
     CPU_ANY_AVX_FLAGS, 0, 1 },
   { STRING_COMMA_LEN (".vmx"), PROCESSOR_UNKNOWN,
@@ -839,6 +845,10 @@ static const arch_entry cpu_arch[] =
     CPU_XSAVE_FLAGS, 0, 0 },
   { STRING_COMMA_LEN (".xsaveopt"), PROCESSOR_UNKNOWN,
     CPU_XSAVEOPT_FLAGS, 0, 0 },
+  { STRING_COMMA_LEN (".xsavec"), PROCESSOR_UNKNOWN,
+    CPU_XSAVEC_FLAGS, 0, 0 },
+  { STRING_COMMA_LEN (".xsaves"), PROCESSOR_UNKNOWN,
+    CPU_XSAVES_FLAGS, 0, 0 },
   { STRING_COMMA_LEN (".aes"), PROCESSOR_UNKNOWN,
     CPU_AES_FLAGS, 0, 0 },
   { STRING_COMMA_LEN (".pclmul"), PROCESSOR_UNKNOWN,
@@ -915,20 +925,10 @@ static const arch_entry cpu_arch[] =
     CPU_SHA_FLAGS, 0, 0 },
   { STRING_COMMA_LEN (".clflushopt"), PROCESSOR_UNKNOWN,
     CPU_CLFLUSHOPT_FLAGS, 0, 0 },
-  { STRING_COMMA_LEN (".xsavec"), PROCESSOR_UNKNOWN,
-    CPU_XSAVEC_FLAGS, 0, 0 },
-  { STRING_COMMA_LEN (".xsaves"), PROCESSOR_UNKNOWN,
-    CPU_XSAVES_FLAGS, 0, 0 },
   { STRING_COMMA_LEN (".prefetchwt1"), PROCESSOR_UNKNOWN,
     CPU_PREFETCHWT1_FLAGS, 0, 0 },
   { STRING_COMMA_LEN (".se1"), PROCESSOR_UNKNOWN,
     CPU_SE1_FLAGS, 0, 0 },
-  { STRING_COMMA_LEN (".avx512dq"), PROCESSOR_UNKNOWN,
-    CPU_AVX512DQ_FLAGS, 0, 0 },
-  { STRING_COMMA_LEN (".avx512bw"), PROCESSOR_UNKNOWN,
-    CPU_AVX512BW_FLAGS, 0, 0 },
-  { STRING_COMMA_LEN (".avx512vl"), PROCESSOR_UNKNOWN,
-    CPU_AVX512VL_FLAGS, 0, 0 },
 };
 
 #ifdef I386COFF
@@ -6997,6 +6997,7 @@ check_prefix:
 	      abort ();
 	    }
 
+#if defined (OBJ_MAYBE_ELF) || defined (OBJ_ELF)
 	  /* For x32, add a dummy REX_OPCODE prefix for mov/add with
 	     R_X86_64_GOTTPOFF relocation so that linker can safely
 	     perform IE->LE optimization.  */
@@ -7005,6 +7006,7 @@ check_prefix:
 	      && i.reloc[0] == BFD_RELOC_X86_64_GOTTPOFF
 	      && i.prefix[REX_PREFIX] == 0)
 	    add_prefix (REX_OPCODE);
+#endif
 
 	  /* The prefix bytes.  */
 	  for (j = ARRAY_SIZE (i.prefix), q = i.prefix; j > 0; j--, q++)

@@ -1,3 +1,23 @@
+2014-11-14  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* config/tc-i386.c (cpu_arch): Re-arrange avx512* and xsave*
+	items.
+
+	* doc/c-i386.texi: Re-arrange avx512* and xsave*.  Add
+	clflushopt and se1.  Remove duplicated entries.
+
+2014-11-13  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	Apply trunk patch:
+	* config/tc-aarch64.c (aarch64_cpus): Add CRC feature for
+	cortex-A53 and cortex-A57.
+
+2014-11-12  Alan Modra  <amodra@gmail.com>
+
+	PR ld/17482
+	* config/tc-i386.c (output_insn): Don't test x86_elf_abi when
+	not ELF.
+
 2014-11-11  Nick Clifton  <nickc@redhat.com>
 
 	* po/uk.po: Updated Ukranian translation.
