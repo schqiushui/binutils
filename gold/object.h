@@ -1,6 +1,6 @@
 // object.h -- support for an object file for linking in gold  -*- C++ -*-
 
-// Copyright (C) 2006-2014 Free Software Foundation, Inc.
+// Copyright (C) 2006-2015 Free Software Foundation, Inc.
 // Written by Ian Lance Taylor <iant@google.com>.
 
 // This file is part of gold.
@@ -2201,6 +2201,10 @@ class Sized_relobj_file : public Sized_relobj<size, big_endian>
 			    const Symbol_value<size>* lv_in,
 			    Symbol_value<size>* lv_out,
 			    const Symbol_table* symtab);
+
+  // Return true if the layout for this object was deferred.
+  bool is_deferred_layout() const
+  { return this->is_deferred_layout_; }
 
   // Return true if the layout for this object was deferred.
   bool is_deferred_layout() const
