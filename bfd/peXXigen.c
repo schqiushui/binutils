@@ -65,6 +65,9 @@
 #ifdef HAVE_WCHAR_H
 #include <wchar.h>
 #endif
+#ifdef HAVE_WCTYPE_H
+#include <wctype.h>
+#endif
 
 /* NOTE: it's strange to be including an architecture specific header
    in what's supposed to be general (to PE/PEI) code.  However, that's
@@ -3536,7 +3539,11 @@ rsrc_write_directory (rsrc_write_data * data,
    putting its 'ucs4_t' representation in *PUC.  */
 
 static unsigned int
+#if defined HAVE_WCTYPE_H
+u16_mbtouc (wint_t * puc, const unsigned short * s, unsigned int n)
+#else
 u16_mbtouc (wchar_t * puc, const unsigned short * s, unsigned int n)
+#endif
 {
   unsigned short c = * s;
 
