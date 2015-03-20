@@ -2919,7 +2919,6 @@ ppc_elf_get_synthetic_symtab (bfd *abfd, long symcount, asymbol **syms,
     }
 
   count = relplt->size / sizeof (Elf32_External_Rela);
-  stub_vma = glink_vma - (bfd_vma) count * 16;
   /* If the stubs are those for -shared/-pie then we might have
      multiple stubs for each plt entry.  If that is the case then
      there is no way to associate stubs with their plt entries short
@@ -2950,9 +2949,10 @@ ppc_elf_get_synthetic_symtab (bfd *abfd, long symcount, asymbol **syms,
   if (s == NULL)
     return -1;
 
+  stub_vma = glink_vma;
   names = (char *) (s + count + 1 + (resolv_vma != 0));
-  p = relplt->relocation;
-  for (i = 0; i < count; i++, p++)
+  p = relplt->relocation + count - 1;
+  for (i = 0; i < count; i++)
     {
       size_t len;
 
@@ -2963,6 +2963,9 @@ ppc_elf_get_synthetic_symtab (bfd *abfd, long symcount, asymbol **syms,
 	s->flags |= BSF_GLOBAL;
       s->flags |= BSF_SYNTHETIC;
       s->section = glink;
+      stub_vma -= 16;
+      if (strcmp ((*p->sym_ptr_ptr)->name, "__tls_get_addr_opt") == 0)
+	stub_vma -= 32;
       s->value = stub_vma - glink->vma;
       s->name = names;
       s->udata.p = NULL;
@@ -2979,7 +2982,7 @@ ppc_elf_get_synthetic_symtab (bfd *abfd, long symcount, asymbol **syms,
       memcpy (names, "@plt", sizeof ("@plt"));
       names += sizeof ("@plt");
       ++s;
-      stub_vma += 16;
+      --p;
     }
 
   /* Add a symbol at the start of the glink branch table.  */
@@ -5087,6 +5090,9 @@ ppc_elf_tls_setup (bfd *obfd, struct bfd_link_info *info)
   htab = ppc_elf_hash_table (info);
   htab->tls_get_addr = elf_link_hash_lookup (&htab->elf, "__tls_get_addr",
 					     FALSE, FALSE, TRUE);
+  if (htab->plt_type != PLT_NEW)
+    htab->params->no_tls_get_addr_opt = TRUE;
+
   if (!htab->params->no_tls_get_addr_opt)
     {
       struct elf_link_hash_entry *opt, *tga;
@@ -5576,6 +5582,13 @@ ppc_elf_adjust_dynamic_symbol (struct bfd_link_info *info,
   if (!h->non_got_ref)
     return TRUE;
 
+  /* If -z nocopyreloc was given, we won't generate them either.  */
+  if (info->nocopyreloc)
+    {
+      h->non_got_ref = 0;
+      return TRUE;
+    }
+
    /* If we didn't find any dynamic relocs in read-only sections, then
       we'll be keeping the dynamic relocs and avoiding the copy reloc.
       We can't do this if there are any small data relocations.  This
@@ -5587,6 +5600,16 @@ ppc_elf_adjust_dynamic_symbol (struct bfd_link_info *info,
       && !htab->is_vxworks
       && !h->def_regular
       && !readonly_dynrelocs (h))
+    {
+      h->non_got_ref = 0;
+      return TRUE;
+    }
+
+  /* Protected variables do not work with .dynbss.  The copy in
+     .dynbss won't be used by the shared library with the protected
+     definition for the variable.  Text relocations are preferable
+     to an incorrect program.  */
+  if (h->protected_def)
     {
       h->non_got_ref = 0;
       return TRUE;

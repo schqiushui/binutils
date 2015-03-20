@@ -1,3 +1,31 @@
+2015-03-18  Alan Modra  <amodra@gmail.com>
+
+	Apply from master
+	2015-03-14  Andreas Krebbel  <krebbel@linux.vnet.ibm.com>
+	* elf-s390-common.c (elf_s390_elf_sort_relocs_p): Don't sort
+	relocs against code sections.
+	* elf32-s390.c: Define elf_backend_sort_relocs_p.
+	* elf64-s390.c: Likewise.
+
+	2015-03-11  Alan Modra  <amodra@gmail.com>
+	* elf32-ppc.c (ppc_elf_get_synthetic_symtab): Examine stubs in
+	reverse order.  Account for larger size of __tls_get_addr_opt stub.
+
+	2015-02-28  Alan Modra  <amodra@gmail.com>
+	* elf32-ppc.c (ppc_elf_tls_setup): Set no_tls_get_addr_opt if
+	not PLT_NEW.
+
+	2015-02-26  Alan Modra  <amodra@gmail.com>
+	* elf64-ppc.c (plt_stub_size, build_plt_stub): Don't build
+	thread-safe stubs for iplt.
+	(build_tls_get_addr_stub): Restore r2 immediately after call.
+
+	2015-02-26  Alan Modra  <amodra@gmail.com>
+	* elf32-ppc.c (ppc_elf_adjust_dynamic_symbol): Heed -z nocopyreloc.
+	Use text relocs rather than giving an error on trying to use
+	.dynbss for protected shared lib vars.
+	* elf64-ppc.c (ppc64_elf_adjust_dynamic_symbol): Likewise.
+
 2015-03-06  H.J. Lu  <hongjiu.lu@intel.com>
 
 	Backport from master
