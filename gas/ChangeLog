@@ -1,3 +1,20 @@
+2015-04-06  Evandro Menezes  <e.menezes@samsung.com>
+
+	* config/tc-aarch64.c: Add support for Samsung Exynos M1.
+	* doc/c-aarch64.texi (-mcpu=): Add "exynos-m1".
+
+2015-04-06  Evandro Menezes  <e.menezes@samsung.com>
+
+	* config/tc-arm.c: Add support for Samsung Exynos M1.
+	* doc/c-arm.texi (-mcpu=): Add "exynos-m1".
+
+2015-04-04  Alan Modra  <amodra@gmail.com>
+
+	Apply from master.
+	2014-12-25  Yaakov Selkowitz  <yselkowi@redhat.com>
+	PR gas/17753
+	* config/tc-mep.c (md_begin): Specify types of vararg literals.
+
 2015-03-20  H.J. Lu  <hongjiu.lu@intel.com>
 
 	Apply patch from master:
