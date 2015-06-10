@@ -1,3 +1,30 @@
+2015-06-05  Alan Modra  <amodra@gmail.com>
+
+	Apply from master
+	2015-05-16  Alan Modra  <amodra@gmail.com>
+	* reloc.cc (Sized_relobj_file::find_functions): Use function_location.
+	* powerpc.cc (Target_powerpc::do_calls_non_split): New function.
+	(addi_12_1, addis_2_12, addis_12_1, cmpld_7_12_0): New constants.
+	(lis_0): Rename from lis_0_0.
+
+	2015-04-28  Alan Modra  <amodra@gmail.com>
+	* powerpc.cc (Target_powerpc::do_dynsym_value): Use Address rather
+	than unsigned int for find_global_entry result temp.  Compare
+	against invalid_address.
+	(Target_powerpc::do_plt_address_for_global): Likewise.
+	(Target_powerpc::Relocate::relocate): Likewise.  Don't assert
+	on plt call stub existence for debug info.  Do assert for plt
+	and global entry stub existence if an alloc section.
+
+	2015-04-28  Alan Modra  <amodra@gmail.com>
+	* powerpc.cc (Target_powerpc::Relocate::relocate): Don't assert
+	on missing global entry stub due to bogus debug info.
+
+	2015-03-24  Alan Modra  <amodra@gmail.com>
+	PR 18147
+	* powerpc.cc (Target_powerpc::Relocate::relocate): Don't report
+	relocation errors for branches to strong undefined symbols.
+
 2015-03-18  Alan Modra  <amodra@gmail.com>
 
 	Apply from master
