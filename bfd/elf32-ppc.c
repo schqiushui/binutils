@@ -9247,30 +9247,20 @@ ppc_elf_relocate_section (bfd *output_bfd,
 	  if (r == bfd_reloc_overflow)
 	    {
 	    overflow:
-	      if (warned)
-		continue;
-	      if (h != NULL
-		  && h->root.type == bfd_link_hash_undefweak
-		  && howto->pc_relative)
+	      /* On code like "if (foo) foo();" don't report overflow
+		 on a branch to zero when foo is undefined.  */
+	      if (!warned
+		  && !(h != NULL
+		       && (h->root.type == bfd_link_hash_undefweak
+			   || h->root.type == bfd_link_hash_undefined)
+		       && is_branch_reloc (r_type)))
 		{
-		  /* Assume this is a call protected by other code that
-		     detect the symbol is undefined.  If this is the case,
-		     we can safely ignore the overflow.  If not, the
-		     program is hosed anyway, and a little warning isn't
-		     going to help.  */
-
-		  continue;
+		  if (!((*info->callbacks->reloc_overflow)
+			(info, (h ? &h->root : NULL), sym_name,
+			 howto->name, rel->r_addend,
+			 input_bfd, input_section, rel->r_offset)))
+		    return FALSE;
 		}
-
-	      if (! (*info->callbacks->reloc_overflow) (info,
-							(h ? &h->root : NULL),
-							sym_name,
-							howto->name,
-							rel->r_addend,
-							input_bfd,
-							input_section,
-							rel->r_offset))
-		return FALSE;
 	    }
 	  else
 	    {
@@ -9438,6 +9428,8 @@ ppc_elf_relocate_section (bfd *output_bfd,
 	      && rel->r_offset >= offset
 	      && rel->r_offset < offset + 4)
 	    {
+	      asection *sreloc;
+
 	      /* If the insn we are patching had a reloc, adjust the
 		 reloc r_offset so that the reloc applies to the moved
 		 location.  This matters for -r and --emit-relocs.  */
@@ -9450,6 +9442,57 @@ ppc_elf_relocate_section (bfd *output_bfd,
 		  relend[-1] = tmp;
 		}
 	      relend[-1].r_offset += patch_off - offset;
+
+	      /* Adjust REL16 addends too.  */
+	      switch (ELF32_R_TYPE (relend[-1].r_info))
+		{
+		case R_PPC_REL16:
+		case R_PPC_REL16_LO:
+		case R_PPC_REL16_HI:
+		case R_PPC_REL16_HA:
+		  relend[-1].r_addend += patch_off - offset;
+		  break;
+		default:
+		  break;
+		}
+
+	      /* If we are building a PIE or shared library with
+		 non-PIC objects, perhaps we had a dynamic reloc too?
+		 If so, the dynamic reloc must move with the insn.  */
+	      sreloc = elf_section_data (input_section)->sreloc;
+	      if (sreloc != NULL)
+		{
+		  Elf32_External_Rela *slo, *shi, *srelend;
+		  bfd_vma soffset;
+
+		  slo = (Elf32_External_Rela *) sreloc->contents;
+		  shi = srelend = slo + sreloc->reloc_count;
+		  soffset = (offset + input_section->output_section->vma
+			     + input_section->output_offset);
+		  while (slo < shi)
+		    {
+		      Elf32_External_Rela *srel = slo + (shi - slo) / 2;
+		      bfd_elf32_swap_reloca_in (output_bfd, (bfd_byte *) srel,
+						&outrel);
+		      if (outrel.r_offset < soffset)
+			slo = srel + 1;
+		      else if (outrel.r_offset > soffset + 3)
+			shi = srel;
+		      else
+			{
+			  if (srel + 1 != srelend)
+			    {
+			      memmove (srel, srel + 1,
+				       (srelend - (srel + 1)) * sizeof (*srel));
+			      srel = srelend - 1;
+			    }
+			  outrel.r_offset += patch_off - offset;
+			  bfd_elf32_swap_reloca_out (output_bfd, &outrel,
+						     (bfd_byte *) srel);
+			  break;
+			}
+		    }
+		}
 	    }
 	  else
 	    rel = NULL;

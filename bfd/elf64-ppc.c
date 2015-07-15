@@ -138,6 +138,8 @@ static bfd_vma opd_entry_value
 
 /* TOC base pointers offset from start of TOC.  */
 #define TOC_BASE_OFF	0x8000
+/* TOC base alignment.  */
+#define TOC_BASE_ALIGN	256
 
 /* Offset of tp and dtp pointers from start of TLS block.  */
 #define TP_OFFSET	0x7000
@@ -11246,6 +11248,7 @@ ppc64_elf_next_toc_section (struct bfd_link_info *info, asection *isec)
 	  addr = (htab->toc_first_sec->output_offset
 		  + htab->toc_first_sec->output_section->vma);
 	  htab->toc_curr = addr;
+	  htab->toc_curr &= -TOC_BASE_ALIGN;
 	}
 
       /* toc_curr is the base address of this toc group.  Set elf_gp
@@ -11626,7 +11629,7 @@ toc_adjusting_stub_needed (struct bfd_link_info *info, asection *isec)
 		{
 		  long adjust;
 
-		  adjust = opd->adjust[OPD_NDX (sym->st_value)];
+		  adjust = opd->adjust[OPD_NDX (sym_value)];
 		  if (adjust == -1)
 		    /* Assume deleted functions won't ever be called.  */
 		    continue;
@@ -12524,7 +12527,7 @@ bfd_vma
 ppc64_elf_set_toc (struct bfd_link_info *info, bfd *obfd)
 {
   asection *s;
-  bfd_vma TOCstart;
+  bfd_vma TOCstart, adjust;
 
   /* The TOC consists of sections .got, .toc, .tocbss, .plt in that
      order.  The TOC starts where the first of these sections starts.  */
@@ -12572,6 +12575,9 @@ ppc64_elf_set_toc (struct bfd_link_info *info, bfd *obfd)
   if (s != NULL)
     TOCstart = s->output_section->vma + s->output_offset;
 
+  /* Force alignment.  */
+  adjust = TOCstart & (TOC_BASE_ALIGN - 1);
+  TOCstart -= adjust;
   _bfd_set_gp_value (obfd, TOCstart);
 
   if (info != NULL && s != NULL)
@@ -12582,7 +12588,7 @@ ppc64_elf_set_toc (struct bfd_link_info *info, bfd *obfd)
 	{
 	  if (htab->elf.hgot != NULL)
 	    {
-	      htab->elf.hgot->root.u.def.value = TOC_BASE_OFF;
+	      htab->elf.hgot->root.u.def.value = TOC_BASE_OFF - adjust;
 	      htab->elf.hgot->root.u.def.section = s;
 	    }
 	}
@@ -12590,8 +12596,8 @@ ppc64_elf_set_toc (struct bfd_link_info *info, bfd *obfd)
 	{
 	  struct bfd_link_hash_entry *bh = NULL;
 	  _bfd_generic_link_add_one_symbol (info, obfd, ".TOC.", BSF_GLOBAL,
-					    s, TOC_BASE_OFF, NULL, FALSE,
-					    FALSE, &bh);
+					    s, TOC_BASE_OFF - adjust,
+					    NULL, FALSE, FALSE, &bh);
 	}
     }
   return TOCstart;
@@ -14824,26 +14830,21 @@ ppc64_elf_relocate_section (bfd *output_bfd,
 
 	  if (r == bfd_reloc_overflow)
 	    {
-	      if (warned)
-		continue;
-	      if (h != NULL
-		  && h->elf.root.type == bfd_link_hash_undefweak
-		  && howto->pc_relative)
+	      /* On code like "if (foo) foo();" don't report overflow
+		 on a branch to zero when foo is undefined.  */
+	      if (!warned
+		  && (reloc_dest == DEST_STUB
+		      || !(h != NULL
+			   && (h->elf.root.type == bfd_link_hash_undefweak
+			       || h->elf.root.type == bfd_link_hash_undefined)
+			   && is_branch_reloc (r_type))))
 		{
-		  /* Assume this is a call protected by other code that
-		     detects the symbol is undefined.  If this is the case,
-		     we can safely ignore the overflow.  If not, the
-		     program is hosed anyway, and a little warning isn't
-		     going to help.  */
-
-		  continue;
+		  if (!((*info->callbacks->reloc_overflow)
+			(info, &h->elf.root, sym_name,
+			 reloc_name, orig_rel.r_addend,
+			 input_bfd, input_section, rel->r_offset)))
+		    return FALSE;
 		}
-
-	      if (!((*info->callbacks->reloc_overflow)
-		    (info, &h->elf.root, sym_name,
-		     reloc_name, orig_rel.r_addend,
-		     input_bfd, input_section, rel->r_offset)))
-		return FALSE;
 	    }
 	  else
 	    {
