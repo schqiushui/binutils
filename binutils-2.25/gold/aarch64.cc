@@ -897,7 +897,7 @@ public:
   typedef AArch64_insn_utilities<big_endian> Insn_utilities;
   typedef typename AArch64_insn_utilities<big_endian>::Insntype Insntype;
 
-  static const int STUB_ADDR_ALIGN = 4;
+  static const int STUB_ADDR_ALIGN;
 
   static const Insntype invalid_insn = static_cast<Insntype>(-1);
 
@@ -1020,6 +1020,9 @@ private:
 };  // End of "Erratum_stub".
 
 
+template<int size, bool big_endian>
+const int Erratum_stub<size, big_endian>::STUB_ADDR_ALIGN = 4;
+
 // Comparator used in set definition.
 template<int size, bool big_endian>
 struct Erratum_stub_less
@@ -1069,7 +1072,7 @@ class Reloc_stub : public Stub_base<size, big_endian>
   static const int MIN_ADRP_IMM = -(1 << 20);
 
   static const int BYTES_PER_INSN = 4;
-  static const int STUB_ADDR_ALIGN = 4;
+  static const int STUB_ADDR_ALIGN;
 
   // Determine whether the offset fits in the jump/branch instruction.
   static bool
@@ -1215,6 +1218,8 @@ class Reloc_stub : public Stub_base<size, big_endian>
   static const unsigned int invalid_index = static_cast<unsigned int>(-1);
 };  // End of Reloc_stub
 
+template<int size, bool big_endian>
+const int Reloc_stub<size, big_endian>::STUB_ADDR_ALIGN = 4;
 
 // Write data to output file.
 

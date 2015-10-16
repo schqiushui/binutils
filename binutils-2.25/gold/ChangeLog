@@ -61,6 +61,12 @@
         code into create_erratum_stub.
         * options.h (fix_cortex_a53_835769): New option.
 
+2015-06-11  Cary Coutant  <ccoutant@gmail.com>
+
+	* aarch64.cc (Erratum_stub::STUB_ADDR_ALIGN): Move initialization
+	outside class body.
+	(Reloc_stub::STUB_ADDR_ALIGN): Likewise.
+
 2015-06-10  Han Shen  <shenhan@google.com>
 	Patch for erratum-843419 (2 of 2 - fix erratum occurrences).
 
