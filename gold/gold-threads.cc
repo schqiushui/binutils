@@ -1,6 +1,6 @@
 // gold-threads.cc -- thread support for gold
 
-// Copyright (C) 2006-2014 Free Software Foundation, Inc.
+// Copyright (C) 2006-2015 Free Software Foundation, Inc.
 // Written by Ian Lance Taylor <iant@google.com>.
 
 // This file is part of gold.
@@ -102,7 +102,7 @@ Lock_impl_threads::Lock_impl_threads()
   if (err != 0)
     gold_fatal(_("pthead_mutextattr_init failed: %s"), strerror(err));
 #ifdef PTHREAD_MUTEX_ADAPTIVE_NP
-  err = pthread_mutextattr_settype(&attr, PTHREAD_MUTEX_ADAPTIVE_NP);
+  err = pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ADAPTIVE_NP);
   if (err != 0)
     gold_fatal(_("pthread_mutextattr_settype failed: %s"), strerror(err));
 #endif
@@ -284,9 +284,18 @@ Condvar::~Condvar()
 class Once_initialize
 {
  public:
-  Once_initialize()
-    : once_(PTHREAD_ONCE_INIT)
-  { }
+   Once_initialize()
+#if defined(__clang__) || (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 4))
+     : once_(PTHREAD_ONCE_INIT)
+   { }
+#else
+// In Drawin PTHREAD_ONCE_INIT is {0x30B1BCBA, {0}} and the GCC < 4.4 doesn't support
+// extended initializer list as above */
+   {
+     pthread_once_t once_2 = PTHREAD_ONCE_INIT;
+     once_ = once_2; 
+   }
+#endif
 
   // Return a pointer to the pthread_once_t variable.
   pthread_once_t*

@@ -1,4 +1,124 @@
-2015-07-26  Doug Kwan  <dougkwan@google.com>
+2015-07-07  Han Shen  <shenhan@google.com>
+
+	Make gold aarch64 accept long form of mapping symbols.
+
+	* aarch64.cc (AArch64_relobj::do_count_local_symbols): Make legal
+	of mapping symbols.
+
+2015-06-29  Han Shen  <shenhan@google.com>
+
+	Patch for erratum 843419 internal error.
+
+        * aarch64.cc (Erratum_stub::Insn_utilities): New typedef.
+        (Erratum_stub::update_erratum_insn): New method.
+        (Stub_table::relocate_stubs): Modified to place relocated insn.
+        (AArch64_relobj::fix_errata): Modified gold_assert.
+
+2015-06-16  Yiran Wang <yiran@google.com>
+	* resolve.cc disable the warning of a hidden symbol matches a
+	reference to be resolved
+
+2015-06-12  Han Shen  <shenhan@google.com>
+
+	Fix erratum 835769.
+
+        * aarch64.cc (AArch64_insn_utilities::BYTES_PER_INSN): Move
+        defintion outside class definition.
+        (AArch64_insn_utilities::AARCH64_ZR): New static constant.
+        (AArch64_insn_utilities::aarch64_op31): New member.
+        (AArch64_insn_utilities::aarch64_ra): New member.
+        (AArch64_insn_utilities::aarch64_mac): New member.
+        (AArch64_insn_utilities::aarch64_mlxl): New member.
+        (ST_E_835769): New global enum member.
+        (Stub_table::relocate_stubs): Add 835769 handler.
+        (Stub_template_repertoire::Stub_template_repertoire): Install new
+        stub type.
+        (AArch64_relobj::scan_errata): This func is renamed from
+        scan_erratum_843419.
+        (AArch64_relobj::do_count_local_symbols): Add 835769 handler.
+        (AArch64_relobj::do_relocate_sections): Add 835769 handler.
+        (AArch64_relobj::scan_sections_for_stubs): Add 835769 handler.
+        (Target_aarch64::scan_erratum_835769_span): New method.
+        (Target_aarch64::create_erratum_stub): New method.
+        (Target_aarch64::is_erratum_835769_sequence): New method.
+        (Target_aarch64::scan_erratum_843419_sequence): Move part of the
+        code into create_erratum_stub.
+        * options.h (fix_cortex_a53_835769): New option.
+
+2015-06-10  Han Shen  <shenhan@google.com>
+	Patch for erratum-843419 (2 of 2 - fix erratum occurrences).
+
+	Now fixing for 843419 is fully functional.
+
+	The first part of the erratum fix CL is here -
+	https://sourceware.org/ml/binutils/2015-04/msg00229.html
+
+	* aarch64.cc(global enum): New constants representing stub types.
+	(Stub_template): New POD struct.
+	(Stub_template_repertoire): New class.
+	(Stub_base): New class.
+	(Erratum_stub): New class.
+	(Reloc_stub): Refactored to be a subclass of Stub_base.
+	(Reloc_stub::Stub_type): Removed.
+	(Reloc_stub::offset): Moved to Stub_base.
+	(Reloc_stub::set_offset): Moved to Stub_base.
+	(Reloc_stub::destination_address): Moved to Stub_base.
+	(Reloc_stub::set_destination_address): Moved to Stub_base.
+	(Reloc_stub::reset_destination_address): Moved to Stub_base.
+	(Reloc_stub::stub_type): Renamed and moved to Stub_base.
+	(Reloc_stub::stub_size): Renamed and moved to Stub_base.
+	(Reloc_stub::stub_insns): Renamed and moved to Stub_base.
+	(Reloc_stub::write): Moved to Stub_base.
+	(Reloc_stub::invalid_offset): Moved to Stub_base.
+	(Reloc_stub::invalid_address): Moved to Stub_base.
+	(Reloc_stub::stub_type_): Renamed and moved to Stub_base.
+	(Reloc_stub::stub_insns_): Moved to Stub_base.
+	(Reloc_stub::offset_): Moved to Stub_base.
+	(Reloc_stub::destination_address_): Moved to Stub_base.
+	(Stub_table::The_aarch64_relobj): New typedef.
+	(Stub_table::The_erratum_stub): New typedef.
+	(Stub_table::The_erratum_stub_less): New typedef.
+	(Stub_table::The_erratum_stub_set): New typedef.
+	(Stub_table::The_erratum_stub_set_iter): New typedef.
+	(Stub_table::empty): Added emptiness testing for erratum stubs.
+	(Stub_table::add_erratum_stub): New method to add an erratum stub.
+	(Stub_table::find_erratum_stub): New method.
+	(Stub_table::find_erratum_stubs_for_input_section): New method.
+	(Stub_table::erratum_stub_address): New method.
+	(Stub_table::update_date_size_changed_p): Modified to handle erratum stubs.
+	(Stub_table::do_addralign): Modified to handle erratum stubs.
+	(Stub_table::erratum_stubs_): New member.
+	(Stub_table::erratum_stub_size_): New member.
+	(Stub_table::relocate_stubs): Modified to handle erratum stubs.
+	(Stub_table::do_write): Modified to handle erratum stubs.
+	(AArch64_relobj::The_erratum_stub): New typedef.
+	(AArch64_relobj::Erratum_stub_set_iter): New typedef.
+	(AArch64_relobj::fix_errata): New method.
+	(Target_aarch64::The_reloc_stub_type): Removed.
+	(Target_aarch64::The_erratum_stub): New typede.
+	(AArch64_relocate_functions::construct_b): New method.
+
+2015-04-27  Han Shen  <shenhan@google.com>
+
+	* options.h (--fix-cortex-a53-843419): Rename option.
+	* aarch64.cc (AArch64_relobj::do_count_local_symbols): Use renamed
+	option.
+	(AArch64_relobj::scan_sections_for_stubs): Use renamed option.
+
+2015-04/16  Han Shen  <shenhan@google.com>
+
+    * aarch64.cc (AArch64_insn_utilities): New utility class.
+    (AArch64_relobj::Mapping_symbol_position): New struct.
+    (AArch64_relobj::Mapping_symbol_info): New typedef.
+    (AArch64_relobj::do_count_local_symbols): New function overriding
+    parent's implementation.
+    (AArch64_relobj::mapping_symbol_info_): New member
+    (AArch64_relobj::scan_erratum_843419): New method.
+    (Target_aarch64::scan_erratum_843419_span): New method.
+    (Target_aarch64::is_erratum_843419_sequence): New method.
+    * options.h (fix_cortex_a53): New option.
+
+2015-02-21  H.J. Lu  <hongjiu.lu@intel.com>
 
 	Apply from master
 	2015-07-26  Doug Kwan  <dougkwan@google.com>

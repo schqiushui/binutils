@@ -1,6 +1,6 @@
 // resolve.cc -- symbol resolution for gold
 
-// Copyright (C) 2006-2014 Free Software Foundation, Inc.
+// Copyright (C) 2006-2015 Free Software Foundation, Inc.
 // Written by Ian Lance Taylor <iant@google.com>.
 
 // This file is part of gold.
@@ -279,15 +279,8 @@ Symbol_table::resolve(Sized_symbol<size>* to,
            && (to->visibility() == elfcpp::STV_HIDDEN
                || to->visibility() == elfcpp::STV_INTERNAL))
     {
-      // A dynamic object cannot reference a hidden or internal symbol
-      // defined in another object.
-      gold_warning(_("%s symbol '%s' in %s is referenced by DSO %s"),
-                   (to->visibility() == elfcpp::STV_HIDDEN
-                    ? "hidden"
-                    : "internal"),
-                   to->demangled_name().c_str(),
-                   to->object()->name().c_str(),
-                   object->name().c_str());
+      // it is good to be helpful, but the warning leads to build error
+      // for some users, so disable it if not really wanted.
       return;
     }
   else

@@ -1,6 +1,6 @@
 // options.h -- handle command line options for gold  -*- C++ -*-
 
-// Copyright (C) 2006-2014 Free Software Foundation, Inc.
+// Copyright (C) 2006-2015 Free Software Foundation, Inc.
 // Written by Ian Lance Taylor <iant@google.com>.
 
 // This file is part of gold.
@@ -809,6 +809,14 @@ class General_options
 	      N_("(ARM only) Fix binaries for Cortex-A8 erratum."),
 	      N_("(ARM only) Do not fix binaries for Cortex-A8 erratum."));
 
+  DEFINE_bool(fix_cortex_a53_843419, options::TWO_DASHES, '\0', false,
+	      N_("(AArch64 only) Fix Cortex-A53 erratum 843419."),
+	      N_("(AArch64 only) Do not fix Cortex-A53 erratum 843419."));
+
+  DEFINE_bool(fix_cortex_a53_835769, options::TWO_DASHES, '\0', false,
+	      N_("(AArch64 only) Fix Cortex-A53 erratum 835769."),
+	      N_("(AArch64 only) Do not fix Cortex-A53 erratum 835769."));
+
   DEFINE_bool(fix_arm1176, options::TWO_DASHES, '\0', true,
 	      N_("(ARM only) Fix binaries for ARM1176 erratum."),
 	      N_("(ARM only) Do not fix binaries for ARM1176 erratum."));
@@ -1272,6 +1280,9 @@ class General_options
 	      NULL);
   DEFINE_bool(execstack, options::DASH_Z, '\0', false,
 	      N_("Mark output as requiring executable stack"), NULL);
+  DEFINE_bool(global, options::DASH_Z, '\0', false,
+	      N_("Make symbols in DSO available for subsequently loaded "
+	         "objects"), NULL);
   DEFINE_bool(initfirst, options::DASH_Z, '\0', false,
 	      N_("Mark DSO to be initialized first at runtime"),
 	      NULL);
