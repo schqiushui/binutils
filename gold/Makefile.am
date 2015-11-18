@@ -1,6 +1,6 @@
 ## Process this file with automake to generate Makefile.in
 #
-#  Copyright (C) 2006-2015 Free Software Foundation, Inc.
+#  Copyright (C) 2006-2014 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -249,7 +249,7 @@ po/POTFILES.in: @MAINT@ Makefile
 # identical to ld1, since it was linked with the host linker.
 
 if GCC
-if NATIVE_LINKER
+if TEST_AS_NATIVE_LINKER
 
 gcctestdir1/ld: ld-new
 	test -d gcctestdir1 || mkdir -p gcctestdir1

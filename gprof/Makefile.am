@@ -78,7 +78,7 @@ MANCONF  = -Dman
 
 TEXI2POD = perl $(srcdir)/../etc/texi2pod.pl $(AM_MAKEINFOFLAGS)
 
-POD2MAN = pod2man --center="GNU" --release="binutils-$(VERSION)" --section=1
+POD2MAN = pod2man --center="GNU" --release="binutils-$(VERSION)" --section=1 --date=" "
 
 info_TEXINFOS = gprof.texi
 gprof_TEXINFOS = config.texi

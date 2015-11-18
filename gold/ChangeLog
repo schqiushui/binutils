@@ -163,25 +163,218 @@
 	* object.h (Sized_relobj_file::is_deferred_layout): New function.
 	(Sized_relobj_file::is_deferred_layout_): New data member.
 
-2014-11-21  Alan Modra  <amodra@gmail.com>
+2015-06-16  Yiran Wang <yiran@google.com>
 
-	* powerpc.cc (Target_powerpc::Relocate::relocate): Correct test
-	for undefined weaks.
+	* resolve.cc disable the warning of a hidden symbol matches a
+	reference to be resolved
 
-2014-11-20  Alan Modra  <amodra@gmail.com>
+2015-07-23  Ian Coolidge  <icoolidge@google.com>
 
-	* powerpc.cc (Stub_control::Stub_control): Init stub14_group_size_
-	from --stub-group-size parameter divided by 1024.
-	(Powerpc_relocate_functions::rela, rela_ua): Add fieldsize
-	template parameter.  Update all uses.
-	(Target_powerpc::Relocate::relocate): Rename has_plt_value to
-	has_stub_value.  Set for long branches.  Don't report overflow for
-	branch to undefined weak symbols.  Print info message on
-	overflowing branch to stub.
+	Plumb --pic-veneer option for gold.
 
-2014-11-20  Alan Modra  <amodra@gmail.com>
+	This fixes ARM Linux gold link after
+	02e541d: ARM: 8323/1: force linker to use PIC veneers
 
-	* powerpc.cc (Target_powerpc::do_relax): Add __go_go to thread_starters.
+	gold/
+	* arm.cc (Reloc_stub::stub_type_for_reloc): Plumb to stub
+	generation.
+	* options.h (General_options): Add --pic-veneer option.
+
+2015-06-11  Cary Coutant  <ccoutant@gmail.com>
+
+	* aarch64.cc (Erratum_stub::STUB_ADDR_ALIGN): Move initialization
+	outside class body.
+	(Reloc_stub::STUB_ADDR_ALIGN): Likewise.
+
+2015-07-20  Han Shen  <shenhan@google.com>
+
+	Optimize erratum 843419 fix.
+
+	* aarch64.cc (AArch64_insn_utilities::is_adr): New method.
+	(AArch64_insn_utilities::aarch64_adr_encode_imm): New method.
+	(AArch64_insn_utilities::aarch64_adrp_decode_imm): New method.
+	(E843419_stub): New sub-class of Erratum_stub.
+	(AArch64_relobj::try_fix_erratum_843419_optimized): New method.
+	(AArch64_relobj::section_needs_reloc_stub_scanning): Try optimized fix.
+	(AArch64_relobj::create_erratum_stub): Add 1 argument.
+	(Target_aarch64::scan_erratum_843419_span): Pass in adrp insn offset.
+
+2015-07-20  Han Shen  <shenhan@google.com>
+
+	Fix arm elf header flags wrt hardfp bit.
+
+	* arm.cc (Target_arm::do_adjust_elf_header): Set flags into view.
+
+2015-07-09  Han Shen  <shenhan@google.com>
+
+	Drop missing symbol warning for arm/aarch64.
+
+	* aarch64.cc (AArch64_relobj::scan_errata): Drop missing symbol warning.
+	* arm.cc (Arm_relobj::scan_section_for_cortex_a8_erratum): Drop missing
+	symbol warning.
+
+2015-07-09  Han Shen  <shenhan@google.com>
+
+	Use "gold_info" instead of "gold_warning" for erratum fix.
+
+	* aarch64.cc (Target_aarch64::scan_erratum_843419_span): Use
+	'gold_info'.
+	(Target_aarch64::scan_erratum_835769_span): USe 'gold_info'.
+
+2015-07-07  Han Shen  <shenhan@google.com>
+
+	Make gold aarch64 accept long form of mapping symbols.
+
+	* aarch64.cc (AArch64_relobj::do_count_local_symbols): Make legal
+	of mapping symbols.
+
+2015-06-29  Han Shen  <shenhan@google.com>
+
+	Patch for erratum 843419 internal error.
+
+	* aarch64.cc (Erratum_stub::Insn_utilities): New typedef.
+	(Erratum_stub::update_erratum_insn): New method.
+	(Stub_table::relocate_stubs): Modified to place relocated insn.
+	(AArch64_relobj::fix_errata): Modified gold_assert.
+
+2015-06-12  Han Shen  <shenhan@google.com>
+
+	Fix erratum 835769.
+
+	* aarch64.cc (AArch64_insn_utilities::BYTES_PER_INSN): Move
+	defintion outside class definition.
+	(AArch64_insn_utilities::AARCH64_ZR): New static constant.
+	(AArch64_insn_utilities::aarch64_op31): New member.
+	(AArch64_insn_utilities::aarch64_ra): New member.
+	(AArch64_insn_utilities::aarch64_mac): New member.
+	(AArch64_insn_utilities::aarch64_mlxl): New member.
+	(ST_E_835769): New global enum member.
+	(Stub_table::relocate_stubs): Add 835769 handler.
+	(Stub_template_repertoire::Stub_template_repertoire): Install new
+	stub type.
+	(AArch64_relobj::scan_errata): This func is renamed from
+	scan_erratum_843419.
+	(AArch64_relobj::do_count_local_symbols): Add 835769 handler.
+	(AArch64_relobj::do_relocate_sections): Add 835769 handler.
+	(AArch64_relobj::scan_sections_for_stubs): Add 835769 handler.
+	(Target_aarch64::scan_erratum_835769_span): New method.
+	(Target_aarch64::create_erratum_stub): New method.
+	(Target_aarch64::is_erratum_835769_sequence): New method.
+	(Target_aarch64::scan_erratum_843419_sequence): Move part of the
+	code into create_erratum_stub.
+	* options.h (fix_cortex_a53_835769): New option.
+
+2015-06-10  Han Shen  <shenhan@google.com>
+	Patch for erratum-843419 (2 of 2 - fix erratum occurrences).
+
+	Now fixing for 843419 is fully functional.
+
+	The first part of the erratum fix CL is here -
+	https://sourceware.org/ml/binutils/2015-04/msg00229.html
+
+	* aarch64.cc(global enum): New constants representing stub types.
+	(Stub_template): New POD struct.
+	(Stub_template_repertoire): New class.
+	(Stub_base): New class.
+	(Erratum_stub): New class.
+	(Reloc_stub): Refactored to be a subclass of Stub_base.
+	(Reloc_stub::Stub_type): Removed.
+	(Reloc_stub::offset): Moved to Stub_base.
+	(Reloc_stub::set_offset): Moved to Stub_base.
+	(Reloc_stub::destination_address): Moved to Stub_base.
+	(Reloc_stub::set_destination_address): Moved to Stub_base.
+	(Reloc_stub::reset_destination_address): Moved to Stub_base.
+	(Reloc_stub::stub_type): Renamed and moved to Stub_base.
+	(Reloc_stub::stub_size): Renamed and moved to Stub_base.
+	(Reloc_stub::stub_insns): Renamed and moved to Stub_base.
+	(Reloc_stub::write): Moved to Stub_base.
+	(Reloc_stub::invalid_offset): Moved to Stub_base.
+	(Reloc_stub::invalid_address): Moved to Stub_base.
+	(Reloc_stub::stub_type_): Renamed and moved to Stub_base.
+	(Reloc_stub::stub_insns_): Moved to Stub_base.
+	(Reloc_stub::offset_): Moved to Stub_base.
+	(Reloc_stub::destination_address_): Moved to Stub_base.
+	(Stub_table::The_aarch64_relobj): New typedef.
+	(Stub_table::The_erratum_stub): New typedef.
+	(Stub_table::The_erratum_stub_less): New typedef.
+	(Stub_table::The_erratum_stub_set): New typedef.
+	(Stub_table::The_erratum_stub_set_iter): New typedef.
+	(Stub_table::empty): Added emptiness testing for erratum stubs.
+	(Stub_table::add_erratum_stub): New method to add an erratum stub.
+	(Stub_table::find_erratum_stub): New method.
+	(Stub_table::find_erratum_stubs_for_input_section): New method.
+	(Stub_table::erratum_stub_address): New method.
+	(Stub_table::update_date_size_changed_p): Modified to handle erratum stubs.
+	(Stub_table::do_addralign): Modified to handle erratum stubs.
+	(Stub_table::erratum_stubs_): New member.
+	(Stub_table::erratum_stub_size_): New member.
+	(Stub_table::relocate_stubs): Modified to handle erratum stubs.
+	(Stub_table::do_write): Modified to handle erratum stubs.
+	(AArch64_relobj::The_erratum_stub): New typedef.
+	(AArch64_relobj::Erratum_stub_set_iter): New typedef.
+	(AArch64_relobj::fix_errata): New method.
+	(Target_aarch64::The_reloc_stub_type): Removed.
+	(Target_aarch64::The_erratum_stub): New typede.
+	(AArch64_relocate_functions::construct_b): New method.
+
+2015-04-27  Han Shen  <shenhan@google.com>
+
+	* options.h (--fix-cortex-a53-843419): Rename option.
+	* aarch64.cc (AArch64_relobj::do_count_local_symbols): Use renamed
+	option.
+	(AArch64_relobj::scan_sections_for_stubs): Use renamed option.
+
+2015-04-16  Han Shen  <shenhan@google.com>
+
+	* aarch64.cc (AArch64_insn_utilities): New utility class.
+	(AArch64_relobj::Mapping_symbol_position): New struct.
+	(AArch64_relobj::Mapping_symbol_info): New typedef.
+	(AArch64_relobj::do_count_local_symbols): New function overriding
+	parent's implementation.
+	(AArch64_relobj::mapping_symbol_info_): New member
+	(AArch64_relobj::scan_erratum_843419): New method.
+	(Target_aarch64::scan_erratum_843419_span): New method.
+	(Target_aarch64::is_erratum_843419_sequence): New method.
+	* options.h (fix_cortex_a53): New option.
+
+2015-02-02  Khem Raj  <raj.khem@gmail.com>
+
+	* attributes.h (class Output_attributes_section_data ): Add
+	do_print_to_mapfile function.
+
+2015-04-07  HC Yen <hc.yen@mediatek.com>
+
+	Add AArch32 support for gold linker.
+	gold/
+	* arm.cc: Add V8 arch combine table.
+
+2015-03-21  Cary Coutant  <cary@google.com>
+
+	PR gold/18048
+	* script-c.h (script_include_directive): Add first_token parameter.
+	* script.cc (script_include_directive): Add first_token parameter, and
+	pass it to read_script_file.
+	* yyscript.y (PARSING_SECTIONS_BLOCK, PARSING_SECTION_CMDS)
+	(PARSING_MEMORY_DEF): New tokens.
+	(top): Add new productions for INCLUDE files.
+	(file_cmd): Replace file_or_sections_cmd with copy of its productions.
+	Pass PARSING_LINKER_SCRIPT to script_include_directive.
+	(section_block_cmd): Likewise; pass PARSING_SECTIONS_BLOCK.
+	(section_cmd): Pass PARSING_SECTION_CMDS.
+	(file_or_sections_cmd): Remove.
+	(memory_def): Pass PARSING_MEMORY_DEF.
+	* testsuite/Makefile.am (memory_test_2): New test.
+	* testsuite/Makefile.in: Regenerate.
+	* testsuite/memory_test_inc.t: New script file.
+	* testsuite/memory_test_inc_1.t.src: New script file.
+	* testsuite/memory_test_inc_2.t.src: New script file.
+	* testsuite/memory_test_inc_3.t.src: New script file.
+
+2015-03-21  Cary Coutant  <cary@google.com>
+
+	PR gold/18010
+	* stringpool.cc (Stringpool_template): Don't optimize if section
+	alignment is greater than sizeof(char).
 
 2014-10-28  Alan Modra  <amodra@gmail.com>
 
@@ -16349,7 +16542,7 @@
 
 	* Added source code to GNU binutils.
 
-Copyright (C) 2008-2015 Free Software Foundation, Inc.
+Copyright (C) 2008-2014 Free Software Foundation, Inc.
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright

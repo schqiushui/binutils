@@ -387,6 +387,9 @@ typedef struct State_Machine_Registers
   unsigned int file;
   unsigned int line;
   unsigned int column;
+  unsigned int discriminator;
+  unsigned int context;
+  unsigned int subprogram;
   int is_stmt;
   int basic_block;
   unsigned char op_index;
@@ -406,10 +409,55 @@ reset_state_machine (int is_stmt)
   state_machine_regs.file = 1;
   state_machine_regs.line = 1;
   state_machine_regs.column = 0;
+  state_machine_regs.discriminator = 0;
+  state_machine_regs.context = 0;
+  state_machine_regs.subprogram = 0;
   state_machine_regs.is_stmt = is_stmt;
   state_machine_regs.basic_block = 0;
   state_machine_regs.end_sequence = 0;
   state_machine_regs.last_file_entry = 0;
+}
+
+/* Build a logicals table for reference when reading the actuals table.  */
+
+static SMR *logicals_table = NULL;
+static unsigned int logicals_allocated = 0;
+static unsigned int logicals_count = 0;
+
+static void
+free_logicals (void)
+{
+  free (logicals_table);
+  logicals_allocated = 0;
+  logicals_count = 0;
+  logicals_table = NULL;
+}
+
+static void
+append_logical (void)
+{
+  if (logicals_allocated == 0)
+    {
+      logicals_allocated = 4;
+      logicals_table = (SMR *) xmalloc (logicals_allocated * sizeof (SMR));
+    }
+  if (logicals_count >= logicals_allocated)
+    {
+      logicals_allocated *= 2;
+      logicals_table = (SMR *)
+	  xrealloc (logicals_table, logicals_allocated * sizeof (SMR));
+    }
+  logicals_table[logicals_count++] = state_machine_regs;
+  printf (_("\t\tLogical %u: 0x%s[%u] file %u line %u discrim %u context %u subprog %u is_stmt %d\n"),
+	  logicals_count,
+	  dwarf_vmatoa ("x", state_machine_regs.address),
+	  state_machine_regs.op_index,
+	  state_machine_regs.file,
+	  state_machine_regs.line,
+	  state_machine_regs.discriminator,
+	  state_machine_regs.context,
+	  state_machine_regs.subprogram,
+	  state_machine_regs.is_stmt);
 }
 
 /* Handled an extend line op.
@@ -418,7 +466,8 @@ reset_state_machine (int is_stmt)
 static int
 process_extended_line_op (unsigned char * data,
 			  int is_stmt,
-			  unsigned char * end)
+			  unsigned char * end,
+			  int is_logical)
 {
   unsigned char op_code;
   unsigned int bytes_read;
@@ -445,6 +494,8 @@ process_extended_line_op (unsigned char * data,
     {
     case DW_LNE_end_sequence:
       printf (_("End of Sequence\n\n"));
+      if (is_logical)
+	append_logical ();
       reset_state_machine (is_stmt);
       break;
 
@@ -483,8 +534,14 @@ process_extended_line_op (unsigned char * data,
       break;
 
     case DW_LNE_set_discriminator:
-      printf (_("set Discriminator to %s\n"),
-	      dwarf_vmatoa ("u", read_uleb128 (data, & bytes_read, end)));
+      {
+	unsigned int discrim;
+
+	discrim = read_uleb128 (data, & bytes_read, end);
+	data += bytes_read;
+	printf (_("set Discriminator to %u\n"), discrim);
+	state_machine_regs.discriminator = discrim;
+      }
       break;
 
     /* HP extensions.  */
@@ -597,9 +654,27 @@ fetch_indirect_string (dwarf_vma offset)
   if (section->start == NULL)
     return (const unsigned char *) _("<no .debug_str section>");
 
-  if (offset > section->size)
+  if (offset >= section->size)
     {
       warn (_("DW_FORM_strp offset too big: %s\n"),
+	    dwarf_vmatoa ("x", offset));
+      return (const unsigned char *) _("<offset is too big>");
+    }
+
+  return (const unsigned char *) section->start + offset;
+}
+
+static const unsigned char *
+fetch_indirect_line_string (dwarf_vma offset)
+{
+  struct dwarf_section *section = &debug_displays [line_str].section;
+
+  if (section->start == NULL)
+    return (const unsigned char *) _("<no .debug_line_str section>");
+
+  if (offset >= section->size)
+    {
+      warn (_("DW_FORM_line_strp offset too big: %s\n"),
 	    dwarf_vmatoa ("x", offset));
       return (const unsigned char *) _("<offset is too big>");
     }
@@ -624,7 +699,7 @@ fetch_indexed_string (dwarf_vma idx, struct cu_tu_set *this_set,
 
   if (this_set != NULL)
     index_offset += this_set->section_offsets [DW_SECT_STR_OFFSETS];
-  if (index_offset > index_section->size)
+  if (index_offset + offset_size > index_section->size)
     {
       warn (_("DW_FORM_GNU_str_index offset too big: %s\n"),
 	    dwarf_vmatoa ("x", index_offset));
@@ -637,7 +712,7 @@ fetch_indexed_string (dwarf_vma idx, struct cu_tu_set *this_set,
 
   str_offset = byte_get (index_section->start + index_offset, offset_size);
   str_offset -= str_section->address;
-  if (str_offset > str_section->size)
+  if (str_offset >= str_section->size)
     {
       warn (_("DW_FORM_GNU_str_index indirect offset too big: %s\n"),
 	    dwarf_vmatoa ("x", str_offset));
@@ -2719,6 +2794,10 @@ load_debug_info (void * file)
   return 0;
 }
 
+/* Experimental DWARF 5 extensions.
+   See http://wiki.dwarfstd.org/index.php?title=TwoLevelLineTables.  */
+#define DWARF2_LINE_EXPERIMENTAL_VERSION 0xf006
+
 /* Read a DWARF .debug_line section header starting at DATA.
    Upon success returns an updated DATA pointer and the LINFO
    structure and the END_OF_SEQUENCE pointer will be filled in.
@@ -2729,7 +2808,9 @@ read_debug_line_header (struct dwarf_section * section,
 			unsigned char * data,
 			unsigned char * end,
 			DWARF2_Internal_LineInfo * linfo,
-			unsigned char ** end_of_sequence)
+			unsigned char ** end_of_sequence,
+			unsigned int * pinitial_length_size,
+			unsigned int * poffset_size)
 {
   unsigned char *hdrptr;
   unsigned int offset_size;
@@ -2754,6 +2835,8 @@ read_debug_line_header (struct dwarf_section * section,
       offset_size = 4;
       initial_length_size = 4;
     }
+  *pinitial_length_size = initial_length_size;
+  *poffset_size = offset_size;
 
   if (linfo->li_length + initial_length_size > section->size)
     {
@@ -2776,15 +2859,30 @@ read_debug_line_header (struct dwarf_section * section,
   /* Get and check the version number.  */
   SAFE_BYTE_GET_AND_INC (linfo->li_version, hdrptr, 2, end);
 
+  /* Version 0xf006 is for experimental two-level line tables.  */
   if (linfo->li_version != 2
       && linfo->li_version != 3
-      && linfo->li_version != 4)
+      && linfo->li_version != 4
+      && linfo->li_version != 5
+      && linfo->li_version != DWARF2_LINE_EXPERIMENTAL_VERSION)
     {
-      warn (_("Only DWARF version 2, 3 and 4 line info is currently supported.\n"));
+      warn (_("Only DWARF versions 2-5 line info are currently supported.\n"));
       return NULL;
     }
 
+  if (linfo->li_version < 5)
+    {
+      linfo->li_address_size = 0;
+      linfo->li_segment_size = 0;
+    }
+  else if (linfo->li_version != DWARF2_LINE_EXPERIMENTAL_VERSION)
+    {
+      SAFE_BYTE_GET_AND_INC (linfo->li_address_size, hdrptr, 1, end);
+      SAFE_BYTE_GET_AND_INC (linfo->li_segment_size, hdrptr, 1, end);
+    }
+
   SAFE_BYTE_GET_AND_INC (linfo->li_prologue_length, hdrptr, offset_size, end);
+
   SAFE_BYTE_GET_AND_INC (linfo->li_min_insn_length, hdrptr, 1, end);
 
   if (linfo->li_version >= 4)
@@ -2832,10 +2930,15 @@ display_debug_lines_raw (struct dwarf_section *section,
     {
       static DWARF2_Internal_LineInfo saved_linfo;
       DWARF2_Internal_LineInfo linfo;
+      unsigned int logicals_table_offset = 0;
+      unsigned int actuals_table_offset = 0;
+      unsigned char *end_of_header_length;
       unsigned char *standard_opcodes;
+      unsigned char *start_of_line_program;
+      unsigned char *end_of_logicals;
       unsigned char *end_of_sequence;
-      unsigned int last_dir_entry = 0;
       int i;
+      unsigned char *hdrptr = NULL;
 
       if (const_strneq (section->name, ".debug_line.")
 	  /* Note: the following does not apply to .debug_line.dwo sections.
@@ -2889,6 +2992,13 @@ display_debug_lines_raw (struct dwarf_section *section,
 	      warn (_("Line range of 0 is invalid, using 1 instead\n"));
 	      linfo.li_line_range = 1;
 	    }
+
+	  end_of_header_length = data + initial_length_size + 2 + offset_size;
+	  if (linfo.li_version >= 5
+	      && linfo.li_version != DWARF2_LINE_EXPERIMENTAL_VERSION)
+	    end_of_header_length += 2;
+	  start_of_line_program = end_of_header_length + linfo.li_prologue_length;
+	  end_of_logicals = end;
 
 	  reset_state_machine (linfo.li_default_is_stmt);
 
@@ -3187,6 +3297,8 @@ display_debug_lines_decoded (struct dwarf_section *section,
 			     unsigned char *end)
 {
   static DWARF2_Internal_LineInfo saved_linfo;
+  unsigned int initial_length_size;
+  unsigned int offset_size;
 
   printf (_("Decoded dump of debug contents of section %s:\n\n"),
 	  section->name);
@@ -3225,7 +3337,9 @@ display_debug_lines_decoded (struct dwarf_section *section,
 	  unsigned char *hdrptr;
 
 	  if ((hdrptr = read_debug_line_header (section, data, end, & linfo,
-						& end_of_sequence)) == NULL)
+						& end_of_sequence,
+						& initial_length_size,
+						& offset_size)) == NULL)
 	      return 0;
 
 	  /* PR 17531: file: 0522b371.  */
@@ -3649,7 +3763,7 @@ display_debug_lines_decoded (struct dwarf_section *section,
 }
 
 static int
-display_debug_lines (struct dwarf_section *section, void *file ATTRIBUTE_UNUSED)
+display_debug_lines (struct dwarf_section *section, void *file)
 {
   unsigned char *data = section->start;
   unsigned char *end = data + section->size;
@@ -3658,6 +3772,8 @@ display_debug_lines (struct dwarf_section *section, void *file ATTRIBUTE_UNUSED)
 
   if (do_debug_lines == 0)
     do_debug_lines |= FLAG_DEBUG_LINES_RAW;
+
+  load_debug_section (line_str, file);
 
   if (do_debug_lines & FLAG_DEBUG_LINES_RAW)
     retValRaw = display_debug_lines_raw (section, data, end);

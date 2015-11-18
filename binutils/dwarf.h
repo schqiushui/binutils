@@ -83,6 +83,7 @@ enum dwarf_section_display_enum
   macinfo,
   macro,
   str,
+  line_str,
   loc,
   pubtypes,
   gnu_pubtypes,

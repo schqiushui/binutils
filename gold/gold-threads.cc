@@ -1,6 +1,6 @@
 // gold-threads.cc -- thread support for gold
 
-// Copyright (C) 2006-2015 Free Software Foundation, Inc.
+// Copyright (C) 2006-2014 Free Software Foundation, Inc.
 // Written by Ian Lance Taylor <iant@google.com>.
 
 // This file is part of gold.
@@ -102,7 +102,7 @@ Lock_impl_threads::Lock_impl_threads()
   if (err != 0)
     gold_fatal(_("pthead_mutextattr_init failed: %s"), strerror(err));
 #ifdef PTHREAD_MUTEX_ADAPTIVE_NP
-  err = pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ADAPTIVE_NP);
+  err = pthread_mutextattr_settype(&attr, PTHREAD_MUTEX_ADAPTIVE_NP);
   if (err != 0)
     gold_fatal(_("pthread_mutextattr_settype failed: %s"), strerror(err));
 #endif
@@ -293,7 +293,7 @@ class Once_initialize
 // extended initializer list as above */
    {
      pthread_once_t once_2 = PTHREAD_ONCE_INIT;
-     once_ = once_2; 
+     once_ = once_2;
    }
 #endif
 

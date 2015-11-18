@@ -96,6 +96,9 @@ int debug_memory = 0;
 /* Enable verbose mode.  */
 int verbose = 0;
 
+/* Enable incbin directive. */
+int allow_incbin_directive = 1;
+
 /* Keep the output file.  */
 static int keep_it = 0;
 
@@ -455,7 +458,9 @@ parse_args (int * pargc, char *** pargv)
       OPTION_REDUCE_MEMORY_OVERHEADS,
       OPTION_WARN_FATAL,
       OPTION_COMPRESS_DEBUG,
-      OPTION_NOCOMPRESS_DEBUG
+      OPTION_NOCOMPRESS_DEBUG,
+      OPTION_ALLOW_INCBIN,
+      OPTION_NOALLOW_INCBIN
     /* When you add options here, check that they do
        not collide with OPTION_MD_BASE.  See as.h.  */
     };
@@ -473,6 +478,8 @@ parse_args (int * pargc, char *** pargv)
     ,{"a", optional_argument, NULL, 'a'}
     /* Handle -al=<FILE>.  */
     ,{"al", optional_argument, NULL, OPTION_AL}
+    ,{"allow-incbin", optional_argument, NULL, OPTION_ALLOW_INCBIN}
+    ,{"noallow-incbin", optional_argument, NULL, OPTION_NOALLOW_INCBIN}
     ,{"compress-debug-sections", no_argument, NULL, OPTION_COMPRESS_DEBUG}
     ,{"nocompress-debug-sections", no_argument, NULL, OPTION_NOCOMPRESS_DEBUG}
     ,{"debug-prefix-map", required_argument, NULL, OPTION_DEBUG_PREFIX_MAP}
@@ -666,6 +673,14 @@ This program has absolutely no warranty.\n"));
 
 	case OPTION_NOCOMPRESS_DEBUG:
 	  flag_compress_debug = 0;
+	  break;
+
+	case OPTION_ALLOW_INCBIN:
+	  allow_incbin_directive = 1;
+	  break;
+
+	case OPTION_NOALLOW_INCBIN:
+	  allow_incbin_directive = 0;
 	  break;
 
 	case OPTION_DEBUG_PREFIX_MAP:

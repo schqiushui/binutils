@@ -11746,10 +11746,14 @@ elf32_arm_merge_eabi_attributes (bfd *ibfd, bfd *obfd)
   /* This needs to happen before Tag_ABI_FP_number_model is merged.  */
   if (in_attr[Tag_ABI_VFP_args].i != out_attr[Tag_ABI_VFP_args].i)
     {
-      /* Ignore mismatches if the object doesn't use floating point.  */
-      if (out_attr[Tag_ABI_FP_number_model].i == 0)
+      /* Ignore mismatches if the object doesn't use floating point or is
+	 floating point ABI independent.  */
+      if (out_attr[Tag_ABI_FP_number_model].i == AEABI_FP_number_model_none
+	  || (in_attr[Tag_ABI_FP_number_model].i != AEABI_FP_number_model_none
+	      && out_attr[Tag_ABI_VFP_args].i == AEABI_VFP_args_compatible))
 	out_attr[Tag_ABI_VFP_args].i = in_attr[Tag_ABI_VFP_args].i;
-      else if (in_attr[Tag_ABI_FP_number_model].i != 0)
+      else if (in_attr[Tag_ABI_FP_number_model].i != AEABI_FP_number_model_none
+	       && in_attr[Tag_ABI_VFP_args].i != AEABI_VFP_args_compatible)
 	{
 	  _bfd_error_handler
 	    (_("error: %B uses VFP register arguments, %B does not"),
@@ -14713,7 +14717,7 @@ elf32_arm_post_process_headers (bfd * abfd, struct bfd_link_info * link_info ATT
       && ((i_ehdrp->e_type == ET_DYN) || (i_ehdrp->e_type == ET_EXEC)))
     {
       int abi = bfd_elf_get_obj_attr_int (abfd, OBJ_ATTR_PROC, Tag_ABI_VFP_args);
-      if (abi)
+      if (abi == AEABI_VFP_args_vfp)
 	i_ehdrp->e_flags |= EF_ARM_ABI_FLOAT_HARD;
       else
 	i_ehdrp->e_flags |= EF_ARM_ABI_FLOAT_SOFT;
@@ -15958,6 +15962,26 @@ const struct elf_size_info elf32_arm_size_info =
   bfd_elf32_swap_reloca_out
 };
 
+static bfd_vma
+read_code32 (const bfd *abfd, const bfd_byte *addr)
+{
+  /* V7 BE8 code is always little endian.  */
+  if ((elf_elfheader (abfd)->e_flags & EF_ARM_BE8) != 0)
+    return bfd_getl32 (addr);
+
+  return bfd_get_32 (abfd, addr);
+}
+
+static bfd_vma
+read_code16 (const bfd *abfd, const bfd_byte *addr)
+{
+  /* V7 BE8 code is always little endian.  */
+  if ((elf_elfheader (abfd)->e_flags & EF_ARM_BE8) != 0)
+    return bfd_getl16 (addr);
+
+  return bfd_get_16 (abfd, addr);
+}
+
 /* Return size of plt0 entry starting at ADDR
    or (bfd_vma) -1 if size can not be determined.  */
 
@@ -15967,7 +15991,7 @@ elf32_arm_plt0_size (const bfd *abfd, const bfd_byte *addr)
   bfd_vma first_word;
   bfd_vma plt0_size;
 
-  first_word = H_GET_32 (abfd, addr);
+  first_word = read_code32 (abfd, addr);
 
   if (first_word == elf32_arm_plt0_entry[0])
     plt0_size = 4 * ARRAY_SIZE (elf32_arm_plt0_entry);
@@ -15992,17 +16016,17 @@ elf32_arm_plt_size (const bfd *abfd, const bfd_byte *start, bfd_vma offset)
   const bfd_byte *addr = start + offset;
 
   /* PLT entry size if fixed on Thumb-only platforms.  */
-  if (H_GET_32(abfd, start) == elf32_thumb2_plt0_entry[0])
+  if (read_code32 (abfd, start) == elf32_thumb2_plt0_entry[0])
       return 4 * ARRAY_SIZE (elf32_thumb2_plt_entry);
 
   /* Respect Thumb stub if necessary.  */
-  if (H_GET_16(abfd, addr) == elf32_arm_plt_thumb_stub[0])
+  if (read_code16 (abfd, addr) == elf32_arm_plt_thumb_stub[0])
     {
       plt_size += 2 * ARRAY_SIZE(elf32_arm_plt_thumb_stub);
     }
 
   /* Strip immediate from first add.  */
-  first_insn = H_GET_32(abfd, addr + plt_size) & 0xffffff00;
+  first_insn = read_code32 (abfd, addr + plt_size) & 0xffffff00;
 
 #ifdef FOUR_WORD_PLT
   if (first_insn == elf32_arm_plt_entry[0])
@@ -16219,6 +16243,7 @@ elf32_arm_get_synthetic_symtab (bfd *abfd,
    becaus elf32_arm_plt_entry isn't defined when FOUR_WORD_PLT isn't defined where elf32_arm_plt_entry_short
    and elf32_arm_plt_entry_long are defined instead.
  */
+
 #undef  elf_backend_plt_sym_val
 #define elf_backend_plt_sym_val		elf32_arm_plt_sym_val
 

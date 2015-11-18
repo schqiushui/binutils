@@ -343,7 +343,6 @@
 
 2014-10-17  Hans-Peter Nilsson  <hp@axis.com>
 
-	Backport from master
 	* ld-scripts/sysroot-prefix.exp: Log $ld_sysroot.  Handle sysroot
 	== "/" as a separate sysroot-configuration with separable
 	test-types.
@@ -356,7 +355,6 @@
 
 2014-10-15  Hans-Peter Nilsson  <hp@axis.com>
 
-	Backport "="-ldscript-path-prefix changes from master.
 	* ld-scripts/sysroot-prefix.exp, ld-scripts/sysroot-prefix-x.s,
 	ld-scripts/sysroot-prefix-y.s: New files.
 	* lib/ld-lib.exp (check_sysroot_available): New proc.

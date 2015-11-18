@@ -1,6 +1,6 @@
 // powerpc.cc -- powerpc target support for gold.
 
-// Copyright (C) 2008-2015 Free Software Foundation, Inc.
+// Copyright (C) 2008-2014 Free Software Foundation, Inc.
 // Written by David S. Miller <davem@davemloft.net>
 //        and David Edelsohn <edelsohn@gnu.org>
 
@@ -6875,7 +6875,7 @@ Target_powerpc<size, big_endian>::symval_for_branch(
 	}
       Address sec_addr = symobj->get_output_section_offset(*dest_shndx);
       if (sec_addr == invalid_address)
-	return false;
+        return false;
 
       sec_addr += symobj->output_section(*dest_shndx)->address();
       *value = sec_addr + sec_off;
@@ -7162,7 +7162,7 @@ Target_powerpc<size, big_endian>::Relocate::relocate(
 	      Insn insn = elfcpp::Swap<32, big_endian>::readval(iview);
 	      insn &= (1 << 26) - (1 << 21); // extract rt
 	      if (size == 32)
-		insn |= addis_0_2;
+		insn = addis_0_2;
 	      else
 		insn |= addis_0_13;
 	      elfcpp::Swap<32, big_endian>::writeval(iview, insn);
