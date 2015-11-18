@@ -163,8 +163,6 @@ typedef struct lang_output_section_statement_struct
   unsigned int ignored : 1;
   /* If this section should update "dot".  Prevents section being ignored.  */
   unsigned int update_dot : 1;
-  /* If this section is after assignment to _end.  */
-  unsigned int after_end : 1;
   /* If this section uses the alignment of its input sections.  */
   unsigned int align_lma_with_input : 1;
 } lang_output_section_statement_type;
@@ -570,6 +568,10 @@ extern void lang_float
 extern void lang_leave_output_section_statement
   (fill_type *, const char *, lang_output_section_phdr_list *,
    const char *);
+extern void lang_abs_symbol_at_end_of
+  (const char *, const char *);
+extern void lang_abs_symbol_at_beginning_of
+  (const char *, const char *);
 extern void lang_statement_append
   (lang_statement_list_type *, lang_statement_union_type *,
    lang_statement_union_type **);
@@ -581,8 +583,6 @@ extern void lang_reset_memory_regions
   (void);
 extern void lang_do_assignments
   (lang_phase_type);
-extern asection *section_for_dot
-  (void);
 
 #define LANG_FOR_EACH_INPUT_STATEMENT(statement)			\
   lang_input_statement_type *statement;					\

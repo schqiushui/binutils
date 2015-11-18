@@ -10,7 +10,7 @@
 	* po/bg.po: Updated Bulgarian translation.
 	* po/sr.po: Updated Serbian translation.
 
-2014-10-14  Andreas Schwab  <schwab@linux-m68k.org>
+2014-10-15  Tristan Gingold  <gingold@adacore.com>
 
 	* configure: Regenerate.
 

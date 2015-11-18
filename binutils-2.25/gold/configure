@@ -635,8 +635,8 @@ NATIVE_OR_CROSS_LINKER_FALSE
 NATIVE_OR_CROSS_LINKER_TRUE
 GCC_FALSE
 GCC_TRUE
-NATIVE_LINKER_FALSE
-NATIVE_LINKER_TRUE
+TEST_AS_NATIVE_LINKER_FALSE
+TEST_AS_NATIVE_LINKER_TRUE
 MSGMERGE
 MSGFMT
 MKINSTALLDIRS
@@ -789,6 +789,7 @@ enable_gold
 enable_threads
 enable_plugins
 enable_targets
+enable_test_as_native
 with_lib_path
 enable_dependency_tracking
 enable_nls
@@ -1438,6 +1439,7 @@ Optional Features:
   --enable-threads        multi-threaded linking
   --enable-plugins        linker plugins
   --enable-targets        alternative target configurations
+  --enable-test-as-native  test as though linker is native
   --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors
   --disable-nls           do not use Native Language Support
@@ -3381,6 +3383,26 @@ if test -n "$enable_targets"; then
     fi
   done
 fi
+
+# Check whether --enable-test-as-native was given.
+if test "${enable_test_as_native+set}" = set; then :
+  enableval=$enable_test_as_native; case "${enableval}" in
+  no)
+    test_as_native=no
+    ;;
+  *)
+    test_as_native=yes
+    ;;
+esac
+else
+  if test "x$target_alias" = "x" -o "x$host_alias" = "x$target_alias"; then
+  test_as_native=yes
+else
+  test_as_native=no
+fi
+fi
+
+
 
 # See which specific instantiations we need.
 targetobjs=
@@ -6258,12 +6280,12 @@ $as_echo "#define AC_APPLE_UNIVERSAL_BUILD 1" >>confdefs.h
 
 
 
- if test "x$target_alias" = "x" -o "x$host_alias" = "x$target_alias"; then
-  NATIVE_LINKER_TRUE=
-  NATIVE_LINKER_FALSE='#'
+ if test "x$test_as_native" = "xyes"; then
+  TEST_AS_NATIVE_LINKER_TRUE=
+  TEST_AS_NATIVE_LINKER_FALSE='#'
 else
-  NATIVE_LINKER_TRUE='#'
-  NATIVE_LINKER_FALSE=
+  TEST_AS_NATIVE_LINKER_TRUE='#'
+  TEST_AS_NATIVE_LINKER_FALSE=
 fi
 
  if test "$GCC" = yes; then
@@ -7859,8 +7881,8 @@ if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
-if test -z "${NATIVE_LINKER_TRUE}" && test -z "${NATIVE_LINKER_FALSE}"; then
-  as_fn_error "conditional \"NATIVE_LINKER\" was never defined.
+if test -z "${TEST_AS_NATIVE_LINKER_TRUE}" && test -z "${TEST_AS_NATIVE_LINKER_FALSE}"; then
+  as_fn_error "conditional \"TEST_AS_NATIVE_LINKER\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${GCC_TRUE}" && test -z "${GCC_FALSE}"; then

@@ -1,34 +1,59 @@
-2014-11-18  Igor Zamyatin  <igor.zamyatin@intel.com>
+2015-04-01  Tejas Belagod  <tejas.belagod@arm.com>
 
-	* emulparams/elf_x86_64.sh (BNDPLT): Set to yes for x86_64.
-	* emultempl/elf32.em (gld${EMULATION_NAME}_handle_option): Handle
-	"-z bndplt" if BNDPLT is yes.
-	(gld${EMULATION_NAME}_list_options): Add "-z bndplt" entry.
-	* ld.texinfo: Add description for bndplt.
+	* emultempl/aarch64elf.em
+	(aarch64_elf_create_output_section_statements): Add parameter in
+	bfd_elf${ELFSIZE}_aarch64_set_options call.
+	(OPTION_FIX_ERRATUM_843419): Define.
+	(PARSE_AND_LIST_LONGOPTS): Add fix-cortex-a53-843419.
+	(PARSE_AND_LIST_ARGS_CASES): Add OPTION_FIX_ERRATUM_843419.
+
+2015-03-24  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	* emultempl/aarch64elf.em (_aarch64_add_stub_section): Set section
+	alignment to 2.
+
+2014-10-08  Senthil Kumar Selvaraj <senthil_kumar.selvaraj@atmel.com>
+
+	* avrtiny.sc: Apply avr.sc fixes.
+
+2014-11-04  Alan Modra  <amodra@gmail.com>
+
+	* emultempl/spu_icache.o_c: Regenerate.
+	* emultempl/spu_ovl.o_c: Regenerate.
+
+2014-11-03  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* testsuite/ld-avr/relax-02.d: Update to check size of symbols has
+	changed.
+	* testsuite/ld-avr/relax-03.d: Likewise.
+
+2014-11-03  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* testsuite/ld-avr/relax-02.d: New file.
+	* testsuite/ld-avr/relax-02.s: New file.
+	* testsuite/ld-avr/relax-03.d: New file.
+	* testsuite/ld-avr/relax-03.s: New file.
 
 2014-10-29  Nick Clifton  <nickc@redhat.com>
 
 	* po/bg.po: Updated Bulgarian translation.
 
-2014-10-28  Alan Modra  <amodra@gmail.com>
-
-	Apply trunk patches
-	2014-10-16  Alan Modra  <amodra@gmail.com>
-	PR 17488
-	* emultempl/ppc64elf.em (gld${EMULATION_NAME}_finish): Don't attempt
-	to access ELF header e_flags when not ppc64 ELF output.
-
 2014-10-24  Tejas Belagod  <tejas.belagod@arm.com>
 
-	* emultempl/aarch64elf.em: Add command-line option for erratum
-	835769.
+	* emultempl/aarch64elf.em: Add command-line option for erratum 835769.
 
 2014-10-17  Hans-Peter Nilsson  <hp@axis.com>
 
-	Backport "implement --print-sysroot in ld" from master
+	Implement --print-sysroot in ld.
 	* ldlex.h (enum option_values): Add entry OPTION_PRINT_SYSROOT.
 	* lexsup.c (ld_options): Add entry for --print-sysroot.
 	(parse_args) <OPTION_PRINT_SYSROOT>: Print sysroot and exit early.
+
+2014-10-16  Alan Modra  <amodra@gmail.com>
+
+	PR 17488
+	* emultempl/ppc64elf.em (gld${EMULATION_NAME}_finish): Don't attempt
+	to access ELF header e_flags when not ppc64 ELF output.
 
 2014-10-15  Tristan Gingold  <gingold@adacore.com>
 
@@ -36,7 +61,6 @@
 
 2014-10-15  Hans-Peter Nilsson  <hp@axis.com>
 
-	Backport "="-ldscript-path-prefix changes from master.
 	* ldlex.l (INPUTLIST): New start condition.
 	(comment pattern, ",", "(", ")", "AS_NEEDED")
 	({FILENAMECHAR1}{FILENAMECHAR}*, "-l"{FILENAMECHAR}+)

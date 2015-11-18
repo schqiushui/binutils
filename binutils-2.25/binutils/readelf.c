@@ -5319,6 +5319,7 @@ process_section_headers (FILE * file)
 	      || (do_debug_macinfo  && const_strneq (name, "macinfo"))
 	      || (do_debug_macinfo  && const_strneq (name, "macro"))
 	      || (do_debug_str      && const_strneq (name, "str"))
+	      || (do_debug_str      && const_strneq (name, "line_str"))
 	      || (do_debug_loc      && const_strneq (name, "loc"))
 	      || (do_debug_addr     && const_strneq (name, "addr"))
 	      || (do_debug_cu_index && const_strneq (name, "cu_index"))
@@ -11903,7 +11904,7 @@ static const char * arm_attr_tag_ABI_enum_size[] =
 static const char * arm_attr_tag_ABI_HardFP_use[] =
   {"As Tag_FP_arch", "SP only", "DP only", "SP and DP"};
 static const char * arm_attr_tag_ABI_VFP_args[] =
-  {"AAPCS", "VFP registers", "custom"};
+  {"AAPCS", "VFP registers", "custom", "compatible"};
 static const char * arm_attr_tag_ABI_WMMX_args[] =
   {"AAPCS", "WMMX registers", "custom"};
 static const char * arm_attr_tag_ABI_optimization_goals[] =
@@ -13161,6 +13162,9 @@ print_mips_isa_ext (unsigned int isa_ext)
       break;
     case AFL_EXT_XLR:
       fputs ("RMI XLR", stdout);
+      break;
+    case AFL_EXT_OCTEON3:
+      fputs ("Cavium Networks Octeon3", stdout);
       break;
     case AFL_EXT_OCTEON2:
       fputs ("Cavium Networks Octeon2", stdout);

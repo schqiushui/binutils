@@ -1,37 +1,65 @@
-2014-11-18  H.J. Lu  <hongjiu.lu@intel.com>
+2014-12-25  Thomas Preud'homme  <thomas.preudhomme@arm.com>
 
-	* ld-x86-64/mpx.exp: Always run mpx3 and mpx4 tests in 64-bit.
+	* ld-arm/attr-merge-2a.s: Add Tag_ABI_VFP_args.
+	* ld-arm/attr-merge-2b.s: Likewise.
+	* ld-arm/attr-merge-2.attr: Likewise.
+	* ld-arm/attr-merge-4a.s: Add Tag_ABI_FP_number_model and
+	Tag_ABI_VFP_args.
+	* ld-arm/attr-merge-4b.s: Likewise.
+	* ld-arm/attr-merge-4.attr: Likewise.
+	* ld-arm/attr-merge-6a.s: Likewise.
+	* ld-arm/attr-merge-6b.s: Likewise.
+	* ld-arm/attr-merge-6.attr: Add Tag_ABI_FP_number_model.
 
-2014-11-18  Igor Zamyatin  <igor.zamyatin@intel.com>
+2015-04-01  Tejas Belagod  <tejas.belagod@arm.com>
 
-	* ld-x86-64/bnd-ifunc-1.d: Add bndplt option.
-	* ld-x86-64/bnd-ifunc-2.d: Likewise.
-	* ld-x86-64/bnd-plt-1.d: Likewise.  Update dissassembly sections.
-	* ld-x86-64/mpx.exp: Handle mpx3 and mpx4 tests.
-	* ld-x86-64/mpx1a.rd: Remove _BND from relocation name.
-	* ld-x86-64/mpx1c.rd: Likewise.
-	* ld-x86-64/mpx2a.rd: Likewise.
-	* ld-x86-64/mpx2c.rd: Likewise.
-	* ld-x86-64/mpx3.dd: New file.
-	* ld-x86-64/mpx3a.s: Likewise.
-	* ld-x86-64/mpx3b.s: Likewise.
-	* ld-x86-64/mpx4.dd: Likewise.
-	* ld-x86-64/mpx4a.s: Likewise.
-	* ld-x86-64/mpx4b.s: Likewise.
+	* ld-aarch64/aarch64-elf.exp: Add erratum843419 test.
+	* ld-aarch64/erratum843419.d: New.
+	* ld-aarch64/erratum843419.s: New.
 
-2014-11-10  Matthew Fortune  <matthew.fortune@imgtec.com>
+2015-03-25  Marcus Shawcroft  <marcus.shawcroft@arm.com>
 
-	Apply trunk patch:
-	* ld-mips-elf/abiflags-strip10-ph.d: New file.
-	* ld-mips-elf/mips-eld.exp: Run the new test.
+	* ld-aarch64/erratum835769.d: Adjust for initial branch over stub
+	section.
+	* ld-aarch64/farcall-b.d: Likewise.
+	* ld-aarch64/farcall-bl.d: Likewise.
+	* ld-aarch64/farcall-back.d: Likewise.
+
+2015-03-25  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	* ld-aarch64/erratum835769.d: Adjust for removal of padding before
+	835769 workaround stubs.
+
+2014-11-13  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR gas/17598
+	* ld-x86-64/x86-64.exp: Run gotplt1.
+
+	* ld-x86-64/gotplt1.d: New file.
+	* ld-x86-64/gotplt1.s: Likewise.
+
+2014-11-11  Jiong Wang <jiong.wang@arm.com>
+
+	* lib/ld-lib.exp (run_ld_link_exec_tests): Append board_cflags if gcc
+	driver used as link tool.
+	(run_cc_link_exec_tests): Likewise.
 
 2014-11-07  H.J. Lu  <hongjiu.lu@intel.com>
 
-	Apply trunk patch:
-	2014-11-07  H.J. Lu  <hongjiu.lu@intel.com>
-
 	PR ld/17482
 	* ld-x86-64/tlsie4.dd: Updated.
+
+2014-11-05  Matthew Fortune  <matthew.fortune@imgtec.com>
+
+	* ld-mips-elf/abiflags-strip10-ph.d: New file.
+	* ld-mips-elf/mips-eld.exp: Run the new test.
+
+2014-10-30  Will Newton  <will.newton@linaro.org>
+
+	* ld-unique/unique.exp: Use a wider glob for matching ARM
+	targets.
+	* ld-unique/unique.s: Use % instead of @ in .type directive.
+	* ld-unique/unique_shared.s: Likewise.
 
 2014-10-24  Tejas Belagod  <tejas.belagod@arm.com>
 
@@ -42,7 +70,6 @@
 
 2014-10-17  Hans-Peter Nilsson  <hp@axis.com>
 
-	Backport from master
 	* ld-scripts/sysroot-prefix.exp: Log $ld_sysroot.  Handle sysroot
 	== "/" as a separate sysroot-configuration with separable
 	test-types.
@@ -55,7 +82,6 @@
 
 2014-10-15  Hans-Peter Nilsson  <hp@axis.com>
 
-	Backport "="-ldscript-path-prefix changes from master.
 	* ld-scripts/sysroot-prefix.exp, ld-scripts/sysroot-prefix-x.s,
 	ld-scripts/sysroot-prefix-y.s: New files.
 	* lib/ld-lib.exp (check_sysroot_available): New proc.

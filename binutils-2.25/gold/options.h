@@ -1,6 +1,6 @@
 // options.h -- handle command line options for gold  -*- C++ -*-
 
-// Copyright (C) 2006-2015 Free Software Foundation, Inc.
+// Copyright (C) 2006-2014 Free Software Foundation, Inc.
 // Written by Ian Lance Taylor <iant@google.com>.
 
 // This file is part of gold.
@@ -956,9 +956,9 @@ class General_options
 	      N_("Do not page align data, do not make text readonly"),
 	      N_("Page align data, make text readonly"));
 
-  DEFINE_enable(new_dtags, options::EXACTLY_TWO_DASHES, '\0', true,
-		N_("Enable use of DT_RUNPATH and DT_FLAGS"),
-		N_("Disable use of DT_RUNPATH and DT_FLAGS"));
+  DEFINE_enable(new_dtags, options::EXACTLY_TWO_DASHES, '\0', false,
+		N_("Enable use of DT_RUNPATH"),
+		N_("Disable use of DT_RUNPATH"));
 
   DEFINE_bool(noinhibit_exec, options::TWO_DASHES, '\0', false,
 	      N_("Create an output file even if errors occur"), NULL);
@@ -987,9 +987,16 @@ class General_options
 		    N_("Do not create a position independent executable"),
 		    false);
 
+  DEFINE_bool(disable_pie_when_unsafe_data_size,
+	      options::TWO_DASHES, '\0', true,
+	      N_("Disable creation of position independent executable"
+		 " when data segment size is larger than the safe value"),
+	      N_("Do not disable creation of position independent executable"
+		 " when data segment size is larger than the safe value"));
+
   DEFINE_bool(pic_veneer, options::TWO_DASHES, '\0', false,
-        N_("Force PIC sequences for ARM/Thumb interworking veneers"),
-        NULL);
+	      N_("Force PIC sequences for ARM/Thumb interworking veneers"),
+	      NULL);
 
   DEFINE_bool(pipeline_knowledge, options::ONE_DASH, '\0', false,
 	      NULL, N_("(ARM only) Ignore for backward compatibility"));
@@ -1097,6 +1104,12 @@ class General_options
 		"stubs are always after (PowerPC before) the group.  1 means "
 		"use default size.\n"),
 	     N_("SIZE"));
+
+  DEFINE_bool(stub_group_auto_padding, options::TWO_DASHES , '\0', true,
+	      N_("(ARM) For very large binaries, relaxation iterations "
+		 "take long. This option turns on 'smart padding' for stub "
+		 "table, which reduces up to 50% of relaxation time on large "
+		 "objects."), NULL);
 
   DEFINE_bool(no_keep_memory, options::TWO_DASHES, '\0', false,
 	      N_("Use less memory and more disk I/O "
@@ -1219,6 +1232,13 @@ class General_options
   DEFINE_bool(warn_multiple_gp, options::TWO_DASHES, '\0', false,
 	      N_("Ignored"), NULL);
 
+  DEFINE_bool(warn_poison_system_directories, options::TWO_DASHES, '\0', false,
+	      N_("Warn for -L options using system directories"),
+	      N_("Do not warn for -L options using system directories"));
+  DEFINE_bool(error_poison_system_directories, options::TWO_DASHES, '\0', false,
+	      N_("Give an error for -L options using system directories"),
+	      NULL);
+
   DEFINE_bool(warn_search_mismatch, options::TWO_DASHES, '\0', true,
 	      N_("Warn when skipping an incompatible library"),
 	      N_("Don't warn when skipping an incompatible library"));
@@ -1234,6 +1254,9 @@ class General_options
 		    options::TWO_DASHES, '\0',
 		    N_("Report unresolved symbols as errors"),
 		    NULL, true);
+  DEFINE_bool(weak_unresolved_symbols, options::TWO_DASHES, '\0', false,
+	      N_("Convert unresolved symbols to weak references"),
+	      NULL);
 
   DEFINE_bool(wchar_size_warning, options::TWO_DASHES, '\0', true, NULL,
 	      N_("(ARM only) Do not warn about objects with incompatible "
@@ -1361,6 +1384,13 @@ class General_options
   const char*
   output_file_name() const
   { return this->output(); }
+
+  // This method sets/unsets the value of option -pie.  This is used to
+  // disable -pie when the size of the data segment becomes larger than
+  // a safe value.
+  void
+  set_pie_value(bool value)
+  { this->set_pie(value); }
 
   // This is not defined via a flag, but combines flags to say whether
   // the output is position-independent or not.

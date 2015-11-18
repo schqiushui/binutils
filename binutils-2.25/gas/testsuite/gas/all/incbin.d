@@ -1,4 +1,4 @@
-#as: -I$srcdir/$subdir
+#as: -I$srcdir/$subdir --allow-incbin
 #objdump: -s -j .text
 #name: incbin
 #not-target: m32c-*

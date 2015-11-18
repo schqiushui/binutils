@@ -1629,16 +1629,11 @@ elf_x86_64_check_relocs (bfd *abfd, struct bfd_link_info *info,
 
 	    case R_X86_64_PC32_BND:
 	    case R_X86_64_PLT32_BND:
-	    case R_X86_64_PC32:
-	    case R_X86_64_PLT32:
-	    case R_X86_64_32:
-	    case R_X86_64_64:
 	      /* MPX PLT is supported only if elf_x86_64_arch_bed
 		 is used in 64-bit mode.  */
 	      if (ABI_64_P (abfd)
-		      && info->bndplt
-		      && (get_elf_x86_64_backend_data (abfd)
-			  == &elf_x86_64_arch_bed))
+		  && (get_elf_x86_64_backend_data (abfd)
+		      == &elf_x86_64_arch_bed))
 		{
 		  elf_x86_64_hash_entry (h)->has_bnd_reloc = TRUE;
 
@@ -1680,7 +1675,11 @@ elf_x86_64_check_relocs (bfd *abfd, struct bfd_link_info *info,
 		}
 
 	    case R_X86_64_32S:
+	    case R_X86_64_32:
+	    case R_X86_64_64:
+	    case R_X86_64_PC32:
 	    case R_X86_64_PC64:
+	    case R_X86_64_PLT32:
 	    case R_X86_64_GOTPCREL:
 	    case R_X86_64_GOTPCREL64:
 	      if (htab->elf.dynobj == NULL)
@@ -1753,14 +1752,6 @@ elf_x86_64_check_relocs (bfd *abfd, struct bfd_link_info *info,
 
 	    if (h != NULL)
 	      {
-		if (r_type == R_X86_64_GOTPLT64)
-		  {
-		    /* This relocation indicates that we also need
-		       a PLT entry, as this is a function.  We don't need
-		       a PLT entry for local symbols.  */
-		    h->needs_plt = 1;
-		    h->plt.refcount += 1;
-		  }
 		h->got.refcount += 1;
 		old_tls_type = elf_x86_64_hash_entry (h)->tls_type;
 	      }
@@ -2182,8 +2173,6 @@ elf_x86_64_gc_sweep_hook (bfd *abfd, struct bfd_link_info *info,
 	case R_X86_64_GOTPLT64:
 	  if (h != NULL)
 	    {
-	      if (r_type == R_X86_64_GOTPLT64 && h->plt.refcount > 0)
-		h->plt.refcount -= 1;
 	      if (h->got.refcount > 0)
 		h->got.refcount -= 1;
 	      if (h->type == STT_GNU_IFUNC)
@@ -2825,6 +2814,7 @@ elf_x86_64_convert_mov_to_lea (bfd *abfd, asection *sec,
 
 	  /* STT_GNU_IFUNC must keep R_X86_64_GOTPCREL relocation.  */
 	  if (ELF_ST_TYPE (isym->st_info) != STT_GNU_IFUNC
+	      && irel->r_offset >= 2
 	      && bfd_get_8 (input_bfd,
 			    contents + irel->r_offset - 2) == 0x8b)
 	    {
@@ -2855,6 +2845,7 @@ elf_x86_64_convert_mov_to_lea (bfd *abfd, asection *sec,
 	  && h->type != STT_GNU_IFUNC
 	  && h != htab->elf.hdynamic
 	  && SYMBOL_REFERENCES_LOCAL (link_info, h)
+	  && irel->r_offset >= 2
 	  && bfd_get_8 (input_bfd,
 			contents + irel->r_offset - 2) == 0x8b)
 	{
@@ -3719,12 +3710,7 @@ elf_x86_64_relocate_section (bfd *output_bfd,
 	case R_X86_64_GOTPCREL64:
 	  /* Use global offset table entry as symbol value.  */
 	case R_X86_64_GOTPLT64:
-	  /* This is the same as GOT64 for relocation purposes, but
-	     indicates the existence of a PLT entry.  The difficulty is,
-	     that we must calculate the GOT slot offset from the PLT
-	     offset, if this symbol got a PLT entry (it was global).
-	     Additionally if it's computed from the PLT entry, then that
-	     GOT offset is relative to .got.plt, not to .got.  */
+	  /* This is obsolete and treated the the same as GOT64.  */
 	  base_got = htab->elf.sgot;
 
 	  if (htab->elf.sgot == NULL)

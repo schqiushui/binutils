@@ -1,6 +1,6 @@
 // x86_64.cc -- x86_64 target support for gold.
 
-// Copyright (C) 2006-2015 Free Software Foundation, Inc.
+// Copyright (C) 2006-2014 Free Software Foundation, Inc.
 // Written by Ian Lance Taylor <iant@google.com>.
 
 // This file is part of gold.
@@ -426,6 +426,12 @@ class Target_x86_64 : public Sized_target<size, false>
       got_mod_index_offset_(-1U), tlsdesc_reloc_info_(),
       tls_base_symbol_defined_(false)
   { }
+
+  // The safe value for data segment size for PIE links.  Anything more
+  // than this is prone to go/unsafe-pie.
+  uint64_t
+  max_pie_data_segment_size() const
+  { return (128 * 1024 * 1024); }
 
   // Hook for a new output section.
   void

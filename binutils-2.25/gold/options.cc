@@ -1,6 +1,6 @@
 // options.c -- handle command line options for gold
 
-// Copyright (C) 2006-2015 Free Software Foundation, Inc.
+// Copyright (C) 2006-2014 Free Software Foundation, Inc.
 // Written by Ian Lance Taylor <iant@google.com>.
 
 // This file is part of gold.
@@ -1200,6 +1200,39 @@ General_options::finalize()
   // in the path, as appropriate.
   this->add_sysroot();
 
+  // Now check if library_path is poisoned.
+  if (this->warn_poison_system_directories())
+    {
+      std::vector<std::string> bad_paths;
+
+      bad_paths.push_back("/lib");
+      // TODO: This check is disabled for now due to a bunch of packages that
+      // use libtool and relink with -L/usr/lib paths (albeit after the right
+      // sysroot path).  Once those are fixed we can enable.
+      // We also need to adjust it so it only rejects one or two levels deep.
+      // Gcc's internal paths also live below /usr/lib.
+      // http://crbug.com/488360
+      // bad_paths.push_back("/usr/lib");
+      bad_paths.push_back("/usr/local/lib");
+      bad_paths.push_back("/usr/X11R6/lib");
+
+      for (std::vector<std::string>::const_iterator b = bad_paths.begin();
+	   b != bad_paths.end();
+	   ++b)
+	for (Dir_list::iterator p = this->library_path_.value.begin();
+	     p != this->library_path_.value.end();
+	     ++p)
+	  if (!p->name().compare(0, b->size(), *b))
+	    {
+	      if (this->error_poison_system_directories())
+		gold_fatal(_("library search path \"%s\" is unsafe for "
+			     "cross-compilation"), p->name().c_str());
+	      else
+		gold_warning(_("library search path \"%s\" is unsafe for "
+			       "cross-compilation"), p->name().c_str());
+	    }
+    }
+
   // Now that we've normalized the options, check for contradictory ones.
   if (this->shared() && this->is_static())
     gold_fatal(_("-shared and -static are incompatible"));
@@ -1256,6 +1289,8 @@ General_options::finalize()
 		     "--emit-relocs"));
       if (this->has_plugins())
 	gold_fatal(_("incremental linking is not compatible with --plugin"));
+      if (this->relro())
+	gold_fatal(_("incremental linking is not compatible with -z relro"));
       if (this->gc_sections())
 	{
 	  gold_warning(_("ignoring --gc-sections for an incremental link"));

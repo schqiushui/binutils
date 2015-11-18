@@ -1,51 +1,185 @@
+2014-12-25  Thomas Preud'homme  <thomas.preudhomme@arm.com>
+
+	* elf32-arm.c (elf32_arm_merge_eabi_attributes): Handle new
+	Tag_ABI_VFP_args value and replace hardcoded values by enum values.
+	(elf32_arm_post_process_headers): Set e_flags in ELF header as hard
+	float only when Tag_ABI_VFP_args is 1, using new enum value
+	AEABI_VFP_args_vfp to check that.
+
 2015-07-23  Joseph Myers  <joseph@codesourcery.com>
 
 	* elfxx-mips.c (_bfd_mips_elf_finish_dynamic_sections)
 	<DT_MIPS_RLD_MAP_REL>: Add target address to host address
 	difference, not to host pointer.
 
- 2015-02-24  Nick Clifton  <nickc@redhat.com>
+2015-04-01  Tejas Belagod  <tejas.belagod@arm.com>
+	    Marcus Shawcroft  <marcus.shawcroft@arm.com>
+	    Jiong Wang  <jiong.wang@arm.com>
 
-	* configure.ac (AC_CHECK_HEADERS): Add wctype.h.
-	* configure: Regenerate.
-	* config.in: Regenerate.
-	* peXXigen.c: Include wctype.h if HAVE_WCTYPE_H is defined.
-	(u16_mbtowc): Use wint_t types if HAVE_WCTYPE_H is defined.
-	(rsrc_cmp): Use towlower instead of wcsncasecmp if HAVE_WCTYPE_H
-	is defined.
+	* bfd-in.h (bfd_elf64_aarch64_set_options)
+	(bfd_elf32_aarch64_set_options): Add parameter.
+	* bfd-in2.h: Regenerated.
+	* elfnn-aarch64.c (aarch64_erratum_843419_stub)
+	(_bfd_aarch64_adrp_p, _bfd_aarch64_erratum_843419_sequence_p)
+	(_bfd_aarch64_erratum_843419_stub_name)
+	(_bfd_aarch64_erratum_843419_fixup)
+	(_bfd_aarch64_erratum_843419_scan)
+	(_bfd_aarch64_erratum_843419_branch_to_stub)
+	(_bfd_aarch64_erratum_843419_p): Define.
+	(enum elf_aarch64_stub_type): Define
+	aarch64_stub_erratum_843419_veneer.
+	(struct elf_aarch64_stub_hash_entry): Define adrp_offset.
+	(struct elf_aarch64_link_hash_table): Define fix_erratum_843419
+	and fix_erratum_843419_adr.
+	(stub_hash_newfunc): Initialize adrp_offset;
+	(_bfd_aarch64_add_stub_entry_after): Define.
+	(aarch64_map_one_stub, aarch64_build_one_stub)
+	(aarch64_size_one_stub): Handle
+	aarch64_stub_erratum_843419_veneer.
+	(_bfd_aarch64_resize_stubs): Round stub section size.
+	(elfNN_aarch64_size_stubs): Add scan for 843419.
+	(bfd_elfNN_aarch64_set_options): Add parameter. Initialize
+	fix_erratum_843419 and fix_erratum_843419_adr.
+	(struct erratum_835769_branch_to_stub_data): Add info.
+	(elfNN_aarch64_write_section): Initialise info.  Handle 843419.
+	(elfNN_aarch64_size_dynamic_sections): Handle 843419.
+	* elfxx-aarch64.c (_bfd_aarch64_decode_adrp_imm)
+	(_bfd_aarch64_sign_extend): Define.
+	(reencode_adr_imm): Remove static. Rename to:
+	(_bfd_aarch64_reencode_adr_imm): Define.
+	(_bfd_aarch64_elf_put_addend): Call _bfd_aarch64_reencode_adr_imm.
+	* elfxx-aarch64.h (AARCH64_ADR_OP, AARCH64_ADRP_OP)
+	(AARCH64_ADRP_OP_MASK, _bfd_aarch64_sign_extend)
+	(_bfd_aarch64_decode_adrp_imm, _bfd_aarch64_reencode_adr_imm):
+	Define.
 
-2014-11-18  Igor Zamyatin  <igor.zamyatin@intel.com>
+2015-03-25  Marcus Shawcroft  <marcus.shawcroft@arm.com>
 
-	* elf64-x86-64.c (elf_x86_64_check_relocs): Enable MPX PLT only
-	for -z bndplt.
+	* elfnn-aarch64.c (_bfd_aarch64_resize_stubs): Adjust stub section
+	size for initial branch.
+	(elfNN_aarch64_build_stubs): Write initial branch.
+	_bfd_aarch64_decode_(elfNN_aarch64_output_arch_local_syms): Write
+	mapping symbol on initial branch.
 
-2014-11-17  Nick Clifton  <nickc@redhat.com>
+2015-03-25  Marcus Shawcroft  <marcus.shawcroft@arm.com>
 
-	Apply trunk patches:
+	* elfnn-aarch64.c (_bfd_aarch64_erratum_835769_scan):
+	Update erratum count.
 
-	2014-11-14  Nick Clifton  <nickc@redhat.com>
+2015-03-24  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	* elfnn-aarch64.c (_bfd_aarch64_create_or_find_stub_sec): Factor
+	code into:
+	(_bfd_aarch64_get_stub_for_link_section): Define.
+
+2015-03-24  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	* elfnn-aarch64.c (_bfd_aarch64_create_or_find_stub_sec): Adjust
+	update of section_group[].stub_sec.
+
+2015-03-24  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	* elfnn-aarch64.c (struct aarch64_erratum_835769_fix) Remove.
+	(erratum_835769_scan) Drop fix_table_size_p and fixes_p arguments.
+	Delete fixes, fix_table_size and associated code.  Call
+	_bfd_aarch64_add_stub_entry_in_group. Rename to...
+	(bfd_aarch64_erratum_835769_scan): Define.
+	(elfNN_aarch64_size_stubs): Delete erratum_835769_fixes,
+	erratum_835769_fix_table_size, i and associated code.  Relocate
+	call to _bfd_aarch64_erratum_835769_scan.  Delete adhoc stub size
+	correction.  Delete construction of stub entry from
+	erratum_835769_fixes array.
+
+2015-03-24  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	* elfnn-aarch64.c (elfNN_aarch64_size_stubs): Use
+	_bfd_aarch64_add_stub_entry_in_group.
+
+2015-03-23  Keith Seitz  <keiths@redhat.com>
+
+	* elfnn-aarch64.c (_bfd_aarch64_create_or_find_stub_sec): Add
+	missing ';'.
+
+2015-03-23  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	* elfnn-aarch64.c (elfNN_aarch64_size_stubs): Factor out
+	stub resize code into...
+	(bfd_aarch64_resize_stubs): Define.
+
+2015-03-23  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	* elfnn-aarch64.c (_bfd_aarch64_create_or_find_stub_sec): Factor stub
+	creation code into...
+	(bfd_aarch64_create_stub_section): Define.
+
+2015-03-23  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	* elfnn-aarch64.c (_bfd_aarch64_create_or_find_stub_sec): Rename
+	from elf_aarch64_create_or_find_stub_sec.
+	(_bfd_aarch64_add_stub_entry_in_group): Rename from
+	elfNN_aarch64_add_stub.  Call
+	_bfd_aarch64_create_or_find_stub_sec.
+	(elfNN_aarch64_size_stubs, elfNN_aarch64_size_stubs): Call
+	_bfd_aarch64_add_stub_entry_in_group.
+
+2015-03-23  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	* elfnn-aarch64.c (erratum_835769_scan) Add comment.  Reverse
+	sense of boolean return.
+	(elfNN_aarch64_size_stubs): Adjust for above.
+
+2015-03-23  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	* elfnn-aarch64.c (elf_aarch64_create_or_find_stub_sec):
+	Remove unused parameter.
+	(elfNN_aarch64_size_stubs): Adjust for above.
+
+2015-03-23  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	* elfnn-aarch64.c (elfNN_aarch64_size_stubs): Remove bfd_indx.
+
+2015-03-23  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	* elfnn-aarch64.c (aarch64_erratum_835769_fixes)
+	(num_aarch64_erratum_835769_fixes): Remove.
+	(elfNN_aarch64_size_stubs): Remove assignments to above.
+
+2015-03-04  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	* elfxx-aarch64.c (decode_add_imm, decode_movw_imm)
+	(decode_tst_branch_ofs_14, decode_ld_lit_ofs_19)
+	(decode_cond_branch_ofs_19, decode_branch_ofs_26): Remove.
+
+2014-11-14  Nick Clifton  <nickc@redhat.com>
 
 	PR binutils/17597
 	* opncls.c (bfd_get_debug_link_info): Avoid reading off the end of
 	the section.
 	(bfd_get_alt_debug_link_info): Likewise.
 
-	2014-11-14  Nick Clifton  <nickc@redhat.com>
+2014-11-14  Nick Clifton  <nickc@redhat.com>
 
 	PR binutils/17512
 	* ieee.c (ieee_archive_p) Skip processing if no bytes are read at
 	all.
 	(ieee_object_p): Likewise.
 
-	2014-11-13  H.J. Lu  <hongjiu.lu@intel.com>
+2014-11-13  H.J. Lu  <hongjiu.lu@intel.com>
 
 	* coffcode.h (coff_slurp_line_table): Add cast to unsigned int.
 
-	2014-11-13  H.J. Lu  <hongjiu.lu@intel.com>
+2014-11-13  H.J. Lu  <hongjiu.lu@intel.com>
 
 	* coffcode.h (coff_pointerize_aux_hook): Fix a typo.
 
-	2014-11-13  Nick Clifton  <nickc@redhat.com>
+2014-11-13  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR gas/17598
+	* elf64-x86-64.c (elf_x86_64_check_relocs): Treat
+	R_X86_64_GOTPLT64 the same as R_X86_64_GOT64.
+	(elf_x86_64_relocate_section): Likewise.
+
+2014-11-13  Nick Clifton  <nickc@redhat.com>
 
 	PR binutils/17512
 	* coffcode.h (coff_ptr_struct): Add is_sym field.
@@ -79,7 +213,7 @@
 	* libcoff.h: Regenerate.
 	* libcoff-in.h: Regenerate.
 
-	2014-11-12  Nick Clifton  <nickc@redhat.com>
+2014-11-12  Nick Clifton  <nickc@redhat.com>
 
 	PR binutils/17512
 	* coffcode.h (coff_slurp_line_table): Set the line number of
@@ -92,13 +226,13 @@
 	* peXXigen.c (pe_print_idata): Add range checking displaying
 	member names.
 
-	2014-11-12  Alan Modra  <amodra@gmail.com>
+2014-11-12  Alan Modra  <amodra@gmail.com>
 
 	PR binutils/17512
 	* coffcode.h (coff_slurp_line_table): Drop line number info
 	not preceded by a valid function entry.  Revert last change.
 
-	2014-11-11  Nick Clifton  <nickc@redhat.com>
+2014-11-11  Nick Clifton  <nickc@redhat.com>
 
 	PR binutils/17512
 	* coffcode.h (coff_slurp_line_table): Initialise the parts of the
@@ -117,13 +251,13 @@
 	structure are initialised.
 	(pe_print_edata): Avoid reading off the end of the data buffer.
 
-	2014-11-11  Alan Modra  <amodra@gmail.com>
+2014-11-11  Alan Modra  <amodra@gmail.com>
 
 	PR binutils/17512
 	* coffcode.h (coff_slurp_line_table): Use updated lineno_count
 	when building func_table.
 
-	2014-11-11  Alan Modra  <amodra@gmail.com>
+2014-11-11  Alan Modra  <amodra@gmail.com>
 
 	PR binutils/17512
 	* coffcode.h (coff_slurp_line_table): Don't bfd_zalloc, just
@@ -135,7 +269,17 @@
 	copied, and free n_lineno_cache.
 	* pe-mips.c (NUM_HOWTOS): Typo fix.
 
-	2014-11-10  Nick Clifton  <nickc@redhat.com>
+2014-11-11  Alan Modra  <amodra@gmail.com>
+
+	* elf-eh-frame.c (_bfd_elf_write_section_eh_frame): Adjust section
+	size check to account for possible zero terminator.
+
+2014-11-10  James Cowgill  <James.Cowgill@imgtec.com>
+
+	* elfxx-mips.c (_bfd_mips_elf_section_processing): don't force small
+	data sections to be PROGBITS
+
+2014-11-10  Nick Clifton  <nickc@redhat.com>
 
 	PR binutils/17521
 	* coff-i386.c (NUM_HOWTOS): New define.
@@ -172,20 +316,26 @@
 	(pe_bfd_object_p): Allocate and initialize enough space to hold a
 	PEAOUTHDR, even if the opt_hdr field specified less.
 
-	2014-11-08  Alan Modra  <amodra@gmail.com>
+2014-11-08  Alan Modra  <amodra@gmail.com>
 
 	* peXXigen.c (pe_print_idata): Revert last patch, cast lhs instead.
 
-	2014-11-07  H.J. Lu  <hongjiu.lu@intel.com>
+2014-11-07  H.J. Lu  <hongjiu.lu@intel.com>
 
 	* peXXigen.c (pe_print_idata): Cast to unsigned long in range
 	checks.
 
-	2014-11-07  Alan Modra  <amodra@gmail.com>
+2014-11-07  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/17482
+	* elf64-x86-64.c (elf_x86_64_relocate_section): Update comments
+	for IE->LE transition.
+
+2014-11-07  Alan Modra  <amodra@gmail.com>
 
 	* tekhex.c (tekhex_set_arch_mach): Ignore unknown arch errors.
 
-	2014-11-07  Alan Modra  <amodra@gmail.com>
+2014-11-07  Alan Modra  <amodra@gmail.com>
 
 	* tekhex.c (CHUNK_SPAN): Define.
 	(struct data_struct <chunk_init>): Use one byte per span, update
@@ -201,11 +351,11 @@
 	(tekhex_set_section_contents): Don't create initial chunks.
 	(tekhex_write_object_contents): Use CHUNK_SPAN.
 
-	2014-11-07  Alan Modra  <amodra@gmail.com>
+2014-11-07  Alan Modra  <amodra@gmail.com>
 
 	* aoutx.h (aout_get_external_symbols): Tidy allocation of symbol buffer.
 
-	2014-11-07  Alan Modra  <amodra@gmail.com>
+2014-11-07  Alan Modra  <amodra@gmail.com>
 
 	* archive.c (_bfd_slurp_extended_name_table): Revert bfd_get_size check.
 	* coffcode.h (coff_set_alignment_hook): Likewise.
@@ -215,7 +365,7 @@
 	* elf.c (bfd_elf_get_str_section): Likewise.
 	* tekhex.c (first_phase): Likewise.
 
-	2014-11-06  Nick Clifton  <nickc@redhat.com>
+2014-11-06  Nick Clifton  <nickc@redhat.com>
 
 	* aoutx.h (slurp_symbol_table): Revert previous delta.
 	(slurp_reloc_table): Likewise.
@@ -224,7 +374,12 @@
 	* coffgen.c (coff_get_normalized_symtab): Allow zero-sized symtabs
 	and do not complain about linker generated files.
 
-	2014-11-04  Nick Clifton  <nickc@redhat.com>
+2014-11-06  Will Newton  <will.newton@linaro.org>
+
+	* elf-attrs.c (_bfd_elf_parse_attributes): Handle zero
+	length sections and sub-sections.
+
+2014-11-04  Nick Clifton  <nickc@redhat.com>
 
 	PR binutils/17512
 	* coffcode.h (handle_COMDAT): Replace abort with BFD_ASSERT.
@@ -232,7 +387,17 @@
 	(coff_slurp_line_table): Add more range checking.
 	* peXXigen.c (pe_print_debugdata): Add range checking.
 
-	2014-11-05  Nick Clifton  <nickc@redhat.com>
+2014-11-05  James Cowgill  <james.cowgill@imgtec.com>
+
+	* elfxx-mips.c (_bfd_mips_elf_finish_dynamic_sections): Fix segfault
+	when creating a dso with discarded dynsym section.
+
+2014-11-05  Matthew Fortune  <matthew.fortune@imgtec.com>
+
+	* elfxx-mips.c (update_mips_abiflags_isa): Add E_MIPS_ARCH_32R6
+	and E_MIPS_ARCH_64R6 support.
+
+2014-11-05  Nick Clifton  <nickc@redhat.com>
 
 	PR binutils/17512
 	* coffcode.h (coff_set_alignment_hook): Warn if the file lies
@@ -250,7 +415,7 @@
 	(rsrc_count_entries): Add range checking.
 	(rsrc_parse_entry): Likewise.
 
-	2014-11-04  Nick Clifton  <nickc@redhat.com>
+2014-11-04  Nick Clifton  <nickc@redhat.com>
 
 	PR binutils/17512
 	* compress.c (bfd_get_full_section_contents): Improve test for
@@ -260,7 +425,23 @@
 	* archive.c (_bfd_slurp_extended_name_table): Handle archives with
 	corrupt extended name tables.
 
-	2014-11-03  Nick Clifton  <nickc@redhat.com>
+2014-11-04  Alan Modra  <amodra@gmail.com>
+
+	* elf32-spu.c (ovl_mgr_stat): New function.
+	(spu_elf_open_builtin_lib): Pass to bfd_openr_iovec.
+
+2014-11-03  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* elf32-avr.c (elf32_avr_relax_delete_bytes): During linker
+	relaxation, reduce the size of symbols that span the deleted
+	bytes.
+
+2014-11-03  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* elf32-avr.c (elf32_avr_relax_delete_bytes): Modify symbols
+	located at the very end of the section.
+
+2014-11-03  Nick Clifton  <nickc@redhat.com>
 
 	PR binutils/17512
 	* aoutx.h (slurp_symbol_table): Check that computed table size is
@@ -292,7 +473,26 @@
 	* xcofflink.c (xcoff_link_input_bfd):  Check offset against
 	length of string table.
 
-	2014-10-31  Nick Clifton  <nickc@redhat.com>
+2014-11-03  Nick Clifton  <nickc@redhat.com>
+
+	* po/fi.po: Updated Finnish translation.
+
+2014-10-31  Andrew Pinski  <apinski@cavium.com>
+            Naveen H.S  <Naveen.Hurugalawadi@caviumnetworks.com>
+
+	* archures.c: Add octeon3 for mips target.
+	* bfd-in2.h: Regenerate.
+	* bfd/cpu-mips.c: Define I_mipsocteon3.
+	nfo_struct): Add octeon3 support.
+	* bfd/elfxx-mips.c: (_bfd_elf_mips_mach): Add support for
+	octeon3.
+	(mips_set_isa_flags): Add support for octeon3.
+	(bfd_mips_isa_ext): Add bfd_mach_mips_octeon3.
+	(mips_mach_extensions): Make bfd_mach_mips_octeon3 an
+	extension of bfd_mach_mips_octeon2.
+	(print_mips_isa_ext): Print the value of Octeon3.
+
+2014-10-31  Nick Clifton  <nickc@redhat.com>
 
 	PR binutils/17512
 	* coffgen.c (_bfd_coff_get_external_symbols): Do not try to load a
@@ -301,78 +501,39 @@
 	table bigger than the file.
 	* tekhex.c (first_phase): Check that the section range is sane.
 
-2014-11-11  Alan Modra  <amodra@gmail.com>
+2014-10-30  Nick Clifton  <nickc@redhat.com>
 
-	* elf-eh-frame.c (_bfd_elf_write_section_eh_frame): Adjust section
-	size check to account for possible zero terminator.
-
-2014-11-10  Matthew Fortune  <matthew.fortune@imgtec.com>
-
-	Apply trunk patch:
-	* elfxx-mips.c (update_mips_abiflags_isa): Add E_MIPS_ARCH_32R6
-	and E_MIPS_ARCH_64R6 support.
-
-2014-11-07  H.J. Lu  <hongjiu.lu@intel.com>
-
-	Apply trunk patch:
-	2014-11-07  H.J. Lu  <hongjiu.lu@intel.com>
-
-	PR ld/17482
-	* elf64-x86-64.c (elf_x86_64_relocate_section): Update comments
-	for IE->LE transition.
-
-2014-11-04  Tristan Gingold  <gingold@adacore.com>
-
-	* development.sh: Set development to false.
-
-2014-11-03  Nick Clifton  <nickc@redhat.com>
-
-	* po/fi.po: Updated Finnish translation.
-
-2014-10-31  Nick Clifton  <nickc@redhat.com>
-
-	Apply trunk patch:
-
-	2014-10-30  Nick Clifton  <nickc@redhat.com>
 	PR binutils/17512
 	* ihex.c (ihex_scan): Fix typo in invocation of ihex_bad_byte.
 	* coffgen.c (coff_get_normalized_symtab): Prevent buffer overrun.
 
-2014-10-30  Nick Clifton  <nickc@redhat.com>
+2014-10-29  Nick Clifton  <nickc@redhat.com>
 
-	Appy trunk patch:
-
-	2014-10-29  Nick Clifton  <nickc@redhat.com>
 	* elf.c (bfd_section_from_shdr): Fix heap use after free memory
 	leak.
 
-2014-10-28  Matthew Fortune  <matthew.fortune@imgtec.com>
+2014-10-29  Dennis Brueni  <dbrueni@slickedit.com>
 
-	Apply trunk patches:
-
-	2014-10-22  Matthew Fortune  <matthew.fortune@imgtec.com>
-	* elfxx-mips.c (print_mips_ases): Print unknown ASEs.
-	(print_mips_isa_ext): Print the value of an unknown extension.
+	* elf.c (elfcore_write_lwpstatus): Fix typo in call to memcpy.
 
 2014-10-28  Nick Clifton  <nickc@redhat.com>
 
-	Apply trunk patches:
-
-	2014-10-28  Nick Clifton  <nickc@redhat.com>
 	PR binutils/17512
 	* elf.c (bfd_section_from_shdr): Allocate and free the recursion
 	detection table on a per-bfd basis.
 	* peXXigen.c (pe_print_edata): Handle binaries with a truncated
 	export table.
 
-	2014-10-28  Andreas Schwab  <schwab@suse.de>
-		    Nick Clifton  <nickc@redhat.com>
+2014-10-28  Andreas Schwab  <schwab@suse.de>
+	    Nick Clifton  <nickc@redhat.com>
+
 	PR binutils/17510
 	* srec.c (srec_bad_byte): Increase size of buf to allow for
 	negative values.
 	(srec_scan): Use an unsigned char buffer to hold header bytes.
 
-	2014-10-27  Nick Clifton  <nickc@redhat.com>
+2014-10-27  Nick Clifton  <nickc@redhat.com>
+
 	PR binutils/17512
 	* elf.c (bfd_section_from_shdr): Detect and warn about ELF
 	binaries with a group of sections linked by the string table
@@ -386,26 +547,68 @@
 	* elf.c (setup_group): Improve handling of corrupt group
 	sections.
 
-2014-10-28  Alan Modra  <amodra@gmail.com>
+2014-10-24  Tejas Belagod  <tejas.belagod@arm.com>
 
-	Apply trunk patches:
+	* bfd-in.h (bfd_elf64_aarch64_set_options): Add a parameter.
+	* bfd-in2.h (bfd_elf64_aarch64_set_options): Likewise.
+	* elfnn-aarch64.c (aarch64_erratum_835769_stub): New.
+	(elf_aarch64_stub_type): Add new type
+	aarch64_stub_erratum_835769_veneer.
+	(elf_aarch64_stub_hash_entry): New fields for erratum 835769.
+	(aarch64_erratum_835769_fix): New data struct to record erratum
+	835769.
+	(elf_aarch64_link_hash_table: Global flags for 835769.
+	(aarch64_build_one_stub): Add case for 835769.
+	(aarch64_size_one_stub): Likewise.
+	(aarch64_mem_op_p, aarch64_mlxl_p,
+	aarch64_erratum_sequence,erratum_835769_scan):
+	New. Decode and scan functions for erratum 835769.
+	(elf_aarch64_create_or_find_stub_sec): New.
+	(elfNN_aarch64_size_stubs): Look for erratum 835769 and record
+	them.
+	(bfd_elfNN_aarch64_set_options: Set global flag for 835769.
+	(erratum_835769_branch_to_stub_data,
+	make_branch_to_erratum_835769_stub):New. Connect up all the
+	erratum stubs to occurances by branches.
+	(elfNN_aarch64_write_section): New hook.
+	(aarch64_map_one_stub): Output erratum stub symbol.
+	(elfNN_aarch64_size_dynamic_sections): Init mapping symbol
+	information for erratum 835769.
+	(elf_backend_write_section): Define.
 
-	2014-10-21  Alan Modra  <amodra@gmail.com>
+2014-10-23  Victor Kamensky  <victor.kamensky@linaro.org>
+
+	* elf32-arm.c (read_code32): New function to read 32 bit
+	arm instruction.
+	(read_code16): New function to read 16 bit thumb instrution.
+	(elf32_arm_plt0_size, elf32_arm_plt_size): Use read_code32
+	and read_code16 to read instructions.
+
+2014-10-22  Matthew Fortune  <matthew.fortune@imgtec.com>
+
+	* elfxx-mips.c (print_mips_ases): Print unknown ASEs.
+	(print_mips_isa_ext): Print the value of an unknown extension.
+
+2014-10-21  Alan Modra  <amodra@gmail.com>
+
 	* elf64-ppc.c (ppc64_elf_tls_optimize): Ignore relocs against toc
 	entries that aren't a multiple of 8 rather than failing assertion.
 
-	2014-10-21  Alan Modra  <amodra@gmail.com>
+2014-10-21  Alan Modra  <amodra@gmail.com>
+
 	* elf64-ppc.c (ppc64_elf_size_stubs): Add gcc-4.9 libgomp functions
 	to thread_starter.
 
-	2014-10-18  Alan Modra  <amodra@gmail.com>
+2014-10-18  Alan Modra  <amodra@gmail.com>
+
 	* elf64-ppc.c (ppc64_elf_add_symbol_hook): If function code
 	section for function symbols defined in .opd is discarded, let
 	the symbol appear to be undefined.
 	(opd_entry_value): Ensure the result section is that for the
 	function code section in the same object as the OPD entry.
 
-	2014-10-16  Alan Modra  <amodra@gmail.com>
+2014-10-16  Alan Modra  <amodra@gmail.com>
+
 	PR 17492
 	* elf32-arm.c (elf32_arm_add_symbol_hook): Only set has_gnu_symbols
 	on ELF output bfd.
@@ -420,12 +623,14 @@
 	* elf-s390-common.c (elf_s390_add_symbol_hook): Likewise.  Handle
 	STB_GNU_UNIQUE too.
 
-	2014-10-16  Alan Modra  <amodra@gmail.com>
+2014-10-16  Alan Modra  <amodra@gmail.com>
+
 	* elf64-ppc.c (ppc64_elf_before_check_relocs): Do .opd processing
 	even when output is not ppc64 ELF.  Remove redundant tests on
 	type of input bfd.
 
-	2014-10-15  Alan Modra  <amodra@gmail.com>
+2014-10-15  Alan Modra  <amodra@gmail.com>
+
 	PR 17481
 	* aoutx.h (NAME (aout, find_nearest_line)): Add "discriminator_ptr"
 	param, group "section" and "offset" params.  Zero discriminator.
@@ -502,7 +707,8 @@
 	* libbfd.h: Regenerate.
 	* libcoff.h: Regenerate.
 
-	2014-10-15  Alan Modra  <amodra@gmail.com>
+2014-10-15  Alan Modra  <amodra@gmail.com>
+
 	* targets.c (BFD_JUMP_TABLE_SYMBOLS): Use NAME##_find_line.
 	* aout-adobe.c (aout_32_find_line): Define.
 	(aout_32_bfd_make_debug_symbol, aout_32_bfd_reloc_type_lookup,
@@ -546,39 +752,16 @@
 	* libbfd.h: Regenerate.
 	* libcoff.h: Regenerate.
 
-2014-10-24  Tejas Belagod  <tejas.belagod@arm.com>
+2014-10-15  Tristan Gingold  <gingold@adacore.com>
 
-	* bfd-in.h (bfd_elf64_aarch64_set_options): Add a parameter.
-	* bfd-in2.h (bfd_elf64_aarch64_set_options): Likewise.
-	* elfnn-aarch64.c (aarch64_erratum_835769_stub): New.
-	(elf_aarch64_stub_type): Add new type
-	aarch64_stub_erratum_835769_veneer.
-	(elf_aarch64_stub_hash_entry): New fields for erratum 835769.
-	(aarch64_erratum_835769_fix): New data struct to record erratum
-	835769.
-	(elf_aarch64_link_hash_table: Global flags for 835769.
-	(aarch64_build_one_stub): Add case for 835769.
-	(aarch64_size_one_stub): Likewise.
-	(aarch64_mem_op_p, aarch64_mlxl_p,
-	aarch64_erratum_sequence,erratum_835769_scan):
-	New. Decode and scan functions for erratum 835769.
-	(elf_aarch64_create_or_find_stub_sec): New.
-	(elfNN_aarch64_size_stubs): Look for erratum 835769 and record
-	them.
-	(bfd_elfNN_aarch64_set_options: Set global flag for 835769.
-	(erratum_835769_branch_to_stub_data,
-	make_branch_to_erratum_835769_stub):New. Connect up all the
-	erratum stubs to occurances by branches.
-	(elfNN_aarch64_write_section): New hook.
-	(aarch64_map_one_stub): Output erratum stub symbol.
-	(elfNN_aarch64_size_dynamic_sections): Init mapping symbol
-	information for erratum 835769.
-	(elf_backend_write_section): Define.
-
-2014-10-14  Tristan Gingold  <gingold@adacore.com>
-
-	* version.m4: Bump version to 2.24.90
+	* version.m4: Bump version to 2.25.51
 	* configure: Regenerate.
+
+2014-10-14  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* elf32-i386.c (elf_i386_convert_mov_to_lea): Skip if relocation
+	offset is less than 2.
+	* elf64-x86-64.c (elf_x86_64_convert_mov_to_lea): Likewise.
 
 2014-10-14  Alan Modra  <amodra@gmail.com>
 

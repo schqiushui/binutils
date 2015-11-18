@@ -1,6 +1,6 @@
 // target.h -- target support for gold   -*- C++ -*-
 
-// Copyright (C) 2006-2015 Free Software Foundation, Inc.
+// Copyright (C) 2006-2014 Free Software Foundation, Inc.
 // Written by Ian Lance Taylor <iant@google.com>.
 
 // This file is part of gold.
@@ -71,6 +71,13 @@ class Target
  public:
   virtual ~Target()
   { }
+
+  // Returns the safe value for data segment size for PIE links.  Anything
+  // greater than this is prone to go/unsafe-pie.  A value of 0 means
+  // that the size is unlimited.
+  virtual uint64_t
+  max_pie_data_segment_size() const
+  { return 0; }
 
   // Return the bit size that this target implements.  This should
   // return 32 or 64.

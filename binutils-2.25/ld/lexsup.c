@@ -513,6 +513,18 @@ static const struct ld_option ld_options[] =
   { {"pop-state", no_argument, NULL, OPTION_POP_STATE},
     '\0', NULL, N_("Pop state of flags governing input file handling"),
     TWO_DASHES },
+  { {"warn-poison-system-directories", no_argument, NULL,
+     OPTION_WARN_POISON_SYSTEM_DIRECTORIES},
+    '\0', NULL, N_("Warn for -L options using system directories"),
+    TWO_DASHES },
+  { {"no-warn-poison-system-directories", no_argument, NULL,
+     OPTION_NO_WARN_POISON_SYSTEM_DIRECTORIES},
+    '\0', NULL, N_("Do not warn for -L options using system directories"),
+    TWO_DASHES },
+  { {"error-poison-system-directories", no_argument, NULL,
+     OPTION_ERROR_POISON_SYSTEM_DIRECTORIES},
+    '\0', NULL, N_("Give an error for -L options using system directories"),
+    TWO_DASHES },
 };
 
 #define OPTION_COUNT ARRAY_SIZE (ld_options)
@@ -1473,6 +1485,18 @@ parse_args (unsigned argc, char **argv)
 	      memcpy (&input_flags, oldp, sizeof (input_flags));
 	      free (oldp);
 	    }
+	  break;
+
+	case OPTION_WARN_POISON_SYSTEM_DIRECTORIES:
+	  command_line.warn_poison_system_directories = TRUE;
+	  break;
+
+	case OPTION_NO_WARN_POISON_SYSTEM_DIRECTORIES:
+	  command_line.warn_poison_system_directories = FALSE;
+	  break;
+
+	case OPTION_ERROR_POISON_SYSTEM_DIRECTORIES:
+	  command_line.error_poison_system_directories = TRUE;
 	  break;
 	}
     }

@@ -1,3 +1,15 @@
+2014-12-25  Thomas Preud'homme  <thomas.preudhomme@arm.com>
+
+	* arm.h: New AEABI_FP_number_model_* and AEABI_VFP_args_* enum values.
+
+2014-11-13  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* x86-64.h (R_X86_64_GOTPLT64): Mark it obsolete.
+
+2014-10-17  Jose E. Marchesi  <jose.marchesi@oracle.com>
+
+	* sparc.h (ELF_SPARC_HWCAP2_VIS3B): Documentation improved.
+
 2014-10-09  Jose E. Marchesi  <jose.marchesi@oracle.com>
 
 	* sparc.h (Tag_GNU_Sparc_HWCAPS2): New object attribute.

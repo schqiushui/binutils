@@ -40,6 +40,8 @@ typedef struct
 {
   dwarf_vma	 li_length;
   unsigned short li_version;
+  unsigned char  li_address_size;
+  unsigned char  li_segment_size;
   unsigned int   li_prologue_length;
   unsigned char  li_min_insn_length;
   unsigned char  li_max_ops_per_insn;
@@ -123,6 +125,7 @@ enum dwarf_section_display_enum
   macinfo,
   macro,
   str,
+  line_str,
   loc,
   pubtypes,
   gnu_pubtypes,
