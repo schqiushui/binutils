@@ -25,6 +25,9 @@
 #include <cerrno>
 #include <cstring>
 #include <algorithm>
+// __STDC_FORMAT_MACROS is needed to turn on macros in inttypes.h.
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
 #include <iostream>
 #include <fstream>
 #include <utility>
@@ -2815,9 +2818,11 @@ Layout::finalize(const Input_objects* input_objects, Symbol_table* symtab,
         data_seg_size = rw_memsz;
 
       if (data_seg_size >= target->max_pie_data_segment_size())
-	gold_warning(_("Unsafe PIE data segment size (%ld > %ld). See "
-		       "go/unsafe-pie."),
-		       data_seg_size, target->max_pie_data_segment_size());
+	gold_warning(
+	  _("Unsafe PIE data segment size (%" PRIu64 " > %" PRIu64 "). See "
+	    "go/unsafe-pie."),
+	  data_seg_size,
+	  target->max_pie_data_segment_size());
     }
 
   // If there is a load segment that contains the file and program headers,
