@@ -25,6 +25,9 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
+// __STDC_FORMAT_MACROS is needed to turn on macros in inttypes.h.
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
 #include <unistd.h>
 #include <algorithm>
 #include "libiberty.h"
@@ -597,9 +600,11 @@ queue_middle_tasks(const General_options& options,
       // perfectly and warn.  So, this is fine.
       if (segment_size >= target->max_pie_data_segment_size())
 	{
-	  gold_info(_("The data segment size (%ld > %ld) is likely unsafe and"
-		      " PIE has been disabled for this link. See go/unsafe-pie."),
-		    segment_size, target->max_pie_data_segment_size());
+	  gold_info(
+	    _("The data segment size (%" PRIu64 " > %" PRIu64 ") is likely unsafe and"
+	      " PIE has been disabled for this link. See go/unsafe-pie."),
+	    segment_size,
+	    target->max_pie_data_segment_size());
 	  const_cast<General_options*>(&parameters->options())->set_pie_value(false);
 	}
     }
