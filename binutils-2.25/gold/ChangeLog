@@ -1,3 +1,10 @@
+2015-10.27  Han Shen  <shenhan@google.com>
+
+	PR gold/19042 - unsupported reloc 311/312.
+
+	* aarch64.cc (Target_aarch64::Scan::local): Add support for
+	reloc 311/312.
+
 2015-01-02  Alan Modra  <amodra@gmail.com>
 
 	* version.cc (print_version): Just print current year.
