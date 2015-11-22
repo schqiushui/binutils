@@ -1015,8 +1015,7 @@ gld${EMULATION_NAME}_after_open (void)
       /* Find an ELF input.  */
       for (abfd = link_info.input_bfds;
 	   abfd != (bfd *) NULL; abfd = abfd->link.next)
-	if (bfd_get_flavour (abfd) == bfd_target_elf_flavour
-	    && bfd_count_sections (abfd) != 0)
+	if (bfd_get_flavour (abfd) == bfd_target_elf_flavour)
 	  break;
 
       /* PR 10555: If there are no ELF input files do not try to
@@ -1054,8 +1053,6 @@ gld${EMULATION_NAME}_after_open (void)
 
       for (abfd = link_info.input_bfds; abfd; abfd = abfd->link.next)
 	{
-	  if (bfd_count_sections (abfd) == 0)
-	    continue;
 	  if (bfd_get_flavour (abfd) == bfd_target_elf_flavour)
 	    elfbfd = abfd;
 	  if (!warn_eh_frame)
@@ -2280,14 +2277,6 @@ fragment <<EOF
 	  link_info.execstack = FALSE;
 	}
 EOF
-
-if test x"$BNDPLT" = xyes; then
-fragment <<EOF
-      else if (strcmp (optarg, "bndplt") == 0)
-	link_info.bndplt = TRUE;
-EOF
-fi
-
 if test x"$GENERATE_SHLIB_SCRIPT" = xyes; then
 fragment <<EOF
       else if (strcmp (optarg, "global") == 0)
@@ -2464,13 +2453,6 @@ fragment <<EOF
   -z relro                    Create RELRO program header\n"));
   fprintf (file, _("\
   -z stacksize=SIZE           Set size of stack segment\n"));
-EOF
-fi
-
-if test x"$BNDPLT" = xyes; then
-fragment <<EOF
-  fprintf (file, _("\
-  -z bndplt                   Always generate BND prefix in PLT entries\n"));
 EOF
 fi
 

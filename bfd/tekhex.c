@@ -267,7 +267,7 @@ typedef struct tekhex_data_struct
 #define enda(x) (x->vma + x->size)
 
 static bfd_boolean
-getvalue (char **srcp, bfd_vma *valuep, char * endp)
+getvalue (char **srcp, bfd_vma *valuep)
 {
   char *src = *srcp;
   bfd_vma value = 0;
@@ -279,7 +279,7 @@ getvalue (char **srcp, bfd_vma *valuep, char * endp)
   len = hex_value (*src++);
   if (len == 0)
     len = 16;
-  while (len-- && src < endp)
+  while (len--)
     {
       if (!ISHEX (*src))
 	return FALSE;
@@ -288,11 +288,11 @@ getvalue (char **srcp, bfd_vma *valuep, char * endp)
 
   *srcp = src;
   *valuep = value;
-  return len == -1U;
+  return TRUE;
 }
 
 static bfd_boolean
-getsym (char *dstp, char **srcp, unsigned int *lenp, char * endp)
+getsym (char *dstp, char **srcp, unsigned int *lenp)
 {
   char *src = *srcp;
   unsigned int i;
@@ -304,12 +304,12 @@ getsym (char *dstp, char **srcp, unsigned int *lenp, char * endp)
   len = hex_value (*src++);
   if (len == 0)
     len = 16;
-  for (i = 0; i < len && src < endp; i++)
+  for (i = 0; i < len; i++)
     dstp[i] = src[i];
   dstp[i] = 0;
   *srcp = src + i;
   *lenp = len;
-  return i == len;
+  return TRUE;
 }
 
 static struct data_struct *
@@ -354,7 +354,7 @@ insert_byte (bfd *abfd, int value, bfd_vma addr)
   how big the data is.  */
 
 static bfd_boolean
-first_phase (bfd *abfd, int type, char *src, char * src_end)
+first_phase (bfd *abfd, int type, char *src)
 {
   asection *section, *alt_section;
   unsigned int len;
@@ -368,21 +368,21 @@ first_phase (bfd *abfd, int type, char *src, char * src_end)
       {
 	bfd_vma addr;
 
-	if (!getvalue (&src, &addr, src_end))
+	if (!getvalue (&src, &addr))
 	  return FALSE;
 
-	while (*src && src < src_end - 1)
+	while (*src)
 	  {
 	    insert_byte (abfd, HEX (src), addr);
 	    src += 2;
 	    addr++;
 	  }
-	return TRUE;
       }
 
+      return TRUE;
     case '3':
       /* Symbol record, read the segment.  */
-      if (!getsym (sym, &src, &len, src_end))
+      if (!getsym (sym, &src, &len))
 	return FALSE;
       section = bfd_get_section_by_name (abfd, sym);
       if (section == NULL)
@@ -397,23 +397,17 @@ first_phase (bfd *abfd, int type, char *src, char * src_end)
 	    return FALSE;
 	}
       alt_section = NULL;
-      while (src < src_end && *src)
+      while (*src)
 	{
 	  switch (*src)
 	    {
 	    case '1':		/* Section range.  */
 	      src++;
-	      if (!getvalue (&src, &section->vma, src_end))
+	      if (!getvalue (&src, &section->vma))
 		return FALSE;
-	      if (!getvalue (&src, &val, src_end))
+	      if (!getvalue (&src, &val))
 		return FALSE;
-	      if (val < section->vma)
-		val = section->vma;
 	      section->size = val - section->vma;
-	      /* PR 17512: file: objdump-s-endless-loop.tekhex.
-	         Check for overlarge section sizes.  */
-	      if (section->size & 0x80000000)
-		return FALSE;
 	      section->flags = SEC_HAS_CONTENTS | SEC_LOAD | SEC_ALLOC;
 	      break;
 	    case '0':
@@ -438,7 +432,7 @@ first_phase (bfd *abfd, int type, char *src, char * src_end)
 		abfd->flags |= HAS_SYMS;
 		new_symbol->prev = abfd->tdata.tekhex_data->symbols;
 		abfd->tdata.tekhex_data->symbols = new_symbol;
-		if (!getsym (sym, &src, &len, src_end))
+		if (!getsym (sym, &src, &len))
 		  return FALSE;
 		new_symbol->symbol.name = (const char *)
                     bfd_alloc (abfd, (bfd_size_type) len + 1);
@@ -486,7 +480,7 @@ first_phase (bfd *abfd, int type, char *src, char * src_end)
 			new_symbol->symbol.section = alt_section;
 		      }
 		  }
-		if (!getvalue (&src, &val, src_end))
+		if (!getvalue (&src, &val))
 		  return FALSE;
 		new_symbol->symbol.value = val - section->vma;
 		break;
@@ -504,7 +498,7 @@ first_phase (bfd *abfd, int type, char *src, char * src_end)
    record.  */
 
 static bfd_boolean
-pass_over (bfd *abfd, bfd_boolean (*func) (bfd *, int, char *, char *))
+pass_over (bfd *abfd, bfd_boolean (*func) (bfd *, int, char *))
 {
   unsigned int chars_on_line;
   bfd_boolean is_eof = FALSE;
@@ -545,7 +539,8 @@ pass_over (bfd *abfd, bfd_boolean (*func) (bfd *, int, char *, char *))
 
       /* Put a null at the end.  */
       src[chars_on_line] = 0;
-      if (!func (abfd, type, src, src + chars_on_line))
+
+      if (!func (abfd, type, src))
 	return FALSE;
     }
 
@@ -962,7 +957,6 @@ tekhex_print_symbol (bfd *abfd,
 #define tekhex_find_nearest_line                    _bfd_nosymbols_find_nearest_line
 #define tekhex_find_line                            _bfd_nosymbols_find_line
 #define tekhex_find_inliner_info                    _bfd_nosymbols_find_inliner_info
-#define tekhex_get_symbol_version_string	    _bfd_nosymbols_get_symbol_version_string
 #define tekhex_bfd_make_debug_symbol                _bfd_nosymbols_bfd_make_debug_symbol
 #define tekhex_read_minisymbols                     _bfd_generic_read_minisymbols
 #define tekhex_minisymbol_to_symbol                 _bfd_generic_minisymbol_to_symbol

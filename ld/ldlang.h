@@ -163,8 +163,6 @@ typedef struct lang_output_section_statement_struct
   unsigned int ignored : 1;
   /* If this section should update "dot".  Prevents section being ignored.  */
   unsigned int update_dot : 1;
-  /* If this section is after assignment to _end.  */
-  unsigned int after_end : 1;
   /* If this section uses the alignment of its input sections.  */
   unsigned int align_lma_with_input : 1;
 } lang_output_section_statement_type;
@@ -470,6 +468,17 @@ struct unique_sections
   const char *name;
 };
 
+/* This structure records symbols for which we need to keep track of
+   definedness for use in the DEFINED () test.  */
+
+struct lang_definedness_hash_entry
+{
+  struct bfd_hash_entry root;
+  unsigned int by_object : 1;
+  unsigned int by_script : 1;
+  unsigned int iteration : 1;
+};
+
 /* Used by place_orphan to keep track of orphan sections and statements.  */
 
 struct orphan_save
@@ -559,6 +568,10 @@ extern void lang_float
 extern void lang_leave_output_section_statement
   (fill_type *, const char *, lang_output_section_phdr_list *,
    const char *);
+extern void lang_abs_symbol_at_end_of
+  (const char *, const char *);
+extern void lang_abs_symbol_at_beginning_of
+  (const char *, const char *);
 extern void lang_statement_append
   (lang_statement_list_type *, lang_statement_union_type *,
    lang_statement_union_type **);
@@ -570,8 +583,6 @@ extern void lang_reset_memory_regions
   (void);
 extern void lang_do_assignments
   (lang_phase_type);
-extern asection *section_for_dot
-  (void);
 
 #define LANG_FOR_EACH_INPUT_STATEMENT(statement)			\
   lang_input_statement_type *statement;					\
@@ -672,6 +683,10 @@ extern void lang_add_unique
   (const char *);
 extern const char *lang_get_output_target
   (void);
+extern struct lang_definedness_hash_entry *lang_symbol_defined (const char *);
+extern void lang_update_definedness
+  (const char *, struct bfd_link_hash_entry *);
+
 extern void add_excluded_libs (const char *);
 extern bfd_boolean load_symbols
   (lang_input_statement_type *, lang_statement_list_type *);

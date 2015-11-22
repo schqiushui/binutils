@@ -486,8 +486,8 @@ static reloc_howto_type elf64_alpha_howto_table[] =
 {
   HOWTO (R_ALPHA_NONE,		/* type */
 	 0,			/* rightshift */
-	 3,			/* size (0 = byte, 1 = short, 2 = long) */
-	 0,			/* bitsize */
+	 0,			/* size (0 = byte, 1 = short, 2 = long) */
+	 8,			/* bitsize */
 	 TRUE,			/* pc_relative */
 	 0,			/* bitpos */
 	 complain_overflow_dont, /* complain_on_overflow */
@@ -1105,14 +1105,7 @@ elf64_alpha_info_to_howto (bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
 			   Elf_Internal_Rela *dst)
 {
   unsigned r_type = ELF64_R_TYPE(dst->r_info);
-
-  if (r_type >= R_ALPHA_max)
-    {
-      (*_bfd_error_handler) (_("%B: unrecognised Alpha reloc number: %d"),
-			     abfd, r_type);
-      bfd_set_error (bfd_error_bad_value);
-      r_type = R_ALPHA_NONE;
-    }
+  BFD_ASSERT (r_type < (unsigned int) R_ALPHA_max);
   cache_ptr->howto = &elf64_alpha_howto_table[r_type];
 }
 
@@ -1756,18 +1749,6 @@ elf64_alpha_want_plt (struct alpha_elf_link_hash_entry *ah)
 	  && (ah->flags & ALPHA_ELF_LINK_HASH_LU_PLT) != 0
 	  && (ah->flags & ~ALPHA_ELF_LINK_HASH_LU_PLT) == 0);
 }
-
-/* Whether to sort relocs output by ld -r or ld --emit-relocs, by r_offset.
-   Don't do so for code sections.  We want to keep ordering of LITERAL/LITUSE
-   as is.  On the other hand, elf-eh-frame.c processing requires .eh_frame
-   relocs to be sorted.  */
-
-static bfd_boolean
-elf64_alpha_sort_relocs_p (asection *sec)
-{
-  return (sec->flags & SEC_CODE) == 0;
-}
-
 
 /* Handle dynamic relocations when doing an Alpha ELF link.  */
 
@@ -5530,8 +5511,6 @@ static const struct elf_size_info alpha_elf_size_info =
   elf64_alpha_add_symbol_hook
 #define elf_backend_relocs_compatible \
   _bfd_elf_relocs_compatible
-#define elf_backend_sort_relocs_p \
-  elf64_alpha_sort_relocs_p
 #define elf_backend_check_relocs \
   elf64_alpha_check_relocs
 #define elf_backend_create_dynamic_sections \

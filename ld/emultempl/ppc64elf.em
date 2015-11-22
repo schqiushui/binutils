@@ -62,6 +62,9 @@ static int no_toc_opt = 0;
 /* Whether to sort input toc and got sections.  */
 static int no_toc_sort = 0;
 
+/* Set if individual PLT call stubs should be aligned.  */
+static int plt_stub_align = 0;
+
 static asection *toc_section = 0;
 
 /* This is called before the input files are opened.  We create a new
@@ -374,9 +377,7 @@ ppc_add_stub_section (const char *stub_sec_name, asection *input_section)
 						 stub_sec_name, flags);
   if (stub_sec == NULL
       || !bfd_set_section_alignment (stub_file->the_bfd, stub_sec,
-				     (params.plt_stub_align > 5
-				      ? params.plt_stub_align
-				      : 5)))
+				     plt_stub_align > 5 ? plt_stub_align : 5))
     goto err_ret;
 
   output_section = input_section->output_section;
@@ -509,16 +510,13 @@ gld${EMULATION_NAME}_after_allocation (void)
   else if (ret > 0)
     need_laying_out = 1;
 
-  /* Call map_segments regardless of the state of need_laying_out.
-     need_laying_out set to -1 means we have just laid everything out,
-     but ppc64_elf_size_stubs strips .branch_lt and .eh_frame if
-     unneeded, after ppc_layout_sections_again.  Another call removes
-     these sections from the segment map.  Their presence is
-     innocuous except for confusing ELF_SECTION_IN_SEGMENT.  */
-  gld${EMULATION_NAME}_map_segments (need_laying_out > 0);
+  if (need_laying_out != -1)
+    {
+      gld${EMULATION_NAME}_map_segments (need_laying_out);
 
-  if (need_laying_out != -1 && !link_info.relocatable)
-    ppc64_elf_set_toc (&link_info, link_info.output_bfd);
+      if (!link_info.relocatable)
+	ppc64_elf_set_toc (&link_info, link_info.output_bfd);
+    }
 }
 
 
@@ -802,14 +800,14 @@ PARSE_AND_LIST_ARGS_CASES=${PARSE_AND_LIST_ARGS_CASES}'
 	  unsigned long val = strtoul (optarg, &end, 0);
 	  if (*end || val > 8)
 	    einfo (_("%P%F: invalid --plt-align `%s'\''\n"), optarg);
-	  params.plt_stub_align = val;
+	  plt_stub_align = val;
 	}
       else
-	params.plt_stub_align = 5;
+	plt_stub_align = 5;
       break;
 
     case OPTION_NO_PLT_ALIGN:
-      params.plt_stub_align = 0;
+      plt_stub_align = 0;
       break;
 
     case OPTION_STUBSYMS:

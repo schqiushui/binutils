@@ -1481,14 +1481,7 @@ mapping_state (enum mstate state)
     /* The mapping symbol has already been emitted.
        There is nothing else to do.  */
     return;
-
-  if (state == MAP_INSN)
-    /* AArch64 instructions require 4-byte alignment.  When emitting
-       instructions into any section, record the appropriate section
-       alignment.  */
-    record_alignment (now_seg, 2);
-
-  if (TRANSITION (MAP_UNDEFINED, MAP_DATA))
+  else if (TRANSITION (MAP_UNDEFINED, MAP_DATA))
     /* This case will be evaluated later in the next else.  */
     return;
   else if (TRANSITION (MAP_UNDEFINED, MAP_INSN))
@@ -1870,14 +1863,8 @@ s_aarch64_inst (int ignored ATTRIBUTE_UNUSED)
       return;
     }
 
-  /* Sections are assumed to start aligned. In text section, there is no
-     MAP_DATA symbol pending. So we only align the address during
-     MAP_DATA --> MAP_INSN transition.
-     For other sections, this is not guaranteed.  */
-  enum mstate mapstate = seg_info (now_seg)->tc_segment_info_data.mapstate;
-  if (!need_pass_2 && (subseg_text_p (now_seg) && mapstate == MAP_DATA))
+  if (!need_pass_2)
     frag_align_code (2, 0);
-
 #ifdef OBJ_ELF
   mapping_state (MAP_INSN);
 #endif
@@ -3952,11 +3939,11 @@ output_info (const char *format, ...)
 static void
 output_operand_error_record (const operand_error_record *record, char *str)
 {
-  int idx = record->detail.index;
-  const aarch64_opcode *opcode = record->opcode;
-  enum aarch64_opnd opd_code = (idx != -1 ? opcode->operands[idx]
-				: AARCH64_OPND_NIL);
   const aarch64_operand_error *detail = &record->detail;
+  int idx = detail->index;
+  const aarch64_opcode *opcode = record->opcode;
+  enum aarch64_opnd opd_code = (idx >= 0 ? opcode->operands[idx]
+				: AARCH64_OPND_NIL);
 
   switch (detail->kind)
     {
@@ -3968,20 +3955,22 @@ output_operand_error_record (const operand_error_record *record, char *str)
     case AARCH64_OPDE_RECOVERABLE:
     case AARCH64_OPDE_FATAL_SYNTAX_ERROR:
     case AARCH64_OPDE_OTHER_ERROR:
-      gas_assert (idx >= 0);
       /* Use the prepared error message if there is, otherwise use the
 	 operand description string to describe the error.  */
       if (detail->error != NULL)
 	{
-	  if (detail->index == -1)
+	  if (idx < 0)
 	    as_bad (_("%s -- `%s'"), detail->error, str);
 	  else
 	    as_bad (_("%s at operand %d -- `%s'"),
-		    detail->error, detail->index + 1, str);
+		    detail->error, idx + 1, str);
 	}
       else
-	as_bad (_("operand %d should be %s -- `%s'"), idx + 1,
+	{
+	  gas_assert (idx >= 0);
+	  as_bad (_("operand %d should be %s -- `%s'"), idx + 1,
 		aarch64_get_operand_desc (opd_code), str);
+	}
       break;
 
     case AARCH64_OPDE_INVALID_VARIANT:
@@ -4086,28 +4075,28 @@ output_operand_error_record (const operand_error_record *record, char *str)
       if (detail->data[0] != detail->data[1])
 	as_bad (_("%s out of range %d to %d at operand %d -- `%s'"),
 		detail->error ? detail->error : _("immediate value"),
-		detail->data[0], detail->data[1], detail->index + 1, str);
+		detail->data[0], detail->data[1], idx + 1, str);
       else
 	as_bad (_("%s expected to be %d at operand %d -- `%s'"),
 		detail->error ? detail->error : _("immediate value"),
-		detail->data[0], detail->index + 1, str);
+		detail->data[0], idx + 1, str);
       break;
 
     case AARCH64_OPDE_REG_LIST:
       if (detail->data[0] == 1)
 	as_bad (_("invalid number of registers in the list; "
 		  "only 1 register is expected at operand %d -- `%s'"),
-		detail->index + 1, str);
+		idx + 1, str);
       else
 	as_bad (_("invalid number of registers in the list; "
 		  "%d registers are expected at operand %d -- `%s'"),
-	      detail->data[0], detail->index + 1, str);
+	      detail->data[0], idx + 1, str);
       break;
 
     case AARCH64_OPDE_UNALIGNED:
       as_bad (_("immediate value should be a multiple of "
 		"%d at operand %d -- `%s'"),
-	      detail->data[0], detail->index + 1, str);
+	      detail->data[0], idx + 1, str);
       break;
 
     default:
@@ -5584,14 +5573,6 @@ md_assemble (char *str)
 
   init_operand_error_report ();
 
-  /* Sections are assumed to start aligned. In text section, there is no
-     MAP_DATA symbol pending. So we only align the address during
-     MAP_DATA --> MAP_INSN transition.
-     For other sections, this is not guaranteed.  */
-  enum mstate mapstate = seg_info (now_seg)->tc_segment_info_data.mapstate;
-  if (!need_pass_2 && (subseg_text_p (now_seg) && mapstate == MAP_DATA))
-    frag_align_code (2, 0);
-
   saved_cond = inst.cond;
   reset_aarch64_instruction (&inst);
   inst.cond = saved_cond;
@@ -5921,20 +5902,21 @@ aarch64_init_frag (fragS * fragP, int max_chars)
   /* Record a mapping symbol for alignment frags.  We will delete this
      later if the alignment ends up empty.  */
   if (!fragP->tc_frag_data.recorded)
-    fragP->tc_frag_data.recorded = 1;
-
-  switch (fragP->fr_type)
     {
-    case rs_align:
-    case rs_align_test:
-    case rs_fill:
-      mapping_state_2 (MAP_DATA, max_chars);
-      break;
-    case rs_align_code:
-      mapping_state_2 (MAP_INSN, max_chars);
-      break;
-    default:
-      break;
+      fragP->tc_frag_data.recorded = 1;
+      switch (fragP->fr_type)
+	{
+	case rs_align:
+	case rs_align_test:
+	case rs_fill:
+	  mapping_state_2 (MAP_DATA, max_chars);
+	  break;
+	case rs_align_code:
+	  mapping_state_2 (MAP_INSN, max_chars);
+	  break;
+	default:
+	  break;
+	}
     }
 }
 
@@ -7204,24 +7186,9 @@ static const struct aarch64_cpu_option_table aarch64_cpus[] = {
 				 AARCH64_FEATURE_CRC), "Cortex-A53"},
   {"cortex-a57", AARCH64_FEATURE(AARCH64_ARCH_V8,
 				 AARCH64_FEATURE_CRC), "Cortex-A57"},
-  {"cortex-a72", AARCH64_FEATURE (AARCH64_ARCH_V8,
-				  AARCH64_FEATURE_CRC), "Cortex-A72"},
-  {"exynos-m1", AARCH64_FEATURE (AARCH64_ARCH_V8,
-				 AARCH64_FEATURE_CRC | AARCH64_FEATURE_CRYPTO),
-				 "Samsung Exynos M1"},
-  /* The 'xgene-1' name is an older name for 'xgene1', which was used
-     in earlier releases and is superseded by 'xgene1' in all
-     tools.  */
+  {"thunderx", AARCH64_ARCH_V8, "Cavium ThunderX"},
   {"xgene-1", AARCH64_ARCH_V8, "APM X-Gene 1"},
-  {"xgene1", AARCH64_ARCH_V8, "APM X-Gene 1"},
-  {"xgene2", AARCH64_FEATURE(AARCH64_ARCH_V8,
-			     AARCH64_FEATURE_CRC), "APM X-Gene 2"},
   {"generic", AARCH64_ARCH_V8, NULL},
-
-  /* These two are example CPUs supported in GCC, once we have real
-     CPUs they will be removed.  */
-  {"example-1",	AARCH64_ARCH_V8, NULL},
-  {"example-2",	AARCH64_ARCH_V8, NULL},
 
   {NULL, AARCH64_ARCH_NONE, NULL}
 };

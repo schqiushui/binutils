@@ -585,9 +585,8 @@ _bfd_do_ns32k_reloc_contents (reloc_howto_type *howto,
   switch (size)
     {
     default:
-      abort ();
     case 0:
-      return bfd_reloc_ok;
+      abort ();
     case 1:
     case 2:
     case 4:

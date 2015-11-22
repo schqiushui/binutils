@@ -28,7 +28,7 @@ MANCONF = -Dman
 TEXI2POD = perl $(BASEDIR)/etc/texi2pod.pl $(AM_MAKEINFOFLAGS)
 
 POD2MAN = pod2man --center="GNU Development Tools" \
-	--release="binutils-$(VERSION)" --section=1
+	--release="binutils-$(VERSION)" --section=1 --date=" "
 
 man_MANS = as.1
 

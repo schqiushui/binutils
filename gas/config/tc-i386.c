@@ -1129,9 +1129,85 @@ i386_align_code (fragS *fragP, int count)
   /* nopw %cs:0L(%[re]ax,%[re]ax,1) */
   static const char alt_10[] =
     {0x66,0x2e,0x0f,0x1f,0x84,0x00,0x00,0x00,0x00,0x00};
-  static const char *const alt_patt[] = {
+  /* data16
+     nopw %cs:0L(%[re]ax,%[re]ax,1) */
+  static const char alt_long_11[] =
+    {0x66,
+     0x66,0x2e,0x0f,0x1f,0x84,0x00,0x00,0x00,0x00,0x00};
+  /* data16
+     data16
+     nopw %cs:0L(%[re]ax,%[re]ax,1) */
+  static const char alt_long_12[] =
+    {0x66,
+     0x66,
+     0x66,0x2e,0x0f,0x1f,0x84,0x00,0x00,0x00,0x00,0x00};
+  /* data16
+     data16
+     data16
+     nopw %cs:0L(%[re]ax,%[re]ax,1) */
+  static const char alt_long_13[] =
+    {0x66,
+     0x66,
+     0x66,
+     0x66,0x2e,0x0f,0x1f,0x84,0x00,0x00,0x00,0x00,0x00};
+  /* data16
+     data16
+     data16
+     data16
+     nopw %cs:0L(%[re]ax,%[re]ax,1) */
+  static const char alt_long_14[] =
+    {0x66,
+     0x66,
+     0x66,
+     0x66,
+     0x66,0x2e,0x0f,0x1f,0x84,0x00,0x00,0x00,0x00,0x00};
+  /* data16
+     data16
+     data16
+     data16
+     data16
+     nopw %cs:0L(%[re]ax,%[re]ax,1) */
+  static const char alt_long_15[] =
+    {0x66,
+     0x66,
+     0x66,
+     0x66,
+     0x66,
+     0x66,0x2e,0x0f,0x1f,0x84,0x00,0x00,0x00,0x00,0x00};
+  /* nopl 0(%[re]ax,%[re]ax,1)
+     nopw 0(%[re]ax,%[re]ax,1) */
+  static const char alt_short_11[] =
+    {0x0f,0x1f,0x44,0x00,0x00,
+     0x66,0x0f,0x1f,0x44,0x00,0x00};
+  /* nopw 0(%[re]ax,%[re]ax,1)
+     nopw 0(%[re]ax,%[re]ax,1) */
+  static const char alt_short_12[] =
+    {0x66,0x0f,0x1f,0x44,0x00,0x00,
+     0x66,0x0f,0x1f,0x44,0x00,0x00};
+  /* nopw 0(%[re]ax,%[re]ax,1)
+     nopl 0L(%[re]ax) */
+  static const char alt_short_13[] =
+    {0x66,0x0f,0x1f,0x44,0x00,0x00,
+     0x0f,0x1f,0x80,0x00,0x00,0x00,0x00};
+  /* nopl 0L(%[re]ax)
+     nopl 0L(%[re]ax) */
+  static const char alt_short_14[] =
+    {0x0f,0x1f,0x80,0x00,0x00,0x00,0x00,
+     0x0f,0x1f,0x80,0x00,0x00,0x00,0x00};
+  /* nopl 0L(%[re]ax)
+     nopl 0L(%[re]ax,%[re]ax,1) */
+  static const char alt_short_15[] =
+    {0x0f,0x1f,0x80,0x00,0x00,0x00,0x00,
+     0x0f,0x1f,0x84,0x00,0x00,0x00,0x00,0x00};
+  static const char *const alt_short_patt[] = {
     f32_1, f32_2, alt_3, alt_4, alt_5, alt_6, alt_7, alt_8,
-    alt_9, alt_10
+    alt_9, alt_10, alt_short_11, alt_short_12, alt_short_13,
+    alt_short_14, alt_short_15
+  };
+  static const char *const alt_long_patt[] = {
+    f32_1, f32_2, alt_3, alt_4, alt_5, alt_6, alt_7, alt_8,
+    alt_9, alt_10, alt_long_11, alt_long_12, alt_long_13,
+    alt_long_14, alt_long_15
   };
 
   /* Only align for at least a positive non-zero boundary. */
@@ -1143,9 +1219,14 @@ i386_align_code (fragS *fragP, int count)
 
      1. For PROCESSOR_I386, PROCESSOR_I486, PROCESSOR_PENTIUM and
      PROCESSOR_GENERIC32, f32_patt will be used.
-     2. For the rest, alt_patt will be used.
+     2. For PROCESSOR_PENTIUMPRO, PROCESSOR_PENTIUM4, PROCESSOR_NOCONA,
+     PROCESSOR_CORE, PROCESSOR_CORE2, PROCESSOR_COREI7, and
+     PROCESSOR_GENERIC64, alt_long_patt will be used.
+     3. For PROCESSOR_ATHLON, PROCESSOR_K6, PROCESSOR_K8 and
+     PROCESSOR_AMDFAM10, PROCESSOR_BD and PROCESSOR_BT, alt_short_patt
+     will be used.
 
-     When -mtune= isn't used, alt_patt will be used if
+     When -mtune= isn't used, alt_long_patt will be used if
      cpu_arch_isa_flags has CpuNop.  Otherwise, f32_patt will
      be used.
 
@@ -1178,7 +1259,7 @@ i386_align_code (fragS *fragP, int count)
 	      /* We use cpu_arch_isa_flags to check if we SHOULD
 		 optimize with nops.  */
 	      if (fragP->tc_frag_data.isa_flags.bitfield.cpunop)
-		patt = alt_patt;
+		patt = alt_long_patt;
 	      else
 		patt = f32_patt;
 	      break;
@@ -1190,13 +1271,15 @@ i386_align_code (fragS *fragP, int count)
 	    case PROCESSOR_L1OM:
 	    case PROCESSOR_K1OM:
 	    case PROCESSOR_GENERIC64:
+	      patt = alt_long_patt;
+	      break;
 	    case PROCESSOR_K6:
 	    case PROCESSOR_ATHLON:
 	    case PROCESSOR_K8:
 	    case PROCESSOR_AMDFAM10:
 	    case PROCESSOR_BD:
 	    case PROCESSOR_BT:
-	      patt = alt_patt;
+	      patt = alt_short_patt;
 	      break;
 	    case PROCESSOR_I386:
 	    case PROCESSOR_I486:
@@ -1230,7 +1313,7 @@ i386_align_code (fragS *fragP, int count)
 	      /* We use cpu_arch_isa_flags to check if we CAN optimize
 		 with nops.  */
 	      if (fragP->tc_frag_data.isa_flags.bitfield.cpunop)
-		patt = alt_patt;
+		patt = alt_short_patt;
 	      else
 		patt = f32_patt;
 	      break;
@@ -1243,12 +1326,12 @@ i386_align_code (fragS *fragP, int count)
 	    case PROCESSOR_L1OM:
 	    case PROCESSOR_K1OM:
 	      if (fragP->tc_frag_data.isa_flags.bitfield.cpunop)
-		patt = alt_patt;
+		patt = alt_long_patt;
 	      else
 		patt = f32_patt;
 	      break;
 	    case PROCESSOR_GENERIC64:
-	      patt = alt_patt;
+	      patt = alt_long_patt;
 	      break;
 	    }
 	}
@@ -1279,15 +1362,15 @@ i386_align_code (fragS *fragP, int count)
 	}
       else
 	{
-	  /* Maximum length of an instruction is 10 byte.  If the
-	     padding is greater than 10 bytes and we don't use jump,
+	  /* Maximum length of an instruction is 15 byte.  If the
+	     padding is greater than 15 bytes and we don't use jump,
 	     we have to break it into smaller pieces.  */
 	  int padding = count;
-	  while (padding > 10)
+	  while (padding > 15)
 	    {
-	      padding -= 10;
+	      padding -= 15;
 	      memcpy (fragP->fr_literal + fragP->fr_fix + padding,
-		      patt [9], 10);
+		      patt [14], 15);
 	    }
 
 	  if (padding)
@@ -2747,6 +2830,7 @@ static bfd_reloc_code_real_type
 reloc (unsigned int size,
        int pcrel,
        int sign,
+       int bnd_prefix,
        bfd_reloc_code_real_type other)
 {
   if (other != NO_RELOC)
@@ -2758,6 +2842,9 @@ reloc (unsigned int size,
 	  {
 	  case BFD_RELOC_X86_64_GOT32:
 	    return BFD_RELOC_X86_64_GOT64;
+	    break;
+	  case BFD_RELOC_X86_64_GOTPLT64:
+	    return BFD_RELOC_X86_64_GOTPLT64;
 	    break;
 	  case BFD_RELOC_X86_64_PLTOFF64:
 	    return BFD_RELOC_X86_64_PLTOFF64;
@@ -2822,7 +2909,9 @@ reloc (unsigned int size,
 	{
 	case 1: return BFD_RELOC_8_PCREL;
 	case 2: return BFD_RELOC_16_PCREL;
-	case 4: return BFD_RELOC_32_PCREL;
+	case 4: return (bnd_prefix && object_64bit
+			? BFD_RELOC_X86_64_PC32_BND
+			: BFD_RELOC_32_PCREL);
 	case 8: return BFD_RELOC_64_PCREL;
 	}
       as_bad (_("cannot do %u byte pc-relative relocation"), size);
@@ -6687,7 +6776,13 @@ output_branch (void)
 
   /* 1 possible extra opcode + 4 byte displacement go in var part.
      Pass reloc in fr_var.  */
-  frag_var (rs_machine_dependent, 5, i.reloc[0], subtype, sym, off, p);
+  frag_var (rs_machine_dependent, 5,
+	    ((!object_64bit
+	      || i.reloc[0] != NO_RELOC 
+	      || (i.bnd_prefix == NULL && !add_bnd_prefix))
+	     ? i.reloc[0]
+	     : BFD_RELOC_X86_64_PC32_BND),
+	    subtype, sym, off, p);
 }
 
 static void
@@ -6763,7 +6858,10 @@ output_jump (void)
     }
 
   fixP = fix_new_exp (frag_now, p - frag_now->fr_literal, size,
-		      i.op[0].disps, 1, reloc (size, 1, 1, i.reloc[0]));
+		      i.op[0].disps, 1, reloc (size, 1, 1,
+					       (i.bnd_prefix != NULL
+						|| add_bnd_prefix),
+					       i.reloc[0]));
 
   /* All jumps handled here are signed, but don't use a signed limit
      check for 32 and 16 bit jumps as we want to allow wrap around at
@@ -6829,7 +6927,7 @@ output_interseg_jump (void)
     }
   else
     fix_new_exp (frag_now, p - frag_now->fr_literal, size,
-		 i.op[1].imms, 0, reloc (size, 0, 0, i.reloc[1]));
+		 i.op[1].imms, 0, reloc (size, 0, 0, 0, i.reloc[1]));
   if (i.op[0].imms->X_op != O_constant)
     as_bad (_("can't handle non absolute segment in `%s'"),
 	    i.tm.name);
@@ -7108,7 +7206,10 @@ output_disp (fragS *insn_start_frag, offsetT insn_start_off)
 		}
 
 	      p = frag_more (size);
-	      reloc_type = reloc (size, pcrel, sign, i.reloc[n]);
+	      reloc_type = reloc (size, pcrel, sign,
+				  (i.bnd_prefix != NULL
+				   || add_bnd_prefix),
+				  i.reloc[n]);
 	      if (GOT_symbol
 		  && GOT_symbol == i.op[n].disps->X_add_symbol
 		  && (((reloc_type == BFD_RELOC_32
@@ -7199,7 +7300,7 @@ output_imm (fragS *insn_start_frag, offsetT insn_start_off)
 		sign = 0;
 
 	      p = frag_more (size);
-	      reloc_type = reloc (size, 0, sign, i.reloc[n]);
+	      reloc_type = reloc (size, 0, sign, 0, i.reloc[n]);
 
 	      /*   This is tough to explain.  We end up with this one if we
 	       * have operands that look like
@@ -7292,7 +7393,7 @@ void
 x86_cons_fix_new (fragS *frag, unsigned int off, unsigned int len,
 		  expressionS *exp, bfd_reloc_code_real_type r)
 {
-  r = reloc (len, 0, cons_sign, r);
+  r = reloc (len, 0, cons_sign, 0, r);
 
 #ifdef TE_PE
   if (exp->X_op == O_secrel)
@@ -7318,7 +7419,7 @@ x86_address_bytes (void)
 
 #if !(defined (OBJ_ELF) || defined (OBJ_MAYBE_ELF) || defined (OBJ_MACH_O)) \
     || defined (LEX_AT)
-# define lex_got(reloc, adjust, types) NULL
+# define lex_got(reloc, adjust, types, bnd_prefix) NULL
 #else
 /* Parse operands of the form
    <symbol>@GOTOFF+<nnn>
@@ -7332,7 +7433,8 @@ x86_address_bytes (void)
 static char *
 lex_got (enum bfd_reloc_code_real *rel,
 	 int *adjust,
-	 i386_operand_type *types)
+	 i386_operand_type *types,
+	 int bnd_prefix)
 {
   /* Some of the relocations depend on the size of what field is to
      be relocated.  But in our callers i386_immediate and i386_displacement
@@ -7467,6 +7569,8 @@ lex_got (enum bfd_reloc_code_real *rel,
 		*adjust = len;
 	      memcpy (tmpbuf + first, past_reloc, second);
 	      tmpbuf[first + second] = '\0';
+	      if (bnd_prefix && *rel == BFD_RELOC_X86_64_PLT32)
+		*rel = BFD_RELOC_X86_64_PLT32_BND;
 	      return tmpbuf;
 	    }
 
@@ -7499,7 +7603,8 @@ lex_got (enum bfd_reloc_code_real *rel,
 static char *
 lex_got (enum bfd_reloc_code_real *rel ATTRIBUTE_UNUSED,
 	 int *adjust ATTRIBUTE_UNUSED,
-	 i386_operand_type *types)
+	 i386_operand_type *types,
+	 int bnd_prefix ATTRIBUTE_UNUSED)
 {
   static const struct
   {
@@ -7600,7 +7705,7 @@ x86_cons (expressionS *exp, int size)
       int adjust = 0;
 
       save = input_line_pointer;
-      gotfree_input_line = lex_got (&got_reloc, &adjust, NULL);
+      gotfree_input_line = lex_got (&got_reloc, &adjust, NULL, 0);
       if (gotfree_input_line)
 	input_line_pointer = gotfree_input_line;
 
@@ -7834,7 +7939,9 @@ i386_immediate (char *imm_start)
   save_input_line_pointer = input_line_pointer;
   input_line_pointer = imm_start;
 
-  gotfree_input_line = lex_got (&i.reloc[this_operand], NULL, &types);
+  gotfree_input_line = lex_got (&i.reloc[this_operand], NULL, &types,
+				(i.bnd_prefix != NULL
+				 || add_bnd_prefix));
   if (gotfree_input_line)
     input_line_pointer = gotfree_input_line;
 
@@ -8091,7 +8198,9 @@ i386_displacement (char *disp_start, char *disp_end)
       *displacement_string_end = '0';
     }
 #endif
-  gotfree_input_line = lex_got (&i.reloc[this_operand], NULL, &types);
+  gotfree_input_line = lex_got (&i.reloc[this_operand], NULL, &types,
+				(i.bnd_prefix != NULL
+				 || add_bnd_prefix));
   if (gotfree_input_line)
     input_line_pointer = gotfree_input_line;
 
@@ -9051,7 +9160,8 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
       && (fixP->fx_r_type == BFD_RELOC_32_PCREL
 	  || fixP->fx_r_type == BFD_RELOC_64_PCREL
 	  || fixP->fx_r_type == BFD_RELOC_16_PCREL
-	  || fixP->fx_r_type == BFD_RELOC_8_PCREL)
+	  || fixP->fx_r_type == BFD_RELOC_8_PCREL
+	  || fixP->fx_r_type == BFD_RELOC_X86_64_PC32_BND)
       && !use_rela_relocations)
     {
       /* This is a hack.  There should be a better way to handle this.
@@ -9120,6 +9230,7 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
       {
       case BFD_RELOC_386_PLT32:
       case BFD_RELOC_X86_64_PLT32:
+      case BFD_RELOC_X86_64_PLT32_BND:
 	/* Make the jump instruction point to the address of the operand.  At
 	   runtime we merely add the offset to the actual PLT entry.  */
 	value = -4;
@@ -10243,6 +10354,7 @@ tc_gen_reloc (asection *section ATTRIBUTE_UNUSED, fixS *fixp)
 #endif
 
     case BFD_RELOC_X86_64_PLT32:
+    case BFD_RELOC_X86_64_PLT32_BND:
     case BFD_RELOC_X86_64_GOT32:
     case BFD_RELOC_X86_64_GOTPCREL:
     case BFD_RELOC_386_PLT32:
@@ -10303,7 +10415,10 @@ tc_gen_reloc (asection *section ATTRIBUTE_UNUSED, fixS *fixp)
 	      break;
 	    case 1: code = BFD_RELOC_8_PCREL;  break;
 	    case 2: code = BFD_RELOC_16_PCREL; break;
-	    case 4: code = BFD_RELOC_32_PCREL; break;
+	    case 4:
+	      code = (fixp->fx_r_type == BFD_RELOC_X86_64_PC32_BND
+		      ? fixp-> fx_r_type : BFD_RELOC_32_PCREL);
+	      break;
 #ifdef BFD64
 	    case 8: code = BFD_RELOC_64_PCREL; break;
 #endif
@@ -10396,6 +10511,7 @@ tc_gen_reloc (asection *section ATTRIBUTE_UNUSED, fixS *fixp)
 	switch (code)
 	  {
 	  case BFD_RELOC_X86_64_PLT32:
+	  case BFD_RELOC_X86_64_PLT32_BND:
 	  case BFD_RELOC_X86_64_GOT32:
 	  case BFD_RELOC_X86_64_GOTPCREL:
 	  case BFD_RELOC_X86_64_TLSGD:

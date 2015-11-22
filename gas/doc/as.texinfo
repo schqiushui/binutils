@@ -5234,6 +5234,8 @@ following section of code if the two strings are not the same.
 
 @cindex @code{incbin} directive
 @cindex binary files, including
+The @code{incbin} directive can be used with @option{--allow-incbin}.
+
 The @code{incbin} directive includes @var{file} verbatim at the current
 location. You can control the search paths used with the @samp{-I} command-line
 option (@pxref{Invoking,,Command-Line Options}).  Quotation marks are required

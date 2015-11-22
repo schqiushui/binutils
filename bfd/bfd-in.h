@@ -292,13 +292,10 @@ typedef struct bfd_section *sec_ptr;
 
 #define bfd_is_com_section(ptr) (((ptr)->flags & SEC_IS_COMMON) != 0)
 
-#define bfd_get_section_limit_octets(bfd, sec)			\
-  ((bfd)->direction != write_direction && (sec)->rawsize != 0	\
-   ? (sec)->rawsize : (sec)->size)
-
 /* Find the address one past the end of SEC.  */
 #define bfd_get_section_limit(bfd, sec) \
-  (bfd_get_section_limit_octets(bfd, sec) / bfd_octets_per_byte (bfd))
+  (((bfd)->direction != write_direction && (sec)->rawsize != 0	\
+    ? (sec)->rawsize : (sec)->size) / bfd_octets_per_byte (bfd))
 
 /* Return TRUE if input section SEC has been discarded.  */
 #define discarded_section(sec)				\

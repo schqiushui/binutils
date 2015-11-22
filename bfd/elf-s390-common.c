@@ -242,15 +242,3 @@ elf_s390_add_symbol_hook (bfd *abfd,
 
   return TRUE;
 }
-
-/* Whether to sort relocs output by ld -r or ld --emit-relocs, by
-   r_offset.  Don't do so for code sections.  We want to keep ordering
-   of GDCALL / PLT32DBL for TLS optimizations as is.  On the other
-   hand, elf-eh-frame.c processing requires .eh_frame relocs to be
-   sorted.  */
-
-static bfd_boolean
-elf_s390_elf_sort_relocs_p (asection *sec)
-{
-  return (sec->flags & SEC_CODE) == 0;
-}

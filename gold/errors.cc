@@ -1,6 +1,6 @@
 // errors.cc -- handle errors for gold
 
-// Copyright (C) 2006-2015 Free Software Foundation, Inc.
+// Copyright (C) 2006-2014 Free Software Foundation, Inc.
 // Written by Ian Lance Taylor <iant@google.com>.
 
 // This file is part of gold.
@@ -196,7 +196,8 @@ Errors::undefined_symbol(const Symbol* sym, const std::string& location)
 
   if (sym->is_cxx_vtable())
     gold_info(_("%s: the vtable symbol may be undefined because "
-		"the class is missing its key function"),
+		"the class is missing its key function"
+                " (see go/missingkeymethod)"),
 	      program_name);
 }
 

@@ -266,6 +266,13 @@ main (int argc, char **argv)
   command_line.warn_mismatch = TRUE;
   command_line.warn_search_mismatch = TRUE;
   command_line.check_section_addresses = -1;
+  command_line.warn_poison_system_directories =
+#ifdef ENABLE_POISON_SYSTEM_DIRECTORIES
+    TRUE;
+#else
+    FALSE;
+#endif
+  command_line.error_poison_system_directories = FALSE;
 
   /* We initialize DEMANGLING based on the environment variable
      COLLECT_NO_DEMANGLE.  The gcc collect2 program will demangle the
@@ -297,7 +304,6 @@ main (int argc, char **argv)
   config.maxpagesize = bfd_emul_get_maxpagesize (default_target);
   config.commonpagesize = bfd_emul_get_commonpagesize (default_target);
   lang_init ();
-  ldexp_init ();
   ldemul_before_parse ();
   lang_has_input_file = FALSE;
   parse_args (argc, argv);
@@ -441,7 +447,6 @@ main (int argc, char **argv)
     fprintf (stderr, "lookup = %p val %lx\n", h, h ? h->u.def.value : 1);
   }
 #endif
-  ldexp_finish ();
   lang_finish ();
 
   /* Even if we're producing relocatable output, some non-fatal errors should

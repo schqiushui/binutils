@@ -1,73 +1,3 @@
-2015-07-10  Alan Modra  <amodra@gmail.com>
-
-	Apply from master
-	2015-07-03  Alan Modra  <amodra@gmail.com>
-	* gas/ppc/titan.d: Correct mfmcsrr0 disassembly.
-
-	2015-06-22  Peter Bergner  <bergner@vnet.ibm.com>
-	* gas/ppc/e6500.s <sync>: Fix invalid test.
-	* gas/ppc/e6500.d: Likewise.
-
-	2015-06-19  Peter Bergner  <bergner@vnet.ibm.com>
-	* gas/ppc/power8.d: Fixup rfebb test results.
-	* gas/ppc/a2.s: Fix invalid mfcr test.
-	* gas/ppc/a2.d: Likewise.
-
-	2015-06-04  Peter Bergner  <bergner@vnet.ibm.com>
-	* gas/ppc/a2.d: Fixup test case due to new extended mnemonic.
-	* gas/ppc/power4.s <hwsync, lwsync, ptesync, sync>: Add tests.
-	* gas/ppc/power4.d: Likewise.
-
-2015-06-19  Nick Clifton  <nickc@redhat.com>
-
-	PR gas/18481
-	* gas/arm/tls.s: Add tests of the tpoff pseudo with a local
-	symbol.
-	* gas/arm/tls.d: Update expected output.
-
-2015-06-17  Renlin Li  <renlin.li@arm.com>
-
-	Applied from master.
-	2015-04-28  Renlin Li  <renlin.li@arm.com>
-
-	* gas/arm/thumb2_vpool_be.d: Adjust the desired output.
-	* gas/arm/vldconst_be.d: Likewise.
-
-2015-06-17  Renlin Li  <renlin.li@arm.com>
-
-	Applied from master.
-	2015-05-05  Renlin Li  <renlin.li@arm.com>
-
-	* gas/aarch64/mapping_5.d: New.
-	* gas/aarch64/mapping_5.s: New.
-	* gas/aarch64/mapping_6.d: New.
-	* gas/aarch64/mapping_6.s: New.
-
-2015-06-16  Matthew Wahab  <matthew.wahab@arm.com>
-
-	Applied from master.
-	2015-06-16  Matthew Wahab  <matthew.wahab@arm.com>
-
-	* sysreg.d: Add id_mmfr4_el1, update expected output.
-	* sysreg.s: Add id_mmfr4_el1.
-
-2015-06-04  Matthew Wahab  <matthew.wahab@arm.com>
-
-	* gas/aarch64/codealign.d: Add test for code section alignment.
-	* gas/aarch64/codealign.s: New file.
-
-2015-05-14  Peter Bergner  <bergner@vnet.ibm.com>
-
-	Applied from master.
-	2015-05-14  Peter Bergner  <bergner@vnet.ibm.com>
-
-	* gas/ppc/power4.d: Add a slbia test.
-	* gas/ppc/power4.s: Likewise.
-	* gas/ppc/power6.d: Add slbia and tlbie tests.
-	* gas/ppc/power6.s: Likewise.
-	* gas/ppc/power7.d: Remove wait tests. Add a tlbie test.
-	* gas/ppc/power7.s: Likewise.
-
 2015-05-07  Renlin Li  <renlin.li@arm.com>
 
 	Applied from master.
@@ -76,107 +6,6 @@
 	* gas/aarch64/ldst-reg-uns-imm.d: Adjust expected output.
 	* gas/aarch64/ldst-reg-unscaled-imm.d: Likewise.
 	* gas/aarch64/reloc-insn.d: Likewise.
-
-2015-04-28  Peter Bergner  <bergner@vnet.ibm.com>
-
-	Applied from master.
-	2015-04-27  Peter Bergner  <bergner@vnet.ibm.com>
-
-	* gas/ppc/a2.s: Fixup test case due to dcbt/dcbtst embedded operand
-	ordering change.
-	* gas/ppc/a2.d: Likewise.
-	* gas/ppc/476.d: Likewise.
-	* gas/ppc/booke.s: Remove invalid 3 operand dcbt tests.
-	* gas/ppc/booke.d: Likewise.
-	* gas/ppc/power7.s: Remove lbarx, lharx, stbcx., sthcx., waitrsv
-	and waitimpl tests.
-	* gas/ppc/power7.d: Likewise.
-
-2015-03-20  H.J. Lu  <hongjiu.lu@intel.com>
-
-	Apply patch from master:
-	2015-03-20  H.J. Lu  <hongjiu.lu@intel.com>
-
-	* gas/i386/i386.exp: Don't run nops-1-bdver1, nops-1-bdver2,
-	nops-1-bdver3, nops-1-bdver4, nops-1-btver1 nops-1-btver2,
-	x86-64-nops-1-nocona, x86-64-nops-1-bdver1, x86-64-nops-1-bdver2,
-	x86-64-nops-1-bdver3, x86-64-nops-1-bdver4, x86-64-nops-1-btver1
-	nor x86-64-nops-1-btver2.
-	* gas/i386/nops-1-core2.d: Updated.
-	* gas/i386/nops-1-k8.d: Likewise.
-	* gas/i386/nops-4a-i686.d: Likewise.
-	* gas/i386/nops-5-i686.d: Likewise.
-	* gas/i386/nops-5.d: Likewise.
-	* gas/i386/nops-6.d: Likewise.
-	* gas/i386/x86-64-nops-1-core2.d: Likewise.
-	* gas/i386/x86-64-nops-1-g64.d: Likewise.
-	* gas/i386/x86-64-nops-1-k8.d: Likewise.
-	* gas/i386/x86-64-nops-1.d: Likewise.
-	* gas/i386/x86-64-nops-2.d: Likewise.
-	* gas/i386/x86-64-nops-3.d: Likewise.
-	* gas/i386/x86-64-nops-4-core2.d: Likewise.
-	* gas/i386/x86-64-nops-4-k8.d: Likewise.
-	* gas/i386/x86-64-nops-4.d: Likewise.
-	* gas/i386/x86-64-nops-5-k8.d: Likewise.
-	* gas/i386/x86-64-nops-5.d: Likewise.
-	* gas/i386/ilp32/x86-64-nops-1-core2.d: Likewise.
-	* gas/i386/ilp32/x86-64-nops-1-k8.d: Likewise.
-	* gas/i386/ilp32/x86-64-nops-1.d: Likewise.
-	* gas/i386/ilp32/x86-64-nops-2.d: Likewise.
-	* gas/i386/ilp32/x86-64-nops-3.d: Likewise.
-	* gas/i386/ilp32/x86-64-nops-4-core2.d: Likewise.
-	* gas/i386/ilp32/x86-64-nops-4-k8.d: Likewise.
-	* gas/i386/ilp32/x86-64-nops-4.d: Likewise.
-	* gas/i386/ilp32/x86-64-nops-5-k8.d: Likewise.
-	* gas/i386/ilp32/x86-64-nops-5.d: Likewise.
-	* gas/i386/nops-1-bdver1.d: Removed.
-	* gas/i386/nops-1-bdver2.d: Likewise.
-	* gas/i386/nops-1-bdver3.d: Likewise.
-	* gas/i386/nops-1-bdver4.d: Likewise.
-	* gas/i386/nops-1-btver1.d: Likewise.
-	* gas/i386/nops-1-btver2.d: Likewise.
-	* gas/i386/x86-64-nops-1-bdver1.d: Likewise.
-	* gas/i386/x86-64-nops-1-bdver2.d: Likewise.
-	* gas/i386/x86-64-nops-1-bdver3.d: Likewise.
-	* gas/i386/x86-64-nops-1-bdver4.d: Likewise.
-	* gas/i386/x86-64-nops-1-btver1.d: Likewise.
-	* gas/i386/x86-64-nops-1-btver2.d: Likewise.
-	* gas/i386/x86-64-nops-1-nocona.d: Likewise.
-	* gas/i386/ilp32/x86-64-nops-1-nocona.d: Likewise.
-
-2015-01-28  Matthew Fortune  <matthew.fortune@imgtec.com>
-
-	* gas/arm/ual-vcmp.s: Add vcmp, vcmpe with #0x0 operand.
-	* gas/ual/vcmp.d: Update expected output.
-	* gas/ual/vcmp-zero-bad.l: Likewise
-
-2014-12-19  Matthew Fortune  <matthew.fortune@imgtec.com>
-
-	* gas/mips/r6-64.s: Remove .align directives from LDPC
-	instructions and add further tests for LDPC.
-	* gas/mips/r6-64-n32.d: remove the NOPs from LDPC expected
-	output and update for new tests.
-	* gas/mips/r6-64-n64.d: Likewise.
-	* gas/mips/ldpc-unalign.l: New file.
-	* gas/mips/ldpc-unalign.s: Likewise.
-	* gas/mips/mips.exp: Run ldpc-unalign test.
-
-2014-12-19  Matthew Fortune  <matthew.fortune@imgtec.com>
-
-	* gas/mips/r6.s: Test JALRC and NAL
-	* gas/mips/r6-n32.d: Add expected output for JALRC and NAL.
-	* gas/mips/r6-n64.d: Likewise.
-	* gas/mips/r6.d: Likewise.
-
-2014-11-30  Alan Modra  <amodra@gmail.com>
-
-	* gas/ppc/a2.d: Update for mftb change.
-	* gas/ppc/476.d: Likewise.
-
-2014-11-18  Igor Zamyatin  <igor.zamyatin@intel.com>
-
-	* gas/i386/x86-64-mpx-branch-1.d: Don't use *_BND relocations.
-	* gas/i386/x86-64-mpx-branch-2.d: Likewise.
 
 2014-11-17  Ilya Tocar  <ilya.tocar@intel.com>
 
@@ -230,38 +59,52 @@
 	* gas/i386/x86-64-clwb.d: Likewise.
 	* gas/i386/x86-64-clwb.s: Likewise.
 
-2014-11-10  Matthew Fortune  <matthew.fortune@imgtec.com>
+2014-11-13  H.J. Lu  <hongjiu.lu@intel.com>
 
-	Apply trunk patch:
-	* gas/mips/elf_arch_mips32r6.d: New file.
-	* gas/mips/elf_arch_mips64r6.d: New file.
-	* gas/mips/mips.exp: Run the new tests.
+	PR gas/17598
+	* gas/i386/reloc64.s: Add @gotplt check.
+	* gas/i386/reloc64.d: Updated.
+	* gas/i386/reloc64.l: Likewise.
 
 2014-11-07  H.J. Lu  <hongjiu.lu@intel.com>
-
-	Apply trunk patch:
-	2014-11-07  H.J. Lu  <hongjiu.lu@intel.com>
 
 	PR ld/17482
 	* gas/i386/ilp32/x32-tls.d: New file.
 	* gas/i386/ilp32/x32-tls.s: Likewise.
 
-2014-10-28  Matthew Fortune  <matthew.fortune@imgtec.com>
+2014-05-11  Matthew Fortune  <matthew.fortune@imgtec.com>
 
-	Apply trunk patches
-	2014-10-21  Maciej W. Rozycki  <macro@codesourcery.com>
+	* gas/mips/elf_arch_mips32r6.d: New file.
+	* gas/mips/elf_arch_mips64r6.d: New file.
+	* gas/mips/mips.exp: Run the new tests.
+
+2014-10-31  Andrew Pinski  <apinski@cavium.com>
+            Naveen H.S  <Naveen.Hurugalawadi@caviumnetworks.com>
+
+	* gas/mips/mips.exp: Add support for Octeon3 architecture.
+	Also add in support for running Octeon3 tests.
+	* gas/mips/octeon3.d: New test.
+	* gas/mips/octeon3.s: New test source.
+
+2014-10-21  Maciej W. Rozycki  <macro@codesourcery.com>
+
 	* gas/mips/insn-opts.d: New test.
 	* gas/mips/insn-opts.s: New test source.
 	* gas/mips/mips.exp: Run the new test.
 
-2014-10-28  Alan Modra  <amodra@gmail.com>
+2014-10-21  Jan Beulich  <jbeulich@suse.com>
 
-	Apply truck patches
-	2014-10-21  Jan Beulich  <jbeulich@suse.com>
+	* gas/gas/all/cond.s: Also test processing of leading double
+	quote and trailing backslash in false branch of conditional.
+	* gas/gas/all/cond.l: Adjust accordingly.
+
+2014-10-21  Jan Beulich  <jbeulich@suse.com>
+
 	* gas/ppc/power8.s: Test msgclr and msgsnd.
 	* gas/ppc/power8.d: Adjust accordingly.
 
-	2014-10-18  Alan Modra  <amodra@gmail.com>
+2014-10-18  Alan Modra  <amodra@gmail.com>
+
 	* gas/i386/inval-equ-2.l: Adjust.
 
 2014-10-09  Jose E. Marchesi  <jose.marchesi@oracle.com>

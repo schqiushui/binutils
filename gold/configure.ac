@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
-dnl   Copyright (C) 2006-2015 Free Software Foundation, Inc.
+dnl   Copyright (C) 2006-2014 Free Software Foundation, Inc.
 dnl
 dnl This file is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
@@ -143,6 +143,23 @@ if test -n "$enable_targets"; then
     fi
   done
 fi
+
+AC_ARG_ENABLE([test-as-native],
+[  --enable-test-as-native  test as though linker is native],
+[case "${enableval}" in
+  no)
+    test_as_native=no
+    ;;
+  *)
+    test_as_native=yes
+    ;;
+esac],
+[if test "x$target_alias" = "x" -o "x$host_alias" = "x$target_alias"; then
+  test_as_native=yes
+else
+  test_as_native=no
+fi])
+
 
 # See which specific instantiations we need.
 targetobjs=
@@ -303,8 +320,8 @@ AC_C_BIGENDIAN
 
 AC_EXEEXT
 
-AM_CONDITIONAL(NATIVE_LINKER,
-  test "x$target_alias" = "x" -o "x$host_alias" = "x$target_alias")
+AM_CONDITIONAL(TEST_AS_NATIVE_LINKER,
+  test "x$test_as_native" = "xyes")
 AM_CONDITIONAL(GCC, test "$GCC" = yes)
 
 AM_CONDITIONAL(NATIVE_OR_CROSS_LINKER,

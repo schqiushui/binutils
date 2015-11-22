@@ -121,11 +121,11 @@ static reloc_howto_type elf_avr_howto_table[] =
 {
   HOWTO (R_AVR_NONE,		/* type */
 	 0,			/* rightshift */
-	 3,			/* size (0 = byte, 1 = short, 2 = long) */
-	 0,			/* bitsize */
+	 2,			/* size (0 = byte, 1 = short, 2 = long) */
+	 32,			/* bitsize */
 	 FALSE,			/* pc_relative */
 	 0,			/* bitpos */
-	 complain_overflow_dont,/* complain_on_overflow */
+	 complain_overflow_bitfield, /* complain_on_overflow */
 	 bfd_elf_generic_reloc,	/* special_function */
 	 "R_AVR_NONE",		/* name */
 	 FALSE,			/* partial_inplace */
@@ -859,11 +859,7 @@ avr_info_to_howto_rela (bfd *abfd ATTRIBUTE_UNUSED,
   unsigned int r_type;
 
   r_type = ELF32_R_TYPE (dst->r_info);
-  if (r_type >= (unsigned int) R_AVR_max)
-    {
-      _bfd_error_handler (_("%B: invalid AVR reloc number: %d"), abfd, r_type);
-      r_type = 0;
-    }
+  BFD_ASSERT (r_type < (unsigned int) R_AVR_max);
   cache_ptr->howto = &elf_avr_howto_table[r_type];
 }
 
@@ -1885,10 +1881,22 @@ elf32_avr_relax_delete_bytes (bfd *abfd,
       isymend = isym + symtab_hdr->sh_info;
       for (; isym < isymend; isym++)
 	{
-	  if (isym->st_shndx == sec_shndx
-	      && isym->st_value > addr
-	      && isym->st_value < toaddr)
-	    isym->st_value -= count;
+	  if (isym->st_shndx == sec_shndx)
+            {
+	      if (isym->st_value > addr
+                  && isym->st_value <= toaddr)
+                isym->st_value -= count;
+
+              if (isym->st_value <= addr
+                  && isym->st_value + isym->st_size > addr)
+                {
+                  /* If this assert fires then we have a symbol that ends
+                     part way through an instruction.  Does that make
+                     sense?  */
+                  BFD_ASSERT (isym->st_value + isym->st_size >= addr + count);
+                  isym->st_size -= count;
+                }
+            }
 	}
     }
 
@@ -1902,11 +1910,22 @@ elf32_avr_relax_delete_bytes (bfd *abfd,
       struct elf_link_hash_entry *sym_hash = *sym_hashes;
       if ((sym_hash->root.type == bfd_link_hash_defined
            || sym_hash->root.type == bfd_link_hash_defweak)
-          && sym_hash->root.u.def.section == sec
-          && sym_hash->root.u.def.value > addr
-          && sym_hash->root.u.def.value < toaddr)
+          && sym_hash->root.u.def.section == sec)
         {
-          sym_hash->root.u.def.value -= count;
+          if (sym_hash->root.u.def.value > addr
+              && sym_hash->root.u.def.value <= toaddr)
+            sym_hash->root.u.def.value -= count;
+
+          if (sym_hash->root.u.def.value <= addr
+              && (sym_hash->root.u.def.value + sym_hash->size > addr))
+            {
+              /* If this assert fires then we have a symbol that ends
+                 part way through an instruction.  Does that make
+                 sense?  */
+              BFD_ASSERT (sym_hash->root.u.def.value + sym_hash->size
+                          >= addr + count);
+              sym_hash->size -= count;
+            }
         }
     }
 

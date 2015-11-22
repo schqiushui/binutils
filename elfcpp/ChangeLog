@@ -1,3 +1,7 @@
+2015-04-07  HC Yen <hc.yen@mediatek.com>
+
+	* arm.h: Add TAG_CPU_ARCH_V8 in Tag_CPU_arch EABI attribute.
+
 2014-09-17  Han Shen  <shenhan@google.com>
 
 	* aarch64.h (R_AARCH64_TLS_DTPREL64): Switch enum value with ...

@@ -1,6 +1,6 @@
 // reloc.cc -- relocate input files for gold.
 
-// Copyright (C) 2006-2015 Free Software Foundation, Inc.
+// Copyright (C) 2006-2014 Free Software Foundation, Inc.
 // Written by Ian Lance Taylor <iant@google.com>.
 
 // This file is part of gold.
@@ -1415,21 +1415,13 @@ Sized_relobj_file<size, big_endian>::find_functions(
 	continue;
 
       bool is_ordinary;
-      Symbol_location loc;
-      loc.shndx = this->adjust_sym_shndx(i, isym.get_st_shndx(),
-					 &is_ordinary);
-      if (!is_ordinary)
-	continue;
-
-      loc.object = this;
-      loc.offset = isym.get_st_value();
-      parameters->target().function_location(&loc);
-
-      if (loc.shndx != shndx)
+      unsigned int sym_shndx = this->adjust_sym_shndx(i, isym.get_st_shndx(),
+						      &is_ordinary);
+      if (!is_ordinary || sym_shndx != shndx)
 	continue;
 
       section_offset_type value =
-	convert_to_section_size_type(loc.offset);
+	convert_to_section_size_type(isym.get_st_value());
       section_size_type fnsize =
 	convert_to_section_size_type(isym.get_st_size());
 

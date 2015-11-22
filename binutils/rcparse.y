@@ -1887,12 +1887,12 @@ sizednumexpr:
 	  }
 	| sizednumexpr '/' sizednumexpr
 	  {
-	    $$.val = $1.val / ($3.val ? $3.val : 1);
+	    $$.val = $1.val / $3.val;
 	    $$.dword = $1.dword || $3.dword;
 	  }
 	| sizednumexpr '%' sizednumexpr
 	  {
-	    $$.val = $1.val % ($3.val ? $3.val : 1);
+	    $$.val = $1.val % $3.val;
 	    $$.dword = $1.dword || $3.dword;
 	  }
 	| sizednumexpr '+' sizednumexpr
@@ -1966,13 +1966,12 @@ sizedposnumexpr:
 	  }
 	| sizedposnumexpr '/' sizednumexpr
 	  {
-	    $$.val = $1.val / ($3.val ? $3.val : 1);
+	    $$.val = $1.val / $3.val;
 	    $$.dword = $1.dword || $3.dword;
 	  }
 	| sizedposnumexpr '%' sizednumexpr
 	  {
-	    /* PR 17512: file: 89105a25.  */
-	    $$.val = $1.val % ($3.val ? $3.val : 1);
+	    $$.val = $1.val % $3.val;
 	    $$.dword = $1.dword || $3.dword;
 	  }
 	| sizedposnumexpr '+' sizednumexpr

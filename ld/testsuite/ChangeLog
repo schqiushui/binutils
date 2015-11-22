@@ -1,338 +1,65 @@
-2015-07-10  Alan Modra  <amodra@gmail.com>
+2014-12-25  Thomas Preud'homme  <thomas.preudhomme@arm.com>
 
-	Apply from master
-	2015-07-05  Richard Sandiford  <richard.sandiford@arm.com>
-	* ld-powerpc/tocopt6-inc.s, ld-powerpc/tocopt6a.s,
-	ld-powerpc/tocopt6b.s, ld-powerpc/tocopt6c.s,
-	ld-powerpc/tocopt6.d: New test.
-	* ld-powerpc/powerpc.exp (ppc64elftests): Add it.
+	* ld-arm/attr-merge-2a.s: Add Tag_ABI_VFP_args.
+	* ld-arm/attr-merge-2b.s: Likewise.
+	* ld-arm/attr-merge-2.attr: Likewise.
+	* ld-arm/attr-merge-4a.s: Add Tag_ABI_FP_number_model and
+	Tag_ABI_VFP_args.
+	* ld-arm/attr-merge-4b.s: Likewise.
+	* ld-arm/attr-merge-4.attr: Likewise.
+	* ld-arm/attr-merge-6a.s: Likewise.
+	* ld-arm/attr-merge-6b.s: Likewise.
+	* ld-arm/attr-merge-6.attr: Add Tag_ABI_FP_number_model.
 
-	2015-06-16  Alan Modra  <amodra@gmail.com>
-	* ld-powerpc/ppc476-shared.s: Repeat dynamic reloc generating insns.
-	* ld-powerpc/ppc476-shared.d: Update.
-	* ld-powerpc/ppc476-shared2.d: Update.
+2015-04-01  Tejas Belagod  <tejas.belagod@arm.com>
 
-	2015-06-05  Alan Modra  <amodra@gmail.com>
-	* ld-powerpc/ppc476-shared.s,
-	* ld-powerpc/ppc476-shared.lnk,
-	* ld-powerpc/ppc476-shared.d,
-	* ld-powerpc/ppc476-shared2.d: New tests.
-	* ld-powerpc/powerpc.exp: Run them.
+	* ld-aarch64/aarch64-elf.exp: Add erratum843419 test.
+	* ld-aarch64/erratum843419.d: New.
+	* ld-aarch64/erratum843419.s: New.
 
-	2015-04-23  Alan Modra  <amodra@gmail.com>
-	* ld-powerpc/ambiguousv1.d: Update for aligned .got.
-	* ld-powerpc/ambiguousv1b.d: Likewise.
-	* ld-powerpc/ambiguousv2.d: Likewise.
-	* ld-powerpc/defsym.d: Likewise.
-	* ld-powerpc/elfv2-2exe.d: Likewise.
-	* ld-powerpc/elfv2exe.d: Likewise.
-	* ld-powerpc/elfv2so.d: Likewise.
-	* ld-powerpc/relbrlt.d: Likewise.
-	* ld-powerpc/tls.g: Likewise.
-	* ld-powerpc/tlsexe.d: Likewise.
-	* ld-powerpc/tlsexe.g: Likewise.
-	* ld-powerpc/tlsexe.r: Likewise.
-	* ld-powerpc/tlsexetoc.d: Likewise.
-	* ld-powerpc/tlsexetoc.g: Likewise.
-	* ld-powerpc/tlsexetoc.r: Likewise.
-	* ld-powerpc/tlsso.d: Likewise.
-	* ld-powerpc/tlsso.g: Likewise.
-	* ld-powerpc/tlsso.r: Likewise.
-	* ld-powerpc/tlstoc.g: Likewise.
-	* ld-powerpc/tlstocso.d: Likewise.
-	* ld-powerpc/tlstocso.g: Likewise.
-	* ld-powerpc/tlstocso.r: Likewise.
-	* ld-powerpc/tocopt.d: Likewise.
-	* ld-powerpc/tocopt2.d: Likewise.
-	* ld-powerpc/tocopt3.d: Likewise.
-	* ld-powerpc/tocopt4.d: Likewise.
-	* ld-powerpc/tocopt5.d: Likewise.
+2015-03-25  Marcus Shawcroft  <marcus.shawcroft@arm.com>
 
-2015-06-23  Jiong Wang  <jiong.wang@arm.com>
+	* ld-aarch64/erratum835769.d: Adjust for initial branch over stub
+	section.
+	* ld-aarch64/farcall-b.d: Likewise.
+	* ld-aarch64/farcall-bl.d: Likewise.
+	* ld-aarch64/farcall-back.d: Likewise.
 
-	Apply from master:
-	2015-06-23  Jiong. Wang  <jiong.wang@arm.com>
+2015-03-25  Marcus Shawcroft  <marcus.shawcroft@arm.com>
 
-	* ld-aarch64/dt_textrel.s: New testcase.
-	* ld-aarch64/dt_textrel.d: New expectation file.
-	* ld-aarch64/aarch64-elf.exp: Run new testcase.
+	* ld-aarch64/erratum835769.d: Adjust for removal of padding before
+	835769 workaround stubs.
 
-2015-06-17  Renlin Li  <renlin.li@arm.com>
+2014-11-13  H.J. Lu  <hongjiu.lu@intel.com>
 
-	Applied from master.
-	2015-04-29  Renlin Li  <renlin.li@arm.com>
+	PR gas/17598
+	* ld-x86-64/x86-64.exp: Run gotplt1.
 
-	* ld-arm/ifunc-10.dd: Adjust the desired output.
-	* ld-arm/ifunc-2.dd: Likewise.
+	* ld-x86-64/gotplt1.d: New file.
+	* ld-x86-64/gotplt1.s: Likewise.
 
-2015-05-05  Jiong Wang  <jiong.wang@arm.com>
+2014-11-11  Jiong Wang <jiong.wang@arm.com>
 
-	Apply from master:
-
-	2015-04-24  Jiong. Wang  <jiong.wang@arm.com>
-
-	* ld-aarch64/pcrel.s: New testcase.
-	* ld-aarch64/pcrel_pic_defiend_local.d: New expect file.
-	* ld-aarch64/pcrel_pic_undefined.d: Ditto.
-	* ld-aarch64/aarch64-elf.exp: Run them.
-
-2015-04-10  Alan Modra  <amodra@gmail.com>
-
-	Revert 2015-03-06  H.J. Lu  <hongjiu.lu@intel.com>
-	PR ld/pr15228
-	PR ld/pr17709
-	* ld-i386/i386.exp (i386tests): Remove test for PR ld/17709.
-	* ld-i386/pr17709-nacl.rd: Delete.
-	* ld-i386/pr17709.rd: Likewise.
-	* ld-i386/pr17709a.s: Likewise.
-	* ld-i386/pr17709b.s: Likewise.
-	* ld-i386/protected3.d: Updated.
-	* ld-i386/protected3.s: Likewise.
-	* ld-x86-64/pr17709-nacl.rd: Delete.
-	* ld-x86-64/pr17709.rd: Likewise.
-	* ld-x86-64/pr17709a.s: Likewise.
-	* ld-x86-64/pr17709b.s: Likewise.
-	* ld-x86-64/protected3.d: Updated.
-	* ld-x86-64/protected3.s: Likewise.
-	* ld-x86-64/x86-64.exp (x86_64tests): Remove test for PR ld/17709.
-
-2015-03-26  Tejas Belagod  <tejas.belagod@arm.com>
-
-	* ld-aarch64/farcall-back-be.d: New.
-
-2015-03-18  Alan Modra  <amodra@gmail.com>
-
-	Apply from master
-	2015-03-11  Alan Modra  <amodra@gmail.com>
-	* ld-powerpc/tls32.s: Add GOT pointer setup.
-	* ld-powerpc/tls32.d: Update.
-	* ld-powerpc/tls32.g: Update.
-	* ld-powerpc/tls32.t: Update.
-	* ld-powerpc/tlsexe.d: Update.
-	* ld-powerpc/tlsexe32.d: Update.
-	* ld-powerpc/tlsexe32.g: Update.
-	* ld-powerpc/tlsexe32.r: Update.
-	* ld-powerpc/tlsexetoc.d: Update.
-	* ld-powerpc/tlsso32.d: Update.
-	* ld-powerpc/tlsso32.g: Update.
-	* ld-powerpc/tlsso32.r: Update.
-
-2015-03-06  H.J. Lu  <hongjiu.lu@intel.com>
-
-	Backport from master
-	2015-03-05  H.J. Lu  <hongjiu.lu@intel.com>
-
-	PR ld/pr15228
-	PR ld/pr17709
-	* ld-i386/i386.exp (i386tests): Add a test for PR ld/17709.
-	* ld-i386/pr17709-nacl.rd: New file.
-	* ld-i386/pr17709.rd: Likewise.
-	* ld-i386/pr17709a.s: Likewise.
-	* ld-i386/pr17709b.s: Likewise.
-	* ld-i386/protected3.d: Updated.
-	* ld-i386/protected3.s: Likewise.
-	* ld-x86-64/pr17709-nacl.rd: New file.
-	* ld-x86-64/pr17709.rd: Likewise.
-	* ld-x86-64/pr17709a.s: Likewise.
-	* ld-x86-64/pr17709b.s: Likewise.
-	* ld-x86-64/protected3.d: Updated.
-	* ld-x86-64/protected3.s: Likewise.
-	* ld-x86-64/x86-64.exp (x86_64tests): Add a test for PR ld/17709.
-
-2015-02-11  Alan Modra  <amodra@gmail.com>
-
-	Apply from master.
-	2015-01-29  Alan Modra  <amodra@gmail.com>
-	* ld-powerpc/tlsld.d, * ld-powerpc/tlsld.s: New test.
-	* ld-powerpc/tlsld32.d, * ld-powerpc/tlsld32.s: New test.
-	* ld-powerpc/powerpc.exp: Run them.
-
-	2015-01-20  Andrew Burgess  <andrew.burgess@embecosm.com>
-	* ld-scripts/provide-4-map.d: Update expected output.
-	* ld-scripts/provide-5-map.d: Likewise.
-
-	2015-01-20  Andrew Burgess  <andrew.burgess@embecosm.com>
-	* ld-scripts/provide-4.d: New file.
-	* ld-scripts/provide-4-map.d: New file.
-	* ld-scripts/provide-4.t: New file.
-	* ld-scripts/provide-5.d: New file.
-	* ld-scripts/provide-5.s: New file.
-	* ld-scripts/provide-5-map.d: New file.
-	* ld-scripts/provide-5.t: New file.
-	* ld-scripts/provide.exp: Run the provide-4.d and provide-5.d
-	tests.
-
-	2015-01-20  Andrew Burgess  <andrew.burgess@embecosm.com>
-	* ld-scripts/overlay-size.d: Add 'map' option.
-	* ld-scripts/overlay-size.exp: Remove manual check of mapfile.
-	* lib/ld-lib.exp (run_dump_test): Add support for new 'map'
-	option, checking linker mapfile output.
-
-	2015-01-19  Alan Modra  <amodra@gmail.com>
-	* ld-gc/pr14265.d,
-	* ld-cris/tls-gc-68.d,
-	* ld-cris/tls-gc-69.d,
-	* ld-cris/tls-gc-70.d,
-	* ld-cris/tls-gc-71.d,
-	* ld-cris/tls-gc-75.d,
-	* ld-cris/tls-gc-76.d,
-	* ld-cris/tls-gc-79.d,
-	* ld-mmix/bpo-10.d,
-	* ld-mmix/bpo-11.d: Update.
-
-	2014-12-23  Alan Modra  <amodra@gmail.com>
-	* ld-powerpc/sdabase.s,
-	* ld-powerpc/sdabase.t,
-	* ld-powerpc/sdabase.d: New test.
-	* ld-powerpc/sdabase2.t,
-	* ld-powerpc/sdabase2.d: New test.
-	* ld-powerpc/powerpc.exp: Run them.
-
-	2014-12-23  Alan Modra  <amodra@gmail.com>
-	* ld-elf/endsym.s, *ld-elf/endsym.d: New test.
-
-	2014-12-04  Alan Modra  <amodra@gmail.com>
-	* ld-powerpc/vxworks-relax.rd: Update for reloc sorting.
-	* ld-powerpc/vxworks-relax-2.rd: Likewise.
-	* ld-sh/sh64/reldl32.rd: Likewise.
-	* ld-sh/sh64/reldl64.rd: Likewise.
-
-2015-01-22  Thomas Preud'homme  <thomas.preudhomme@arm.com>
-
-	Backport from mainline
-	2015-01-13  Thomas Preud'homme <thomas.preudhomme@arm.com>
-
-	* elfnn-aarch64.c (elfNN_aarch64_final_link_relocate): Use SYMBOLIC_BIND
-	to check if a symbol should be bound symbolically.
-
-2015-01-11  H.J. Lu  <hongjiu.lu@intel.com>
-
-	PR ld/17827
-	* ld-x86-64/pr17689.out: Updated.
-	* ld-x86-64/pr17689b.S: Likewise.
-
-	* ld-x86-64/pr17827.rd: New file.
-
-	* ld-x86-64/x86-64.exp: Run PR ld/17827 test.
-
-2015-01-05  H.J. Lu  <hongjiu.lu@intel.com>
-
-	PR ld/17773
-	* ld-elf/binutils.exp (binutils_test): Add an optional
-	readelf_options.  Replace -l with $readelf_options.  Add a
-	gap test.
-	* ld/testsuite/ld-elf/gap.s: New file.
-
-2014-12-19  Matthew Fortune  <matthew.fortune@imgtec.com>
-
-	* ld-mips-elf/attr-gnu-4-00.d: Relax check for ISA extension.
-	* ld-mips-elf/attr-gnu-4-01.d: Likewise.
-	* ld-mips-elf/attr-gnu-4-02.d: Likewise.
-	* ld-mips-elf/attr-gnu-4-03.d: Likewise.
-	* ld-mips-elf/attr-gnu-4-08.d: Likewise.
-	* ld-mips-elf/attr-gnu-4-10.d: Likewise.
-	* ld-mips-elf/attr-gnu-4-11.d: Likewise.
-	* ld-mips-elf/attr-gnu-4-18.d: Likewise.
-	* ld-mips-elf/attr-gnu-4-20.d: Likewise.
-	* ld-mips-elf/attr-gnu-4-22.d: Likewise.
-	* ld-mips-elf/attr-gnu-4-28.d: Likewise.
-	* ld-mips-elf/attr-gnu-4-30.d: Likewise.
-	* ld-mips-elf/attr-gnu-4-33.d: Likewise.
-	* ld-mips-elf/attr-gnu-4-38.d: Likewise.
-	* ld-mips-elf/attr-gnu-4-44.d: Likewise.
-
-2014-12-19  Matthew Fortune  <matthew.fortune@imgtec.com>
-
-	* ld-mips-elf/mips-elf.exp: Update undefweak-overflow tests.
-	* ld-mips-elf/undefweak-overflow-n32.d: Remove.
-	* ld-mips-elf/undefweak-overflow-n64.d: Likewise.
-	* ld-mips-elf/undefweak-overflow.s: Set mips64r6, noreorder and
-	add a label to mark the micromips region.
-	* ld-mips-elf/undefweak-overflow.d: Update expected output.
-
-2014-12-19  Andrew Bennett  <andrew.bennett@imgtec.com>
-
-	* ld-mips-elf/mips-elf.exp: Add undefined weak overflow
-	tests for o32, n32 and n64.
-	* ld-mips-elf/undefweak-overflow.s: New test.
-	* ld-mips-elf/undefweak-overflow.d: New test.
-	* ld-mips-elf/undefweak-overflow-n32.d: New test.
-	* ld-mips-elf/undefweak-overflow-n64.d: New test.
-
-2014-12-13  H.J. Lu  <hongjiu.lu@intel.com>
-
-	PR ld/17689
-	* ld-x86-64/pr17689.out: New file.
-	* ld-x86-64/pr17689.rd: Likewise.
-	* ld-x86-64/pr17689a.c: Likewise.
-	* ld-x86-64/pr17689b.S: Likewise.
-
-	* ld-x86-64/x86-64.exp: Run PR ld/17689 tests.
-
-2014-12-03  H.J. Lu  <hongjiu.lu@intel.com>
-
-	* ld-x86-64/copyreloc-main.c: Removed.
-	* ld-x86-64/copyreloc-main.S: New.
-	* ld-x86-64/x86-64.exp: Replace copyreloc-main.c with
-	copyreloc-main.S.
-
-2014-12-02  H.J. Lu  <hongjiu.lu@intel.com>
-
-	* ld-x86-64/copyreloc-lib.c: New file.
-	* ld-x86-64/copyreloc-main.c: Likewise.
-	* ld-x86-64/copyreloc-main.out: Likewise.
-	* ld-x86-64/copyreloc-main1.rd: Likewise.
-	* ld-x86-64/copyreloc-main2.rd: Likewise.
-
-	* ld-x86-64/x86-64.exp: Run copyreloc tests.
-
-2014-12-01  H.J. Lu  <hongjiu.lu@intel.com>
-
-	PR ld/16452
-	PR ld/16457
-	* ld-elf/pr16452.map: New file.
-	* ld-elf/pr16452.od: Likewise.
-	* ld-elf/pr16452a.c: Likewise.
-	* ld-elf/pr16452b.c: Likewise.
-	* ld-elf/pr16457.od: Likewise.
-
-	* ld-elf/shared.exp (build_tests): Add tests for PR ld/16452 and
-	PR ld/16457.
-
-2014-11-18  H.J. Lu  <hongjiu.lu@intel.com>
-
-	* ld-x86-64/mpx.exp: Always run mpx3 and mpx4 tests in 64-bit.
-
-2014-11-18  Igor Zamyatin  <igor.zamyatin@intel.com>
-
-	* ld-x86-64/bnd-ifunc-1.d: Add bndplt option.
-	* ld-x86-64/bnd-ifunc-2.d: Likewise.
-	* ld-x86-64/bnd-plt-1.d: Likewise.  Update dissassembly sections.
-	* ld-x86-64/mpx.exp: Handle mpx3 and mpx4 tests.
-	* ld-x86-64/mpx1a.rd: Remove _BND from relocation name.
-	* ld-x86-64/mpx1c.rd: Likewise.
-	* ld-x86-64/mpx2a.rd: Likewise.
-	* ld-x86-64/mpx2c.rd: Likewise.
-	* ld-x86-64/mpx3.dd: New file.
-	* ld-x86-64/mpx3a.s: Likewise.
-	* ld-x86-64/mpx3b.s: Likewise.
-	* ld-x86-64/mpx4.dd: Likewise.
-	* ld-x86-64/mpx4a.s: Likewise.
-	* ld-x86-64/mpx4b.s: Likewise.
-
-2014-11-10  Matthew Fortune  <matthew.fortune@imgtec.com>
-
-	Apply trunk patch:
-	* ld-mips-elf/abiflags-strip10-ph.d: New file.
-	* ld-mips-elf/mips-eld.exp: Run the new test.
+	* lib/ld-lib.exp (run_ld_link_exec_tests): Append board_cflags if gcc
+	driver used as link tool.
+	(run_cc_link_exec_tests): Likewise.
 
 2014-11-07  H.J. Lu  <hongjiu.lu@intel.com>
 
-	Apply trunk patch:
-	2014-11-07  H.J. Lu  <hongjiu.lu@intel.com>
-
 	PR ld/17482
 	* ld-x86-64/tlsie4.dd: Updated.
+
+2014-11-05  Matthew Fortune  <matthew.fortune@imgtec.com>
+
+	* ld-mips-elf/abiflags-strip10-ph.d: New file.
+	* ld-mips-elf/mips-eld.exp: Run the new test.
+
+2014-10-30  Will Newton  <will.newton@linaro.org>
+
+	* ld-unique/unique.exp: Use a wider glob for matching ARM
+	targets.
+	* ld-unique/unique.s: Use % instead of @ in .type directive.
+	* ld-unique/unique_shared.s: Likewise.
 
 2014-10-24  Tejas Belagod  <tejas.belagod@arm.com>
 
@@ -343,7 +70,6 @@
 
 2014-10-17  Hans-Peter Nilsson  <hp@axis.com>
 
-	Backport from master
 	* ld-scripts/sysroot-prefix.exp: Log $ld_sysroot.  Handle sysroot
 	== "/" as a separate sysroot-configuration with separable
 	test-types.
@@ -356,7 +82,6 @@
 
 2014-10-15  Hans-Peter Nilsson  <hp@axis.com>
 
-	Backport "="-ldscript-path-prefix changes from master.
 	* ld-scripts/sysroot-prefix.exp, ld-scripts/sysroot-prefix-x.s,
 	ld-scripts/sysroot-prefix-y.s: New files.
 	* lib/ld-lib.exp (check_sysroot_available): New proc.

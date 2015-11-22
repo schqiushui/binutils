@@ -1,6 +1,6 @@
 // ehframe.h -- handle exception frame sections for gold  -*- C++ -*-
 
-// Copyright (C) 2006-2015 Free Software Foundation, Inc.
+// Copyright (C) 2006-2014 Free Software Foundation, Inc.
 // Written by Ian Lance Taylor <iant@google.com>.
 
 // This file is part of gold.
@@ -358,6 +358,14 @@ extern bool operator==(const Cie&, const Cie&);
 class Eh_frame : public Output_section_data
 {
  public:
+  enum Eh_frame_section_disposition
+  {
+    EH_EMPTY_SECTION,
+    EH_UNRECOGNIZED_SECTION,
+    EH_OPTIMIZABLE_SECTION,
+    EH_END_MARKER_SECTION
+  };
+
   Eh_frame();
 
   // Record the associated Eh_frame_hdr, if any.
@@ -373,7 +381,7 @@ class Eh_frame : public Output_section_data
   // returns whether the section was incorporated into the .eh_frame
   // data.
   template<int size, bool big_endian>
-  bool
+  Eh_frame_section_disposition
   add_ehframe_input_section(Sized_relobj_file<size, big_endian>* object,
 			    const unsigned char* symbols,
 			    section_size_type symbols_size,

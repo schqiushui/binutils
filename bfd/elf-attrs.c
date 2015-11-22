@@ -430,13 +430,9 @@ _bfd_elf_parse_attributes (bfd *abfd, Elf_Internal_Shdr * hdr)
 {
   bfd_byte *contents;
   bfd_byte *p;
-  bfd_byte *p_end;
   bfd_vma len;
   const char *std_sec;
 
-  /* PR 17512: file: 2844a11d.  */
-  if (hdr->sh_size == 0)
-    return;
   contents = (bfd_byte *) bfd_malloc (hdr->sh_size);
   if (!contents)
     return;
@@ -447,12 +443,11 @@ _bfd_elf_parse_attributes (bfd *abfd, Elf_Internal_Shdr * hdr)
       return;
     }
   p = contents;
-  p_end = p + hdr->sh_size;
   std_sec = get_elf_backend_data (abfd)->obj_attrs_vendor;
   if (*(p++) == 'A')
     {
       len = hdr->sh_size - 1;
-      while (len > 0 && p < p_end - 4)
+      while (len > 0)
 	{
 	  unsigned namelen;
 	  bfd_vma section_len;
@@ -482,7 +477,7 @@ _bfd_elf_parse_attributes (bfd *abfd, Elf_Internal_Shdr * hdr)
 	    }
 
 	  p += namelen;
-	  while (section_len > 0 && p < p_end)
+	  while (section_len > 0)
 	    {
 	      int tag;
 	      unsigned int n;
@@ -490,12 +485,9 @@ _bfd_elf_parse_attributes (bfd *abfd, Elf_Internal_Shdr * hdr)
 	      bfd_vma subsection_len;
 	      bfd_byte *end;
 
-	      tag = safe_read_leb128 (abfd, p, &n, FALSE, p_end);
+	      tag = read_unsigned_leb128 (abfd, p, &n);
 	      p += n;
-	      if (p < p_end - 4)
-		subsection_len = bfd_get_32 (abfd, p);
-	      else
-		subsection_len = 0;
+	      subsection_len = bfd_get_32 (abfd, p);
 	      p += 4;
 	      if (subsection_len == 0)
 		break;
@@ -504,9 +496,6 @@ _bfd_elf_parse_attributes (bfd *abfd, Elf_Internal_Shdr * hdr)
 	      section_len -= subsection_len;
 	      subsection_len -= n + 4;
 	      end = p + subsection_len;
-	      /* PR 17512: file: 0e8c0c90.  */
-	      if (end > p_end)
-		end = p_end;
 	      switch (tag)
 		{
 		case Tag_File:
@@ -514,25 +503,25 @@ _bfd_elf_parse_attributes (bfd *abfd, Elf_Internal_Shdr * hdr)
 		    {
 		      int type;
 
-		      tag = safe_read_leb128 (abfd, p, &n, FALSE, end);
+		      tag = read_unsigned_leb128 (abfd, p, &n);
 		      p += n;
 		      type = _bfd_elf_obj_attrs_arg_type (abfd, vendor, tag);
 		      switch (type & (ATTR_TYPE_FLAG_INT_VAL | ATTR_TYPE_FLAG_STR_VAL))
 			{
 			case ATTR_TYPE_FLAG_INT_VAL | ATTR_TYPE_FLAG_STR_VAL:
-			  val = safe_read_leb128 (abfd, p, &n, FALSE, end);
+			  val = read_unsigned_leb128 (abfd, p, &n);
 			  p += n;
 			  bfd_elf_add_obj_attr_int_string (abfd, vendor, tag,
-							   val, (char *) p);
+							   val, (char *)p);
 			  p += strlen ((char *)p) + 1;
 			  break;
 			case ATTR_TYPE_FLAG_STR_VAL:
 			  bfd_elf_add_obj_attr_string (abfd, vendor, tag,
-						       (char *) p);
+						       (char *)p);
 			  p += strlen ((char *)p) + 1;
 			  break;
 			case ATTR_TYPE_FLAG_INT_VAL:
-			  val = safe_read_leb128 (abfd, p, &n, FALSE, end);
+			  val = read_unsigned_leb128 (abfd, p, &n);
 			  p += n;
 			  bfd_elf_add_obj_attr_int (abfd, vendor, tag, val);
 			  break;

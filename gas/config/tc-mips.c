@@ -510,7 +510,8 @@ static int mips_32bitmode = 0;
 #define CPU_HAS_ROR(CPU)	CPU_HAS_DROR (CPU)
 
 /* True if CPU is in the Octeon family */
-#define CPU_IS_OCTEON(CPU) ((CPU) == CPU_OCTEON || (CPU) == CPU_OCTEONP || (CPU) == CPU_OCTEON2)
+#define CPU_IS_OCTEON(CPU) ((CPU) == CPU_OCTEON || (CPU) == CPU_OCTEONP \
+			    || (CPU) == CPU_OCTEON2 || (CPU) == CPU_OCTEON3)
 
 /* True if CPU has seq/sne and seqi/snei instructions.  */
 #define CPU_HAS_SEQ(CPU)	(CPU_IS_OCTEON (CPU))
@@ -1878,7 +1879,7 @@ static void mips_compressed_mark_labels (void);
 static inline void
 mips_clear_insn_labels (void)
 {
-  register struct insn_label_list **pl;
+  struct insn_label_list **pl;
   segment_info_type *si;
 
   if (now_seg)
@@ -15160,14 +15161,10 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
       break;
 
     case BFD_RELOC_MIPS_18_PCREL_S3:
-      if ((S_GET_VALUE (fixP->fx_addsy) & 0x7) != 0)
+      if ((*valP & 0x7) != 0)
 	as_bad_where (fixP->fx_file, fixP->fx_line,
-		      _("PC-relative access using misaligned symbol (%lx)"),
-		      (long) S_GET_VALUE (fixP->fx_addsy));
-      if ((fixP->fx_offset & 0x7) != 0)
-	as_bad_where (fixP->fx_file, fixP->fx_line,
-		      _("PC-relative access using misaligned offset (%lx)"),
-		      (long) fixP->fx_offset);
+		      _("PC-relative access to misaligned address (%lx)"),
+		      (long) *valP);
 
       gas_assert (!fixP->fx_done);
       break;
@@ -15176,7 +15173,7 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
       if ((*valP & 0x3) != 0)
 	as_bad_where (fixP->fx_file, fixP->fx_line,
 		      _("PC-relative access to misaligned address (%lx)"),
-		      (long) (S_GET_VALUE (fixP->fx_addsy) + fixP->fx_offset));
+		      (long) *valP);
 
       gas_assert (!fixP->fx_done);
       break;
@@ -18829,6 +18826,7 @@ static const struct mips_cpu_info mips_cpu_info_table[] =
   { "octeon",	      0, 0,			ISA_MIPS64R2, CPU_OCTEON },
   { "octeon+",	      0, 0,			ISA_MIPS64R2, CPU_OCTEONP },
   { "octeon2",	      0, 0,			ISA_MIPS64R2, CPU_OCTEON2 },
+  { "octeon3",	      0, ASE_VIRT | ASE_VIRT64,	ISA_MIPS64R5, CPU_OCTEON3 },
 
   /* RMI Xlr */
   { "xlr",	      0, 0,			ISA_MIPS64,   CPU_XLR },

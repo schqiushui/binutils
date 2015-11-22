@@ -254,11 +254,11 @@ static reloc_howto_type elf_d30v_howto_table[] =
   /* This reloc does nothing.  */
   HOWTO (R_D30V_NONE,		/* Type.  */
 	 0,			/* Rightshift.  */
-	 3,			/* Size (0 = byte, 1 = short, 2 = long).  */
-	 0,			/* Bitsize.  */
+	 2,			/* Size (0 = byte, 1 = short, 2 = long).  */
+	 32,			/* Bitsize.  */
 	 FALSE,			/* PC_relative.  */
 	 0,			/* Bitpos.  */
-	 complain_overflow_dont,/* Complain_on_overflow.  */
+	 complain_overflow_bitfield, /* Complain_on_overflow.  */
 	 bfd_elf_generic_reloc,	/* Special_function.  */
 	 "R_D30V_NONE",		/* Name.  */
 	 FALSE,			/* Partial_inplace.  */
@@ -516,11 +516,7 @@ d30v_info_to_howto_rel (bfd *abfd ATTRIBUTE_UNUSED,
   unsigned int r_type;
 
   r_type = ELF32_R_TYPE (dst->r_info);
-  if (r_type >= (unsigned int) R_D30V_max)
-    {
-      _bfd_error_handler (_("%B: invalid D30V reloc number: %d"), abfd, r_type);
-      r_type = 0;
-    }
+  BFD_ASSERT (r_type < (unsigned int) R_D30V_max);
   cache_ptr->howto = &elf_d30v_howto_table[r_type];
 }
 
@@ -534,11 +530,7 @@ d30v_info_to_howto_rela (bfd *abfd ATTRIBUTE_UNUSED,
   unsigned int r_type;
 
   r_type = ELF32_R_TYPE (dst->r_info);
-  if (r_type >= (unsigned int) R_D30V_max)
-    {
-      _bfd_error_handler (_("%B: invalid D30V reloc number: %d"), abfd, r_type);
-      r_type = 0;
-    }
+  BFD_ASSERT (r_type < (unsigned int) R_D30V_max);
   cache_ptr->howto = &elf_d30v_howto_table[r_type];
 }
 

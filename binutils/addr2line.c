@@ -140,14 +140,6 @@ slurp_symtab (bfd *abfd)
       syms = xmalloc (storage);
       symcount = bfd_canonicalize_dynamic_symtab (abfd, syms);
     }
-
-  /* PR 17512: file: 2a1d3b5b.
-     Do not pretend that we have some symbols when we don't.  */
-  if (symcount <= 0)
-    {
-      free (syms);
-      syms = NULL;
-    }
 }
 
 /* These global variables are used to pass information between
@@ -431,7 +423,6 @@ main (int argc, char **argv)
 
   program_name = *argv;
   xmalloc_set_program_name (program_name);
-  bfd_set_error_program_name (program_name);
 
   expandargv (&argc, &argv);
 

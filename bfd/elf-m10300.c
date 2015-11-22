@@ -142,11 +142,11 @@ static reloc_howto_type elf_mn10300_howto_table[] =
   /* Dummy relocation.  Does nothing.  */
   HOWTO (R_MN10300_NONE,
 	 0,
-	 3,
-	 0,
+	 2,
+	 16,
 	 FALSE,
 	 0,
-	 complain_overflow_dont,
+	 complain_overflow_bitfield,
 	 bfd_elf_generic_reloc,
 	 "R_MN10300_NONE",
 	 FALSE,
@@ -806,13 +806,7 @@ mn10300_info_to_howto (bfd *abfd ATTRIBUTE_UNUSED,
   unsigned int r_type;
 
   r_type = ELF32_R_TYPE (dst->r_info);
-  if (r_type >= R_MN10300_MAX)
-    {
-      (*_bfd_error_handler) (_("%B: unrecognised MN10300 reloc number: %d"),
-			     abfd, r_type);
-      bfd_set_error (bfd_error_bad_value);
-      r_type = R_MN10300_NONE;
-    }
+  BFD_ASSERT (r_type < (unsigned int) R_MN10300_MAX);
   cache_ptr->howto = elf_mn10300_howto_table + r_type;
 }
 
@@ -5030,7 +5024,7 @@ _bfd_mn10300_elf_adjust_dynamic_symbol (struct bfd_link_info * info,
       h->needs_copy = 1;
     }
 
-  return _bfd_elf_adjust_dynamic_copy (info, h, s);
+  return _bfd_elf_adjust_dynamic_copy (h, s);
 }
 
 /* Set the sizes of the dynamic sections.  */

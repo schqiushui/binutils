@@ -66,9 +66,6 @@ getCHARS (unsigned char *ptr, int *idx, int size, int max)
 
   if (b == 0)
     {
-      /* PR 17512: file: 13caced2.  */
-      if (oc >= max)
-	return _("*corrupt*");
       /* Got to work out the length of the string from self.  */
       b = ptr[oc++];
       (*idx) += 8;
@@ -169,12 +166,7 @@ getINT (unsigned char *ptr, int *idx, int size, int max)
   int byte = *idx / 8;
 
   if (byte >= max)
-    {
-      /* PR 17512: file: id:000001,src:000002,op:flip1,pos:45.  */
-      /* Prevent infinite loops re-reading beyond the end of the buffer.  */
-      fatal (_("ICE: getINT: Out of buffer space"));
-      return 0;
-    }
+    return 0;
 
   if (size == -2)
     size = addrsize;
@@ -196,7 +188,7 @@ getINT (unsigned char *ptr, int *idx, int size, int max)
       n = (ptr[byte + 0] << 24) + (ptr[byte + 1] << 16) + (ptr[byte + 2] << 8) + (ptr[byte + 3]);
       break;
     default:
-      fatal (_("Unsupported read size: %d"), size);
+      abort ();
     }
 
   *idx += size * 8;
@@ -623,8 +615,6 @@ module (void)
   do
     {
       c = getc (file);
-      if (c == EOF)
-	break;
       ungetc (c, file);
 
       c &= 0x7f;
@@ -686,7 +676,6 @@ main (int ac, char **av)
 
   program_name = av[0];
   xmalloc_set_program_name (program_name);
-  bfd_set_error_program_name (program_name);
 
   expandargv (&ac, &av);
 

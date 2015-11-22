@@ -180,11 +180,7 @@ elf_cr16c_info_to_howto_rel (bfd *abfd ATTRIBUTE_UNUSED,
 {
   unsigned int r_type = ELF32_R_TYPE (dst->r_info);
 
-  if (r_type >= RINDEX_16C_MAX)
-    {
-      _bfd_error_handler (_("%B: invalid CR16C reloc number: %d"), abfd, r_type);
-      r_type = 0;
-    }
+  BFD_ASSERT (r_type < (unsigned int) RINDEX_16C_MAX);
   cache_ptr->howto = &elf_howto_table[r_type];
 }
 

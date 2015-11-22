@@ -1,6 +1,6 @@
 // layout.cc -- lay out output file sections for gold
 
-// Copyright (C) 2006-2015 Free Software Foundation, Inc.
+// Copyright (C) 2006-2014 Free Software Foundation, Inc.
 // Written by Ian Lance Taylor <iant@google.com>.
 
 // This file is part of gold.
@@ -25,6 +25,9 @@
 #include <cerrno>
 #include <cstring>
 #include <algorithm>
+// __STDC_FORMAT_MACROS is needed to turn on macros in inttypes.h.
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
 #include <iostream>
 #include <fstream>
 #include <utility>
@@ -1420,15 +1423,21 @@ Layout::layout_eh_frame(Sized_relobj_file<size, big_endian>* object,
 
   elfcpp::Elf_Xword orig_flags = os->flags();
 
-  if (!parameters->incremental()
-      && this->eh_frame_data_->add_ehframe_input_section(object,
-							 symbols,
-							 symbols_size,
-							 symbol_names,
-							 symbol_names_size,
-							 shndx,
-							 reloc_shndx,
-							 reloc_type))
+  Eh_frame::Eh_frame_section_disposition disp =
+      Eh_frame::EH_UNRECOGNIZED_SECTION;
+  if (!parameters->incremental())
+    {
+      disp = this->eh_frame_data_->add_ehframe_input_section(object,
+							     symbols,
+							     symbols_size,
+							     symbol_names,
+							     symbol_names_size,
+							     shndx,
+							     reloc_shndx,
+							     reloc_type);
+    }
+
+  if (disp == Eh_frame::EH_OPTIMIZABLE_SECTION)
     {
       os->update_flags_for_input_section(shdr.get_sh_flags());
 
@@ -1440,33 +1449,47 @@ Layout::layout_eh_frame(Sized_relobj_file<size, big_endian>* object,
 	  os->set_order(ORDER_RELRO);
 	}
 
-      // We found a .eh_frame section we are going to optimize, so now
-      // we can add the set of optimized sections to the output
-      // section.  We need to postpone adding this until we've found a
-      // section we can optimize so that the .eh_frame section in
-      // crtbegin.o winds up at the start of the output section.
-      if (!this->added_eh_frame_data_)
-	{
-	  os->add_output_section_data(this->eh_frame_data_);
-	  this->added_eh_frame_data_ = true;
-	}
       *off = -1;
+      return os;
     }
-  else
-    {
-      // We couldn't handle this .eh_frame section for some reason.
-      // Add it as a normal section.
-      bool saw_sections_clause = this->script_options_->saw_sections_clause();
-      *off = os->add_input_section(this, object, shndx, ".eh_frame", shdr,
-				   reloc_shndx, saw_sections_clause);
-      this->have_added_input_section_ = true;
 
-      if ((orig_flags & (elfcpp::SHF_WRITE | elfcpp::SHF_EXECINSTR))
-	  != (os->flags() & (elfcpp::SHF_WRITE | elfcpp::SHF_EXECINSTR)))
-	os->set_order(this->default_section_order(os, false));
-    }
+  if (disp == Eh_frame::EH_END_MARKER_SECTION && !this->added_eh_frame_data_)
+    {
+      // We found the end marker section, so now we can add the set of
+      // optimized sections to the output section.  We need to postpone
+      // adding this until we've found a section we can optimize so that
+      // the .eh_frame section in crtbeginT.o winds up at the start of
+      // the output section.
+      os->add_output_section_data(this->eh_frame_data_);
+      this->added_eh_frame_data_ = true;
+     }
+
+  // We couldn't handle this .eh_frame section for some reason.
+  // Add it as a normal section.
+  bool saw_sections_clause = this->script_options_->saw_sections_clause();
+  *off = os->add_input_section(this, object, shndx, ".eh_frame", shdr,
+			       reloc_shndx, saw_sections_clause);
+  this->have_added_input_section_ = true;
+
+  if ((orig_flags & (elfcpp::SHF_WRITE | elfcpp::SHF_EXECINSTR))
+      != (os->flags() & (elfcpp::SHF_WRITE | elfcpp::SHF_EXECINSTR)))
+    os->set_order(this->default_section_order(os, false));
 
   return os;
+}
+
+void
+Layout::finalize_eh_frame_section()
+{
+  // If we never found an end marker section, we need to add the
+  // optimized eh sections to the output section now.
+  if (!parameters->incremental()
+      && this->eh_frame_section_ != NULL
+      && !this->added_eh_frame_data_)
+    {
+      this->eh_frame_section_->add_output_section_data(this->eh_frame_data_);
+      this->added_eh_frame_data_ = true;
+    }
 }
 
 // Create and return the magic .eh_frame section.  Create
@@ -2754,6 +2777,53 @@ Layout::finalize(const Input_objects* input_objects, Symbol_table* symtab,
     }
   while (target->may_relax()
 	 && target->relax(pass, input_objects, symtab, this, task));
+
+  // Check if data segment size is less than the safe value with PIE links.
+  // Warn about bug http://b/20165734 for unsafe sizes.
+  if (parameters->options().pie() && target->max_pie_data_segment_size())
+    {
+      Segment_list::const_iterator p;
+      uint64_t re_vaddr = 0, re_memsz = 0, rw_vaddr = 0, rw_memsz = 0;
+      uint64_t data_seg_size = 0;
+      for (p = this->segment_list_.begin();
+	   p != this->segment_list_.end();
+	   ++p)
+	{
+	  // With -Wl,--rosegment, note the end addr of "R E" segment.
+	  if (parameters->options().rosegment()
+	      && (*p)->type() == elfcpp::PT_LOAD
+	      && ((*p)->flags() & elfcpp::PF_X) != 0
+	      && ((*p)->flags() & elfcpp::PF_R) != 0)
+	    {
+	      re_vaddr = (*p)->vaddr();
+	      re_memsz = (*p)->memsz();
+	      continue;
+	    }
+	  if ((*p)->type() == elfcpp::PT_LOAD
+	      && ((*p)->flags() & elfcpp::PF_W) != 0
+	      && ((*p)->flags() & elfcpp::PF_R) != 0)
+	    {
+	      rw_vaddr = (*p)->vaddr();
+	      rw_memsz = (*p)->memsz();
+	      break;
+	    }
+	}
+
+      // With -Wl,--rosegment, report data segment size as delta of end of
+      // "RW" segment and end of "R E" segment.  Otherwise, data segment
+      // size is just the memsz of "RW" segment.
+      if (parameters->options().rosegment())
+        data_seg_size = (rw_vaddr + rw_memsz) - (re_vaddr + re_memsz);
+      else
+        data_seg_size = rw_memsz;
+
+      if (data_seg_size >= target->max_pie_data_segment_size())
+	gold_warning(
+	  _("Unsafe PIE data segment size (%" PRIu64 " > %" PRIu64 "). See "
+	    "go/unsafe-pie."),
+	  data_seg_size,
+	  target->max_pie_data_segment_size());
+    }
 
   // If there is a load segment that contains the file and program headers,
   // provide a symbol __ehdr_start pointing there.
@@ -4989,6 +5059,8 @@ const Layout::Section_name_mapping Layout::section_name_mapping[] =
   MAPPING_INIT(".gnu.linkonce.armextab.", ".ARM.extab"),
   MAPPING_INIT(".ARM.exidx", ".ARM.exidx"),
   MAPPING_INIT(".gnu.linkonce.armexidx.", ".ARM.exidx"),
+  MAPPING_INIT("_function_patch_prologue.", "_function_patch_prologue"),
+  MAPPING_INIT("_function_patch_epilogue.", "_function_patch_epilogue"),
 };
 #undef MAPPING_INIT
 #undef MAPPING_INIT_EXACT

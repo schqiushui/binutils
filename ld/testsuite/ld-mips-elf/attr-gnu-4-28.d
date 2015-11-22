@@ -15,7 +15,7 @@ GPR size: .*
 CPR1 size: .*
 CPR2 size: 0
 FP ABI: Hard float \(single precision\)
-ISA Extension: .*
+ISA Extension: None
 ASEs:
 	None
 FLAGS 1: 0000000.
