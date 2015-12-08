@@ -321,6 +321,10 @@ run_dump_test "mov1a"
 run_dump_test "mov1b"
 run_dump_test "mov1c"
 run_dump_test "mov1d"
+run_dump_test "mov2a"
+run_dump_test "mov2b"
+run_dump_test "mov2c"
+run_dump_test "mov2d"
 run_dump_test "load1a"
 run_dump_test "load1b"
 run_dump_test "load1c"
@@ -545,6 +549,22 @@ if { [isnative] && [which $CC] != 0 } {
 	    { gotpcrel1a.S gotpcrel1b.c gotpcrel1c.c } \
 	    {{objdump {-dw} gotpcrel1.dd}} \
 	    "gotpcrel1" \
+	] \
+	[list \
+	    "Build pr19319.so" \
+	    "-shared" \
+	    "" \
+	    { pr19319a.S } \
+	    "" \
+	    "pr19319.so" \
+	] \
+	[list \
+	    "Build pr19319" \
+	    "-pie -nostdlib -nostartfiles tmpdir/pr19319.so" \
+	    "" \
+	    { pr19319b.S } \
+	    {{objdump {-dw} pr19319.dd}} \
+	    "pr19319" \
 	] \
     ]
 
