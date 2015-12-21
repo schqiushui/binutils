@@ -128,7 +128,7 @@ automatically cause those extensions to be disabled.
 @multitable @columnfractions .12 .17 .17 .54
 @headitem Extension @tab Minimum Architecture @tab Enabled by default
  @tab Description
-@item @code{crc} @tab ARMv8-A @tab No
+@item @code{crc} @tab ARMv8-A @tab ARMv8.1-A or later
  @tab Enable CRC instructions.
 @item @code{crypto} @tab ARMv8-A @tab No
  @tab Enable cryptographic extensions.  This implies @code{fp} and @code{simd}.
@@ -142,6 +142,11 @@ automatically cause those extensions to be disabled.
  @tab Enable Limited Ordering Regions extensions.
 @item @code{rdma} @tab ARMv8-A @tab ARMv8-A or later
  @tab Enable ARMv8.1 Advanced SIMD extensions.  This implies @code{simd}.
+@item @code{fp16} @tab ARMv8.2-A @tab ARMv8.2-A or later
+ @tab Enable ARMv8.2 16-bit floating-point support.  This implies
+ @code{fp}.
+@item @code{profile} @tab ARMv8.2-A @tab No
+ @tab Enable statistical profiling extensions.
 @end multitable
 
 @node AArch64 Syntax

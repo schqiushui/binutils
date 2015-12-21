@@ -1,3 +1,55 @@
+2015-12-17  Ramana Radhakrishnan  <ramana.radhakrishnan@arm.com>
+
+	* gas/config/tc-arm.c (aeabi_set_public_attributes): Adjust
+	TAG_ARCH_profile for armv8-a.
+	* gas/testsuite/gas/arm/armv8a-automatic-hlt.d: New test.
+	* gas/testsuite/gas/arm/armv8a-automatic-hlt.s: New test.
+	* gas/testsuite/gas/arm/armv8a-automatic-lda.d: New test.
+	* gas/testsuite/gas/arm/armv8a-automatic-lda.s: New test.
+
+2015-12-15  Nick Clifton  <nickc@redhat.com>
+
+	* doc/c-msp430.texi (MSP430 Options): Remove references to a
+	non-existent silicon errata.
+	* config/tc-msp430.c: Likewise.
+
+2015-12-15  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* config/tc-aarch64.c (parse_neon_type_for_operand): Adjust to
+	take into account new vector type 2H.
+	(vectype_to_qualifier): Likewise.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* config/tc-aarch64.c (vectype_to_qualifier): Calculate operand
+	qualifier from per-type base and offet.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* config/tc-aarch64.c (aarch64_hint_opt_hsh): New.
+	(parse_barrier_psb): New.
+	(parse_operands): Add case for AARCH64_OPND_BARRIER_PSB.
+	(md_begin): Set up aarch64_hint_opt_hsh.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* config/tc-aarch64.c (aarch64_features): Add "profile".
+	* doc/c-aarch64.texi (AArch64 Extensions): Add "profile".
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* config/tc-aarch64.c (parse_sys_ins_reg): Add check of
+	architectural support for system register.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* doc/c-aarch64.texi (AArch64 Extensions): Update entry for crc.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* config/tc-aarch64.c (aarch64_features): Add "fp16".
+	* doc/c-aarch64.texi (Architecture Extensions): Add "fp16".
+
 2015-12-09  Matthew Wahab  <matthew.wahab@arm.com>
 
 	* config/tc-aarch64.c (aarch64_archs): Add "armv8.2-a".

@@ -1,3 +1,136 @@
+2015-12-15  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/advsimd-fp16.d: Update expected output.
+	* gas/aarch64/advsimd-fp16: Add tests for Adv.SIMD scalar shift
+	by immediate instructions.
+
+2015-12-15  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/advsimd-fp16.d: Update expected output.
+	* gas/aarch64/advsimd-fp16.s: Add tests for Adv.SIMD across lanes
+	instructions.
+	* gas/aarch64/illegal.d: Update expected output.
+	* gas/aarch64/illegal.s: Replace tests for illegal use of 'h'
+	specifier.
+
+2015-12-15  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/advsimd-fp16.d: Update expected output.
+	* gas/aarch64/advsimd-fp16.s: Add tests for Adv.SIMD Scalar
+	Pairwise instructions.
+
+2015-12-15  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/advsimd-fp16.d: Update expected output.
+	* gas/aarch64/advsimd-fp16.s: Add tests for Adv.SIMD modified
+	immediate instructions.
+
+2015-12-15  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/advsimd-fp16.d: Update expected output.
+	* gas/aarch64/advsimd-fp16.s: Add tests for Adv.SIMD across lanes
+	instructions.
+	* gas/aarch64/illegal.d: Update expected output.
+	* gas/aarch64/illegal.s: Replace test for illegal use of 'h' specifier.
+
+2015-12-15  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/advsimd-fp16.d: Update expected output.
+	* gas/aarch64/advsimd-fp16.s: Add tests for scalar indexed element
+	instructions.
+
+2015-12-15  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/advsimd-fp16.d: Update expected output.
+	* gas/aarch64/advsimd-fp16.s: Add tests for vector indexed element
+	instructions.
+
+2015-12-15  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/advsimd-fp16.d: Update expected output.
+	* gas/aarch64/advsimd-fp16.s: Add tests for scalar two register misc.
+	instructions.
+
+2015-12-15  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/advsimd-fp16.d: Update expected output.
+	* gas/aarch64/advsimd-fp16.s: Add tests for vector two register
+	misc. instructions.
+
+2015-12-15  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/advsimd-fp16.d: Update expected output.
+	* gas/aarch64/advsimd-fp16.s: Add tests for scalar three register
+	same instructions.
+
+2015-12-15  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/advsimd-fp16.d: New.
+	* gas/aarch64/advsimd-fp16.s: New.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/system-2.d: Enable the statistical profiling
+	extension.  Update the expected output.
+	* gas/aarch64/system-2.s: Add tests for PSB CSYNC.
+	* gas/aarch64/system.d: Update the expected output.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/sysreg-2.s: Add tests for the statistical profiling
+	system registers.
+	* gas/aarch64/sysreg-2.d: Enable the statistical profiling
+	extension and update the expected output.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/sysreg-2.d: Update for new tests for AT S1E1RP and
+	AT S1E1WP.
+	* gas/aarch64/sysreg-2.s: Add tests for AT S1E1RP and AT S1E1WP.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/sysreg-2.d: Add tests for dc instruction.
+	* gas/aarch64/sysreg-2.s: Add uses of dc instruction.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/uao-directive.d: New.
+	* gas/aarch64/uao.d: New.
+	* gas/aarch64/uao.s: New.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/sysreg-2.d: Add tests for new registers.
+	* gas/aarch64/sysreg-2.s: Likewise.  Also replace some spaces with
+	tabs.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/system-2.d: New.
+	* gas/aarch64/system-2.s: New.
+	* gas/aarch64/system.d: Adjust expected output for HINT 16.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/float-fp16.d: New.
+	* gas/aarch64/float-fp16.s: New.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/alias-2.d: Add tests for REV.
+	* gas/aarch64/alias-2.s: Likewise.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/alias-2.d: New.
+	* gas/aarch64/alias-2.s: New.
+
+2015-12-14  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* gas/aarch64/sysreg-2.d: New.
+	* gas/aarch64/sysreg-2.s: New.
+
 2015-12-10  Alan Modra  <amodra@gmail.com>
 
 	Apply from master.
