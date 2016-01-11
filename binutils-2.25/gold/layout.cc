@@ -2819,8 +2819,18 @@ Layout::finalize(const Input_objects* input_objects, Symbol_table* symtab,
 
       if (data_seg_size >= target->max_pie_data_segment_size())
 	gold_warning(
-	  _("Unsafe PIE data segment size (%" PRIu64 " > %" PRIu64 "). See "
-	    "go/unsafe-pie."),
+	  _("Unsafe PIE data segment size (%" PRIu64 " > %" PRIu64 "). "
+	    "For kernels with CONFIG_ARCH_BINFMT_ELF_RANDOMIZE_PIE enabled, "
+	    "load_elf_binary() attempts to map a PIE binary into an address "
+	    "range immediately below mm->mmap_base. The first PT_LOAD segment "
+	    "is mapped below mm->mmap_base, the subsequent PT_LOAD segment(s) "
+	    "end up being mapped above mm->mmap_base into the area that is "
+	    "supposed to be the \"gap\" between the stack and the binary. Since"
+	    " the size of the \"gap\" on x86_64 is only guaranteed to be 128MB "
+	    "this means that binaries with large data segments > 128MB can end "
+	    "up mapping part of their data segment over their stack resulting "
+	    "in corruption of the stack. Any PIE binary with a data segment > "
+	    "128MB is vulnerable to this. It is suggested to turn off PIE."),
 	  data_seg_size,
 	  target->max_pie_data_segment_size());
     }
