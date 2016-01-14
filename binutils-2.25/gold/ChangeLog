@@ -1,4 +1,11 @@
-2015-10.27  Han Shen  <shenhan@google.com>
+2015-11-05  Cary Coutant  <ccoutant@gmail.com>
+
+	PR gold/19163
+	* aarch64.cc (Target_aarch64::Relocate::relocate): Don't apply
+	certain relocations if --no-apply-dynamic-relocs is set.
+	* options.h (--apply-dynamic-relocs): New aarch64-specific option.
+
+2015-10-27  Han Shen  <shenhan@google.com>
 
 	PR gold/19042 - unsupported reloc 311/312.
 
