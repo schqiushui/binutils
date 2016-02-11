@@ -1,3 +1,28 @@
+2016-02-10  H.J. Lu  <hongjiu.lu@intel.com>
+
+	Backport from master
+	2016-02-10  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/19601
+	* elf32-i386.c (elf_i386_relocate_section): Mask off the least
+	significant bit in GOT offset for R_386_GOT32X.
+
+2016-02-02  H.J. Lu  <hongjiu.lu@intel.com>
+
+	Backport from master
+	2016-02-02  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/19542
+	* elf64-x86-64.c (elf_x86_64_convert_load): Store the estimated
+	distances in the compressed_size field of the output section.
+
+2016-02-01  John David Anglin  <danglin@gcc.gnu.org>
+
+	PR ld/19526
+	* elf32-hppa.c (elf32_hppa_final_link): Don't sort non-regular output
+	files.
+	* elf64-hppa.c (elf32_hppa_final_link): Likewise.  Remove retval.
+
 2016-01-25  Tristan Gingold  <gingold@adacore.com>
 
 	* version.m4: Bump version to 2.26.0
