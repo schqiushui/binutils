@@ -1,4 +1,9 @@
-2015-10.27  Han Shen  <shenhan@google.com>
+2015-12-16  Roland McGrath  <mcgrathr@google.com>
+
+	PR ld/17473
+	* binary.cc: Move #include "safe-ctype.h" to be last #include.
+
+2015-10-27  Han Shen  <shenhan@google.com>
 
 	PR gold/19042 - unsupported reloc 311/312.
 
