@@ -555,6 +555,19 @@ bfd_elf_record_link_assignment (bfd *output_bfd,
   if (h == NULL)
     return provide;
 
+  if (h->versioned == unknown)
+    {
+      /* Set versioned if symbol version is unknown.  */
+      char *version = strrchr (name, ELF_VER_CHR);
+      if (version)
+	{
+	  if (version > name && version[-1] != ELF_VER_CHR)
+	    h->versioned = versioned_hidden;
+	  else
+	    h->versioned = versioned;
+	}
+    }
+
   switch (h->root.type)
     {
     case bfd_link_hash_defined:
@@ -4562,8 +4575,10 @@ error_free_dyn:
 		break;
 	      }
 
-	  /* Don't add DT_NEEDED for references from the dummy bfd.  */
+	  /* Don't add DT_NEEDED for references from the dummy bfd nor
+	     for unmatched symbol.  */
 	  if (!add_needed
+	      && matched
 	      && definition
 	      && ((dynsym
 		   && h->ref_regular_nonweak
