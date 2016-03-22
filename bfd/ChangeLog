@@ -1,3 +1,43 @@
+2016-03-17  H.J. Lu  <hongjiu.lu@intel.com>
+
+	Backport from master
+	2016-03-15  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/19827
+	* elf32-i386.c (elf_i386_check_relocs): Bind defined symbol
+	locally in PIE.
+	(elf_i386_relocate_section): Likewise.
+	* elf64-x86-64.c (elf_x86_64_check_relocs): Likewise.
+	(elf_x86_64_relocate_section): Likewise.
+
+2016-03-15  H.J. Lu  <hongjiu.lu@intel.com>
+
+	Backport from master
+	2016-01-30  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/19539
+	* elf32-i386.c (elf_i386_reloc_type_class): Check relocation
+	against STT_GNU_IFUNC symbol only with dynamic symbols.
+	* elf64-x86-64.c (elf_x86_64_reloc_type_class): Likewise.
+
+2016-03-15  Nick Clifton  <nickc@redhat.com>
+
+	Backport from master:
+	2016-03-09  Leon Winter  <winter-gcc@bfw-online.de>
+
+	PR ld/19623
+	* cofflink.c (_bfd_coff_generic_relocate_section): Do not apply
+	relocations against absolute symbols.
+
+2016-03-14  H.J. Lu  <hongjiu.lu@intel.com>
+
+	Backport from master
+	2016-01-28  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR binutils/19523
+	* dwarf2.c (_bfd_dwarf2_slurp_debug_info): Set BFD_DECOMPRESS to
+	decompress debug sections.
+
 2016-03-09  H.J. Lu  <hongjiu.lu@intel.com>
 
 	PR ld/19579

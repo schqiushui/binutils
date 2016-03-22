@@ -1,3 +1,40 @@
+2016-03-17  H.J. Lu  <hongjiu.lu@intel.com>
+
+	Backport from master
+	2016-03-15  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/19827
+	* testsuite/ld-i386/i386.exp: Run PR ld/19827 tests.
+	* testsuite/ld-x86-64/x86-64.exp: Likewise.
+	* testsuite/ld-i386/pr19827.rd: New file.
+	* testsuite/ld-i386/pr19827a.S: Likewise.
+	* testsuite/ld-i386/pr19827b.S: Likewise.
+	* testsuite/ld-x86-64/pr19827.rd: Likewise.
+	* testsuite/ld-x86-64/pr19827a.S: Likewise.
+	* testsuite/ld-x86-64/pr19827b.S: Likewise.
+
+2016-03-15  H.J. Lu  <hongjiu.lu@intel.com>
+
+	Backport from master
+	2016-02-20  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* testsuite/ld-elf/pr19539.d: Skip cris*-*-* targets.
+
+	2016-01-30  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/19539
+	* testsuite/ld-elf/pr19539.d: New file.
+	* testsuite/ld-elf/pr19539.s: Likewise.
+	* testsuite/ld-elf/pr19539.t: Likewise.
+
+2016-03-14  H.J. Lu  <hongjiu.lu@intel.com>
+
+	Backport from master
+	2015-12-07  Jan Beulich  <jbeulich@suse.com>
+
+	* ld-elf/gabiend.rt: Accept any alignment.
+	* ld-elf/gabinormal.rt: Likewise.
+
 2016-03-09  H.J. Lu  <hongjiu.lu@intel.com>
 
 	Backport from master
