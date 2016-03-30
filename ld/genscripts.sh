@@ -145,6 +145,24 @@ if [ "${LIB_PATH}" != ":" ] ; then
   lib_path2=${LIB_PATH}
 fi
 
+# Return 0 if this is building for ChromeOS target.
+# Currently ChromeOS targets and Android targets do not intersect.
+is_chromeos_target()
+{
+    for t in \
+	arm-none-eabi \
+	armv7a-cros-linux-gnueabi \
+	i686-pc-linux-gnu \
+	x86_64-cros-linux-gnu \
+	x86_64-pc-linux-gnu ;
+    do
+	if [[ "$1" == "${t}" ]]; then
+	    return 0
+	fi
+    done
+    return 1
+}
+
 # Add args to lib_path1 and lib_path2, discarding any duplicates
 append_to_lib_path()
 {
@@ -228,6 +246,10 @@ case :${lib_path1}:${lib_path2}: in
   *) LIB_PATH=${lib_path1}:${lib_path2} ;;
 esac
 
+if is_chromeos_target ${target}; then
+    LIB_SEARCH_DIRS=`echo ${LIB_PATH} | sed -e 's/:/ /g' -e 's/\([^ ][^ ]*\)/SEARCH_DIR(\\"\1\\");/g'`
+fi
+
 # For Android, comment out LIB_SEARCH_DIRS.
 #LIB_SEARCH_DIRS=`echo ${LIB_PATH} | sed -e 's/:/ /g' -e 's/\([^ ][^ ]*\)/SEARCH_DIR(\\"\1\\");/g'`
 
@@ -295,7 +317,9 @@ LD_FLAG=
 DATA_ALIGNMENT=${DATA_ALIGNMENT_}
 RELOCATING=" "
 ( echo "/* Default linker script, for normal executables */"
-  echo "/* Modified for Android.  */"
+  if ! is_chromeos_target ${target}; then
+      echo "/* Modified for Android.  */"
+  fi
   . ${CUSTOMIZER_SCRIPT}
   . ${srcdir}/scripttempl/${SCRIPT_NAME}.sc
 ) | sed -e '/^ *$/d;s/[ 	]*$//' > ldscripts/${EMULATION_NAME}.x
@@ -349,7 +373,9 @@ if test -n "$GENERATE_SHLIB_SCRIPT"; then
     DATA_ALIGNMENT=${DATA_ALIGNMENT_sc-${DATA_ALIGNMENT}}
     COMBRELOC=ldscripts/${EMULATION_NAME}.xsc.tmp
     ( echo "/* Script for --shared -z combreloc: shared library, combine & sort relocs */"
-      echo "/* Modified for Android.  */"
+      if ! is_chromeos_target ${target}; then
+	  echo "/* Modified for Android.  */"
+      fi
       . ${CUSTOMIZER_SCRIPT}
       . ${srcdir}/scripttempl/${SCRIPT_NAME}.sc
     ) | sed -e '/^ *$/d;s/[ 	]*$//' > ldscripts/${EMULATION_NAME}.xsc

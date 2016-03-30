@@ -1327,10 +1327,12 @@ Reloc_stub<size, big_endian>::stub_type_for_reloc(
   if (aarch64_valid_for_adrp_p(location, dest))
     return ST_ADRP_BRANCH;
 
-  if (parameters->options().output_is_position_independent()
-      && parameters->options().output_is_executable())
+  // Always use PC-relative addressing in case of -shared or -pie.
+  if (parameters->options().output_is_position_independent())
     return ST_LONG_BRANCH_PCREL;
 
+  // This saves 2 insns per stub, compared to ST_LONG_BRANCH_PCREL.
+  // But is only applicable to non-shared or non-pie.
   return ST_LONG_BRANCH_ABS;
 }
 
@@ -6907,16 +6909,41 @@ Target_aarch64<size, big_endian>::Relocate::relocate(
       break;
 
     case elfcpp::R_AARCH64_ABS64:
+      if (!parameters->options().apply_dynamic_relocs()
+          && parameters->options().output_is_position_independent()
+          && gsym != NULL
+          && gsym->needs_dynamic_reloc(reloc_property->reference_flags())
+          && !gsym->can_use_relative_reloc(false))
+        // We have generated an absolute dynamic relocation, so do not
+        // apply the relocation statically. (Works around bugs in older
+        // Android dynamic linkers.)
+        break;
       reloc_status = Reloc::template rela_ua<64>(
 	view, object, psymval, addend, reloc_property);
       break;
 
     case elfcpp::R_AARCH64_ABS32:
+      if (!parameters->options().apply_dynamic_relocs()
+          && parameters->options().output_is_position_independent()
+          && gsym != NULL
+          && gsym->needs_dynamic_reloc(reloc_property->reference_flags()))
+        // We have generated an absolute dynamic relocation, so do not
+        // apply the relocation statically. (Works around bugs in older
+        // Android dynamic linkers.)
+        break;
       reloc_status = Reloc::template rela_ua<32>(
 	view, object, psymval, addend, reloc_property);
       break;
 
     case elfcpp::R_AARCH64_ABS16:
+      if (!parameters->options().apply_dynamic_relocs()
+          && parameters->options().output_is_position_independent()
+          && gsym != NULL
+          && gsym->needs_dynamic_reloc(reloc_property->reference_flags()))
+        // We have generated an absolute dynamic relocation, so do not
+        // apply the relocation statically. (Works around bugs in older
+        // Android dynamic linkers.)
+        break;
       reloc_status = Reloc::template rela_ua<16>(
 	view, object, psymval, addend, reloc_property);
       break;
@@ -8180,10 +8207,6 @@ Target_aarch64<size, big_endian>::scan_erratum_843419_span(
 	    }
 	  if (do_report)
 	    {
-	      gold_info(_("Erratum 843419 found and fixed at \"%s\", "
-			     "section %d, offset 0x%08x."),
-			   relobj->name().c_str(), shndx,
-			   (unsigned int)(span_start + offset));
 	      unsigned int erratum_insn_offset =
 		span_start + offset + insn_offset;
 	      Address erratum_address =

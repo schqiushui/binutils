@@ -644,6 +644,13 @@ class General_options
 	      N_("Allow unresolved references in shared libraries"),
 	      N_("Do not allow unresolved references in shared libraries"));
 
+  // Note: this is cherry-picked from upstream patch 0eccf19f9. But the default
+  // value is changed from "true" to "false".
+  DEFINE_bool(apply_dynamic_relocs, options::TWO_DASHES, '\0', false,
+	      N_("Apply link-time values for dynamic relocations (default)"),
+	      N_("(aarch64 only) Do not apply link-time values "
+		 "for dynamic relocations"));
+
   DEFINE_bool(as_needed, options::TWO_DASHES, '\0', false,
 	      N_("Only set DT_NEEDED for shared libraries if used"),
 	      N_("Always DT_NEEDED for shared libraries"));
@@ -833,6 +840,10 @@ class General_options
 		 N_("(ARM only) Rewrite BX rn branch to ARMv4 interworking "
 		    "veneer"),
 		 NULL);
+
+  DEFINE_bool(long_plt, options::TWO_DASHES, '\0', false,
+	      N_("(ARM only) Generate long PLT entries"),
+	      N_("(ARM only) Do not generate long PLT entries"));
 
   DEFINE_bool(g, options::EXACTLY_ONE_DASH, '\0', false,
 	      N_("Ignored"), NULL);
