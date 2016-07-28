@@ -1,3 +1,228 @@
+2016-06-29  Maciej W. Rozycki  <macro@imgtec.com>
+
+	Backport from master
+	2016-04-22  Maciej W. Rozycki  <macro@imgtec.com>
+
+	* config/tc-mips.c (code_option_type): New enum.
+	(parse_code_option): Return status indicating option type.
+	(s_mipsset): Update `parse_code_option' call site accordingly.
+	Always set register sizes from the ISA with ISA overrides.
+	(s_module): Update `parse_code_option' call site.
+	* testsuite/gas/mips/isa-override-1.d: New test.
+	* testsuite/gas/mips/micromips@isa-override-1.d: New test.
+	* testsuite/gas/mips/mips1@isa-override-1.d: New test.
+	* testsuite/gas/mips/mips2@isa-override-1.d: New test.
+	* testsuite/gas/mips/mips32@isa-override-1.d: New test.
+	* testsuite/gas/mips/mips32r2@isa-override-1.d: New test.
+	* testsuite/gas/mips/mips32r3@isa-override-1.d: New test.
+	* testsuite/gas/mips/mips32r5@isa-override-1.d: New test.
+	* testsuite/gas/mips/mips32r6@isa-override-1.d: New test.
+	* testsuite/gas/mips/mips64r2@isa-override-1.d: New test.
+	* testsuite/gas/mips/mips64r3@isa-override-1.d: New test.
+	* testsuite/gas/mips/mips64r5@isa-override-1.d: New test.
+	* testsuite/gas/mips/mips64r6@isa-override-1.d: New test.
+	* testsuite/gas/mips/r3000@isa-override-1.d: New test.
+	* testsuite/gas/mips/r3900@isa-override-1.d: New test.
+	* testsuite/gas/mips/r5900@isa-override-1.d: New test.
+	* testsuite/gas/mips/octeon@isa-override-1.d: New test.
+	* testsuite/gas/mips/octeon3@isa-override-1.d: New test.
+	* testsuite/gas/mips/isa-override-2.l: New list test.
+	* testsuite/gas/mips/mips1@isa-override-2.l: New list test.
+	* testsuite/gas/mips/mips2@isa-override-2.l: New list test.
+	* testsuite/gas/mips/mips32@isa-override-2.l: New list test.
+	* testsuite/gas/mips/mips32r2@isa-override-2.l: New list test.
+	* testsuite/gas/mips/mips32r3@isa-override-2.l: New list test.
+	* testsuite/gas/mips/mips32r5@isa-override-2.l: New list test.
+	* testsuite/gas/mips/mips32r6@isa-override-2.l: New list test.
+	* testsuite/gas/mips/r3000@isa-override-2.l: New list test.
+	* testsuite/gas/mips/r3900@isa-override-2.l: New list test.
+	* testsuite/gas/mips/octeon3@isa-override-2.l: New list test.
+	* testsuite/gas/mips/octeon3@isa-override-1.l: New stderr
+	output.
+	* testsuite/gas/mips/isa-override-1.s: New test source.
+	* testsuite/gas/mips/r5900@isa-override-1.s: New test source.
+	* testsuite/gas/mips/isa-override-2.s: New test source.
+	* testsuite/gas/mips/mips1@isa-override-2.s: New test source.
+	* testsuite/gas/mips/mips2@isa-override-2.s: New test source.
+	* testsuite/gas/mips/mips32@isa-override-2.s: New test source.
+	* testsuite/gas/mips/mips32r2@isa-override-2.s: New test source.
+	* testsuite/gas/mips/mips32r3@isa-override-2.s: New test source.
+	* testsuite/gas/mips/mips32r5@isa-override-2.s: New test source.
+	* testsuite/gas/mips/mips32r6@isa-override-2.s: New test source.
+	* testsuite/gas/mips/r3000@isa-override-2.s: New test source.
+	* testsuite/gas/mips/r3900@isa-override-2.s: New test source.
+	* testsuite/gas/mips/octeon3@isa-override-2.s: New test source.
+	* testsuite/gas/mips/mips.exp: Run the new tests.
+
+2015-07-21  Tristan Gingold  <gingold@adacore.com>
+
+	* configure: Regenerate.
+
+2015-07-21  Tristan Gingold  <gingold@adacore.com>
+
+	* configure: Regenerate.
+
+2015-07-10  Alan Modra  <amodra@gmail.com>
+
+	Apply from master
+	2015-07-03  Alan Modra  <amodra@gmail.com>
+	* config/tc-ppc.c (md_show_usage): Add -m821, -m850, -m860.
+	* doc/c-ppc.texi (PowerPC-Opts): Likewise.
+
+	2015-06-19  Peter Bergner  <bergner@vnet.ibm.com>
+	* config/tc-ppc.c (md_assemble): Use ppc_optional_operand_value.
+	Allow for optional operands without insert functions.
+
+	2015-03-11  Alan Modra  <amodra@gmail.com>
+	* config/tc-ppc.c (md_assemble): Don't abort on 8 byte insn fixups.
+	(md_apply_fix): Report an error on data-only fixups used with insns.
+
+2015-06-19  Nick Clifton  <nickc@redhat.com>
+
+	PR gas/18541
+	* config/tc-arm.c (md_apply_fix): Add support for ADR in thumb
+	mode against a nearby symbol.
+
+2015-06-17  Renlin Li  <renlin.li@arm.com>
+
+	Applied from master.
+	2015-04-28  Renlin Li  <renlin.li@arm.com>
+	2015-06-03  Renlin Li  <renlin.li@arm.com>
+
+	* config/tc-arm.c (arm_init_frag): Always emit mapping symbols.
+
+2015-06-17  Renlin Li  <renlin.li@arm.com>
+
+	Applied from master.
+	2015-05-05  Renlin Li  <renlin.li@arm.com>
+
+	* config/tc-aarch64.c (aarch64_init_frag): Always generate mapping
+	symbols.
+
+2015-06-04  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* config/tc-aarch64.c (mapping_state): Set minimum alignment for code
+	sections.
+
+2015-05-07  Renlin Li  <renlin.li@arm.com>
+
+	* config/tc-aarch64.c (s_aarch64_inst): Align frag during state
+	transition within executable section.
+	(md_assemble): Likewise.
+
+2015-04-06  Evandro Menezes  <e.menezes@samsung.com>
+
+	* config/tc-aarch64.c: Add support for Samsung Exynos M1.
+	* doc/c-aarch64.texi (-mcpu=): Add "exynos-m1".
+
+2015-04-06  Evandro Menezes  <e.menezes@samsung.com>
+
+	* config/tc-arm.c: Add support for Samsung Exynos M1.
+	* doc/c-arm.texi (-mcpu=): Add "exynos-m1".
+
+2015-04-04  Alan Modra  <amodra@gmail.com>
+
+	Apply from master.
+	2014-12-25  Yaakov Selkowitz  <yselkowi@redhat.com>
+	PR gas/17753
+	* config/tc-mep.c (md_begin): Specify types of vararg literals.
+
+2015-03-20  H.J. Lu  <hongjiu.lu@intel.com>
+
+	Apply patch from master:
+	2015-03-20  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* config/tc-i386.c (i386_align_code): Limit multi-byte nop
+	instructions to 10 bytes.
+
+2015-03-11  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* config/tc-aarch64.c: Add support for Cortex-A72.
+	* doc/c-aarch64.texi (-mcpu=): Add "cortex-a72".
+
+2015-03-11  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* config/tc-arm.c: Add support for Cortex-A72.
+
+2015-02-11  Alan Modra  <amodra@gmail.com>
+
+	Apply from master.
+	2015-01-12  Alan Modra  <amodra@gmail.com>
+	* read.c (s_altmacro, s_reloc): Make definition static.
+
+	2014-12-12  Alan Modra  <amodra@gmail.com>
+	* config/tc-ppc.h (md_reg_eh_frame_to_debug_frame): Match current
+	gcc behaviour.
+	* config/te-aix.h: New file.
+	* configure.tgt: Use em=aix for powerpc-aix.
+
+2015-01-28  Matthew Wahab  <matthew.wahab@arm.com>
+
+	* config/tc-arm.c (parse_ifimm_zero): Accept #0x0 as a synonym for #0,
+	restoring previous behaviour.
+
+2014-12-23  Tristan Gingold  <gingold@adacore.com>
+
+	* configure: Regenerate.
+
+2014-12-23  Tristan Gingold  <gingold@adacore.com>
+
+	* configure: Regenerate.
+
+2014-12-19  Matthew Fortune  <matthew.fortune@imgtec.com>
+
+	* config/tc-mips.c (md_apply_fix): Apply alignment check
+	to the symbol and offset rather than *valP for
+	BFD_RELOC_MIPS_18_PCREL_S3.  Also update the error message
+	for BFD_RELOC_MIPS_19_PCREL_S2.
+
+2014-11-18  Igor Zamyatin  <igor.zamyatin@intel.com>
+
+	* config/tc-i386-intel.c (i386_operator): Remove last argument
+	from lex_got call.
+	* config/tc-i386.c (reloc): Remove bnd_prefix from parameters'
+	list.  Return always BFD_RELOC_32_PCREL.
+	* (output_branch): Remove condition for BFD_RELOC_X86_64_PC32_BND.
+	* (output_jump): Update call to reloc accordingly.
+	* (output_interseg_jump): Likewise.
+	* (output_disp): Likewise.
+	* (output_imm): Likewise.
+	* (x86_cons_fix_new): Likewise.
+	* (lex_got): Remove bnd_prefix from parameters' list in macro and
+	declarations. Don't use BFD_RELOC_X86_64_PLT32_BND.
+	* (x86_cons): Update call to lex_got accordingly.
+	* (i386_immediate): Likewise.
+	* (i386_displacement): Likewise.
+	* (md_apply_fix): Don't use BFD_RELOC_X86_64_PLT32_BND nor
+	BFD_RELOC_X86_64_PC32_BND.
+	* (tc_gen_reloc): Likewise.
+
+2014-11-17  Philipp Tomsich  <philipp.tomsich@theobroma-systems.com>
+
+	* config/tc-aarch64.c (aarch64_cpus): Add "xgene2".
+	* doc/c-aarch64.texi: Document it.
+
+2014-11-17  Philipp Tomsich  <philipp.tomsich@theobroma-systems.com>
+
+	* config/tc-aarch64.c (aarch64_cpus): Add "xgene1".
+	* doc/c-aarch64.texi: Rename xgene-1 to xgene1.
+
+2014-11-18  Marcus Shawcroft  <marcus.shawcroft@arm.com>
+
+	Apply trunk patch:
+	* config/tc-aarch64.c (aarch64_cpus): Add CRC feature for
+	cortex-A53 and cortex-A57.
+
+2014-11-17  Nick Clifton  <nickc@redhat.com>
+
+	Apply trunk patches:
+
+	2014-11-13  Nick Clifton  <nickc@redhat.com>
+
+	PR binutils/17512
+	* config/obj-coff.c (coff_obj_symbol_new_hook): Set the is_sym
+	field.
+
 2014-11-17  Ilya Tocar  <ilya.tocar@intel.com>
 
 	* config/tc-i386.c (cpu_arch): Add .avx512vbmi.
