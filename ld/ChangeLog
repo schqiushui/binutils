@@ -1,3 +1,116 @@
+2017-09-19  Nick Clifton  <nickc@redhat.com>
+
+	2.29.1 Release
+
+	* configure: Regenerate.
+	* po/ld.pot: Regenerate.
+
+2017-09-19  Nick Clifton  <nickc@redhat.com>
+
+	Import from mainline:
+
+	* emultempl/xtensaelf.em (xtensa_wild_group_interleave_callback):
+	Only check for by_name sorting.
+
+2017-08-31  Alan Modra  <amodra@gmail.com>
+
+	* testsuite/ld-elf/eh3.d: Update.
+	* testsuite/ld-elf/eh4.d: Update.
+
+2017-08-14  Alan Modra  <amodra@gmail.com>
+
+	PR 21441
+	* testsuite/ld-x86-64/pr21038a.d: Adjust.
+	* testsuite/ld-x86-64/pr21038a-now.d: Adjust.
+
+2017-09-18  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/21924
+	* testsuite/ld-i386/i386.exp: Require GCC 5 or above for
+	"weakundef1 with PIE" test.
+	* testsuite/ld-x86-64/tls.exp: Require GCC 5 or above for
+	"tlsdesc1" and "tlsdesc1 with PIE" tests.
+
+2017-08-21  Hans-Peter Nilsson  <hp@bitrange.com>
+
+	Import from mainline:
+
+	PR ld/20125
+	* testsuite/ld-mmix/pr20125.d, testsuite/ld-mmix/pr20125.s: New
+	test.
+
+2017-09-10  Alan Modra  <amodra@gmail.com>
+
+	* ld.texinfo (--plt-align): Describe new behaviour of option.
+	* emultempl/ppc64elf.em (params): Default plt_stub_align to 5.
+	* testsuite/ld-powerpc/powerpc.exp: Pass --no-plt-align for
+	selected tests.
+	* testsuite/ld-powerpc/relbrlt.d: Pass --no-plt-align.
+	* testsuite/ld-powerpc/elfv2so.d: Adjust expected output.
+
+2017-09-01  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/22064
+	* testsuite/ld-x86-64/pr22064a.S: New file.
+	* testsuite/ld-x86-64/pr22064b.c: Likewise.
+	* testsuite/ld-x86-64/x86-64.exp: Run PR ld/22064 test.
+
+2017-09-01  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/22061
+	* testsuite/ld-i386/ibt-plt-1.d: Pass --hash-style=sysv to ld.
+	Updated.
+	* testsuite/ld-i386/ibt-plt-2a.d: Likewise.
+	* testsuite/ld-i386/ibt-plt-2c.d: Likewise.
+	* testsuite/ld-i386/ibt-plt-3a.d: Likewise.
+	* testsuite/ld-i386/ibt-plt-3c.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-1-x32.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-2a-x32.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-2c-x32.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-3a-x32.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-3c-x32.d: Likewise.
+	* testsuite/ld-i386/ibt-plt-2b.d: Pass --hash-style=sysv to ld
+	and dump unwind information.
+	* testsuite/ld-i386/ibt-plt-2d.d: Likewise.
+	* testsuite/ld-i386/ibt-plt-3b.d: Likewise.
+	* testsuite/ld-i386/ibt-plt-3d.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-2b-x32.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-2b.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-2d-x32.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-2d.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-3b-x32.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-3b.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-3d-x32.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-3d.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-1.d: Pass --hash-style=sysv to ld.
+	* testsuite/ld-x86-64/ibt-plt-2a.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-2c.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-3a.d: Likewise.
+	* testsuite/ld-x86-64/ibt-plt-3c.d: Likewise.
+
+2017-08-30  Maciej W. Rozycki  <macro@imgtec.com>
+
+	* testsuite/ld-mips-elf/bal-jalx-addend-micromips.d: New test.
+	* testsuite/ld-mips-elf/bal-jalx-addend-micromips-n32.d: New
+	test.
+	* testsuite/ld-mips-elf/bal-jalx-addend-micromips-n64.d: New
+	test.
+	* testsuite/ld-mips-elf/bal-jalx-local-micromips.d: New test.
+	* testsuite/ld-mips-elf/bal-jalx-local-micromips-n32.d: New
+	test.
+	* testsuite/ld-mips-elf/bal-jalx-local-micromips-n64.d: New
+	test.
+	* testsuite/ld-mips-elf/bal-jalx-pic-micromips.d: New test.
+	* testsuite/ld-mips-elf/bal-jalx-pic-micromips-n32.d: New test.
+	* testsuite/ld-mips-elf/bal-jalx-pic-micromips-n64.d: New test.
+	* testsuite/ld-mips-elf/bal-jalx-pic-ignore-micromips.d: New
+	test.
+	* testsuite/ld-mips-elf/bal-jalx-pic-ignore-micromips-n32.d: New
+	test.
+	* testsuite/ld-mips-elf/bal-jalx-pic-ignore-micromips-n64.d: New
+	test.
+	* testsuite/ld-mips-elf/mips-elf.exp: Run the new tests.
+
 2017-08-17  Andrew Burgess  <andrew.burgess@embecosm.com>
 
 	PR 21961

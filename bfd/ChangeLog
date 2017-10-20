@@ -1,3 +1,226 @@
+2017-09-19  Nick Clifton  <nickc@redhat.com>
+
+	2.29.1 Release
+
+	* version.m4: Bump version to 2.29.1
+	* configure: Regenerate.
+	* po/bfd.pot: Regenerate.
+
+2017-09-19  Nick Clifton  <nickc@redhat.com>
+
+	Import from mainline:
+
+	* xtensa-isa.c (xtensa_isa_init): Don't update lookup table
+	entries for sysregs with negative indices.
+
+2017-09-19  Alan Modra  <amodra@gmail.com>
+
+	PR 21441
+	* elf64-ppc.c (ppc64_elf_build_stubs): Don't check glink_eh_frame
+	size.
+
+2017-09-19  Alan Modra  <amodra@gmail.com>
+
+	PR 22150
+	* elflink.c (bfd_elf_size_dynamic_sections): Garbage collect
+	symbols before calculating verrefs.  Don't renumber dynsyms
+	after gc.  Exclude .gnu.version when zero or one dynsym.
+	Localize some vars and reindent.
+
+	Apply from master
+	2017-08-31  Alan Modra  <amodra@gmail.com>
+	* elf-eh-frame.c (_bfd_elf_parse_eh_frame): Don't exit early
+	for a section containing just a terminator.  Allow multiple
+	terminators at end of section.
+	* elflink.c (bfd_elf_discard_info): Iterate over .eh_frame
+	sections when not adding alignment.  Assert on terminator in
+	the middle of FDEs.
+
+	2017-08-31  Alan Modra  <amodra@gmail.com>
+	PR 21441
+	PR 22048
+	* elflink.c (bfd_elf_discard_info): Don't pad embedded zero
+	terminators.
+
+	2017-08-14  Alan Modra  <amodra@gmail.com>
+	PR 21441
+	* elf-eh-frame.c (_bfd_elf_discard_section_eh_frame): Don't add
+	alignment padding here.
+	* elflink.c (bfd_elf_discard_info): Add .eh_frame padding here
+	in a reverse pass over sections.
+
+2017-09-18  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/22148
+	* elf32-i386.c (elf_i386_get_synthetic_symtab): Check error
+	return from bfd_canonicalize_dynamic_reloc.
+	* elf64-x86-64.c (elf_x86_64_get_synthetic_symtab): Likewise.
+
+2017-09-14  Nick Clifton  <nickc@redhat.com>
+
+	Import from mainline:
+
+	PR binutils/22113
+	* peXXigen.c (pe_print_idata): Extend check for HintName vector
+	entries.
+
+2017-08-21  Hans-Peter Nilsson  <hp@bitrange.com>
+
+	Import from mainline:
+
+	PR ld/20125
+	* elf64-mmix.c (mmix_elf_relax_section): Correct handling of
+	undefined weak symbols.
+
+2017-09-10  Nick Clifton  <nickc@redhat.com>
+
+	Import from mainline:
+
+	PR 22047
+	* dwarf2.c (read_section): If necessary add a terminating NUL byte
+	to dwarf string sections.
+
+2017-09-10  Alan Modra  <amodra@gmail.com>
+
+	* elf64-ppp.c (plt_stub_pad): Handle positive and negative
+	plt_stub_align.
+
+2017-09-09  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR binutils/22018
+	* elf32-i386.c (elf_i386_get_synthetic_symtab): Check for valid
+	PLT section size.
+	* elf64-x86-64.c (elf_x86_64_get_synthetic_symtab): Likewise.
+
+2017-09-05  Nick Clifton  <nickc@redhat.com>
+
+	Import from mainline:
+
+	PR binutils/22032
+	* opncls.c (bfd_close_all_done): Don't call bfd_cache_close
+	before _close_and_cleanup.  Call iovec->bclose after.
+	(bfd_close): Remove code common to, and call, bfd_close_all_done.
+
+2017-09-04  Nick Clifton  <nickc@redhat.com>
+
+	Import from mainline:
+
+	PR binutils/21781
+	* coffcode.h (handle_COMDAT): Replace abort with an error message
+	and return.
+
+	PR 21786
+	* coff-rs6000.c (_bfd_strntol): New function.
+	(_bfd_strntoll): New function.
+	(GET_VALUE_IN_FIELD): New macro.
+	(EQ_VALUE_IN_FIELD): new macro.
+	(_bfd_xcoff_slurp_armap): Use new macros.
+	(_bfd_xcoff_archive_p): Likewise.
+	(_bfd_xcoff_read_ar_hdr): Likewise.
+	(_bfd_xcoff_openr_next_archived_file): Likewise.
+	(_bfd_xcoff_stat_arch_elt): Likewise.
+	* coff64-rs6000.c (_bfd_strntol): New function.
+	(_bfd_strntoll): New function.
+	(GET_VALUE_IN_FIELD): New macro.
+	(xcoff64_slurp_armap): Use new macros.
+
+	PR 21787
+	* archive.c (bfd_generic_archive_p): If the bfd does not have the
+	correct magic bytes at the start, set the error to wrong format
+	and clear the format selector before returning NULL.
+
+	PR 21813
+	* mach-o.c (bfd_mach_o_canonicalize_relocs): Pass the base address
+	of the relocs to the canonicalize_one_reloc routine.
+	* mach-o.h (struct bfd_mach_o_backend_data): Update the prototype
+	for the _bfd_mach_o_canonicalize_one_reloc field.
+	* mach-o-arm.c (bfd_mach_o_arm_canonicalize_one_reloc): Add
+	res_base parameter.  Use to check for corrupt pair relocs.
+	* mach-o-aarch64.c (bfd_mach_o_arm64_canonicalize_one_reloc):
+	Likewise.
+	* mach-o-i386.c (bfd_mach_o_i386_canonicalize_one_reloc):
+	Likewise.
+	* mach-o-x86-64.c (bfd_mach_o_x86_64_canonicalize_one_reloc):
+	Likewise.
+	* vms-alpha.c (_bfd_vms_slurp_eihd): Make sure that there is
+	enough data in the record before attempting to parse it.
+	(_bfd_vms_slurp_eeom): Likewise.
+	(_bfd_vms_slurp_egsd): Check for an invalid section index.
+	(image_set_ptr): Likewise.
+	(alpha_vms_slurp_relocs): Likewise.
+	(alpha_vms_object_p): Check for a truncated record.
+
+	PR 21824
+	* elf32-msp430.c (msp430_elf_relax_section): Allow conversion of
+	16-bit absolute branches into 10-bit pc-relative branches on the
+	MSP430 as well as the MSP430X.
+
+	PR 21916
+	* elf-attrs.c (_bfd_elf_parse_attributes): Complain about very
+	small section lengths.
+	* elf.c (_bfd_elf_setup_sections): Skip empty entries in the group
+	table.
+	(elfcore_grok_freebsd_prstatus): Add checks to make sure that
+	there is enough data present in the note.
+
+2017-09-04  Alan Modra  <amodra@gmail.com>
+
+	PR 22067
+	* elf32-i386.c (elf_i386_hash_table): Check is_elf_hash_table first.
+	* elf64-x86-64.c (elf_x86_64_hash_table): Likewise.
+
+2017-09-01  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/22064
+	* elf64-x86-64.c (elf_x86_64_finish_dynamic_symbol): Check
+	ELF_COMMON_DEF_P for common symbols.
+
+2017-09-01  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/22061
+	* elf32-i386.c (elf_i386_link_setup_gnu_properties): Create
+	.eh_frame section for the second PLT.
+	* elf64-x86-64.c (elf_x86_64_link_setup_gnu_properties): Correct
+	alignment of .eh_frame section for the second PLT.
+
+2017-09-01  Nick Clifton  <nickc@redhat.com>
+
+	PR 22059
+	* dwarf2.c (decode_line_info): Fix test for an overlong line info
+	structure.
+
+2017-09-01  Nick Clifton  <nickc@redhat.com>
+
+	PR 21933
+	PR 22060
+	* elf.c (elf_read_notes): Check for a note size of -1.
+
+2017-09-01  Nick Clifton  <nickc@redhat.com>
+
+	PR 22058
+	* elf-attrs.c (_bfd_elf_parse_attributes): Ensure that the
+	attribute buffer is NUL terminated.
+
+2017-08-30  Maciej W. Rozycki  <macro@imgtec.com>
+
+	* elfxx-mips.c (mips_elf_perform_relocation): Correct microMIPS
+	branch offset interpretation.
+
+2017-08-29  Nick Clifton  <nickc@redhat.com>
+
+	Import from mainline:
+
+	PR 21840
+	* mach-o.c (bfd_mach_o_read_symtab_strtab): Fail if the symtab
+	size is -1.
+	* nlmcode.h (nlm_swap_auxiliary_headers_in): Replace assertion
+	with error return.
+	* section.c (bfd_make_section_with_flags): Fail if the name or bfd
+	are NULL.
+	* vms-alpha.c (bfd_make_section_with_flags): Correct computation
+	of end pointer.
+	(evax_bfd_print_emh): Check for invalid string lengths.
+
 2017-08-23  Alan Modra  <amodra@gmail.com>
 
 	PR 21988
